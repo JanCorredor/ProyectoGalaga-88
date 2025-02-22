@@ -27,8 +27,9 @@ typedef enum GameScreen
 typedef struct {
     Vector2 particle_position;
     Color particle_color;
-    int opacity;
+    bool visible; // 1 visible 0 invisible
     int particle_size;
+    int particle_speed;
 } Particle;
 
 //Gameplay
@@ -55,10 +56,18 @@ static Player player = { 0 };
 // Declaracion de funciones
 //-------------------------------------------------------------------------------------
 
-#define MAXPARTICLES 50
+//Particle System
+#define MAXPARTICLES 100  //Particles in screen
 Particle particles[MAXPARTICLES];
-void createParticles();
-void drawParticles();
+void createParticles(); //Create
+void drawParticles();  //Update
+
+//Disparar
+#define MAXPLAYERBULLETS 100  // MAX PLAYER BULLETS IN the SCREEN at the same time
+Bullet playerbullets[MAXPLAYERBULLETS];
+int player_bullet_counter = -1;
+void ShootBullet();  //Create
+void DrawBullet();  //Update
 
 //-------------------------------------------------------------------------------------
 // Main
@@ -74,11 +83,18 @@ int main()
 	// Utility function from resource_dir.h to find the resources folder and set it as the current working directory so we can load from it
 	SearchAndSetResourceDir("resources");
 
-	// Load textures from the resources directory
-	Texture GalagaTitleLogo = LoadTexture("GalagaTitleLogo.png");
-    Texture Galaga88Logo = LoadTexture("GALAGA88_LOGO.png");
+	////// Load textures from the resources directory
+    //LOGO
+    Texture GalagaTitleLogo = LoadTexture("GalagaTitleLogo.png");
     GameScreen currentScreen = LOGO;
-    
+
+    //TITLE
+    Texture Galaga88Logo = LoadTexture("GALAGA88_LOGO.png");
+
+    //Gameplay
+    Texture player_body = LoadTexture("PlayerGalaga88.png");
+    Texture player_bullet = LoadTexture("PlayerBullet.png");
+
     //Frame
     unsigned int framesCounter = 0;
     SetTargetFPS(60); // Set Game to run 60 Frames per second
@@ -112,6 +128,7 @@ int main()
             // Wait for 2 seconds (120 frames) before jumping to TITLE screen
             if (framesCounter > 120)
             {
+                UnloadTexture(GalagaTitleLogo);
                 currentScreen = TITLE;
             }
         } break;
@@ -128,8 +145,9 @@ int main()
         case GAMEPLAY:
         {
             //Player Movement
-            if (IsKeyDown(KEY_LEFT)) player.position.x -= 12;
-            if (IsKeyDown(KEY_RIGHT)) player.position.x += 12;
+            int player_speed = 9;                                                                                       //La he reducido de 12 a 9, pero tal vez un poco más (Jan)
+            if (IsKeyDown(KEY_LEFT)) player.position.x -= player_speed;
+            if (IsKeyDown(KEY_RIGHT)) player.position.x += player_speed;
 
             //Player Collisions
             if ((player.position.x + player.radius) >= GetScreenWidth()) //Right Side
@@ -145,6 +163,7 @@ int main()
             if (IsKeyPressed(KEY_SPACE))
             {
                 //Crear Instancia de bala
+                ShootBullet();
             }
 
 
@@ -194,7 +213,9 @@ int main()
 
             //Scores
             DrawText("SCORE", GetScreenWidth() / 20, GetScreenHeight() / 50, 45, WHITE);
+                //Insertar Puntuacion
             DrawText("H I SCORE", GetScreenWidth() *7/ 10, GetScreenHeight() / 50, 45, WHITE);
+                //Insertar Puntuacion Mas alta
 
             //Other
             DrawText("PUSH ENTER", GetScreenWidth()/3, GetScreenHeight() /2, 45, GREEN);
@@ -208,7 +229,26 @@ int main()
         {
             ClearBackground(BLACK);
 
-            DrawCircle(player.position.x, player.position.y, player.radius, BLUE);
+            //Particulas
+            drawParticles();
+
+            //Scores
+            DrawText("SCORE", GetScreenWidth() / 20, GetScreenHeight() / 50, 45, WHITE);
+                //Insertar Puntuacion
+
+            //Player
+            //DrawCircle(player.position.x, player.position.y, player.radius, BLUE);                        // Dejamos el circulo o alguna figura geometrica para las colisiones? (Jan)
+            DrawTexture(player_body, player.position.x-74, player.position.y-63, WHITE);
+
+
+            //Bullets
+            DrawBullet();
+
+            for (int i = 0; i < player_bullet_counter; i++) //Draw
+            {
+                DrawTexture(player_bullet, playerbullets[i].bullet_position.x, playerbullets[i].bullet_position.y, WHITE);
+            }
+            
 
 
         } break;
@@ -239,24 +279,71 @@ int main()
 void createParticles()
 {
     Color particle_colors[6] = { GREEN, SKYBLUE, BLUE, RED, WHITE, LIGHTGRAY }; //Particles Possible Colors
+
     for (int i = 0; i < MAXPARTICLES; i++) //Create
     {
-        particles[i].particle_position = (Vector2){ GetRandomValue(GetScreenWidth()/100, GetScreenWidth()*99/100), 0};
-        particles[i].particle_color = particle_colors[GetRandomValue(0, 5)];
-        particles[i].particle_size = 5;
-        particles[i].opacity = 100;
+        particles[i].particle_position = (Vector2){ GetRandomValue(GetScreenWidth()/200, GetScreenWidth()*199/200), GetRandomValue(GetScreenHeight() / 200, GetScreenHeight() * 199 / 200) }; //Random position in screen
+        particles[i].particle_color = particle_colors[GetRandomValue(0, 5)]; // Pick Random Color
+        particles[i].particle_size = 5; // Constant Value
+        particles[i].particle_speed = GetRandomValue(1, 3);
+        particles[i].visible = true; //Visible by Default
     }
 }
 
 void drawParticles()
 {
+    Color particle_colors[6] = { GREEN, SKYBLUE, BLUE, RED, WHITE, LIGHTGRAY }; //Particles Possible Colors
+
     for (int i = 0; i < MAXPARTICLES; i++) //Update
     {
-        particles[i].particle_position.y += 1;
+        particles[i].particle_position.y += particles[i].particle_speed;
+
+        if (GetRandomValue(0, 100) == 0) // Particles Blink
+        {
+            particles[i].visible = false; // Invisible
+        }
+        else if (GetRandomValue(0, 50) == 50)
+        {
+            particles[i].visible = true; // Visible
+        }
+
+        if ((particles[i].particle_position.y) >= GetScreenHeight()) // Restart 
+        {
+            particles[i].particle_position = (Vector2){ GetRandomValue(GetScreenWidth() / 200, GetScreenWidth() * 199 / 200), GetRandomValue(0, 5) };// Position
+            particles[i].particle_color = particle_colors[GetRandomValue(0, 5)];                                                                     //Color
+            particles[i].particle_speed = GetRandomValue(1, 3);                                                                                      //Speed
+        }
+
     }
 
     for (int i = 0; i < MAXPARTICLES; i++) //Draw
     {
-        DrawRectangle(particles[i].particle_position.x, particles[i].particle_position.y, particles[i].particle_size, particles[i].particle_size, particles[i].particle_color);
+        if (particles[i].visible == true) //Draw only if visible
+        {
+            DrawRectangle(particles[i].particle_position.x, particles[i].particle_position.y, particles[i].particle_size, particles[i].particle_size, particles[i].particle_color);
+        }
+    }
+}
+
+void ShootBullet()
+{
+    player_bullet_counter += 1;
+
+    playerbullets[player_bullet_counter].bullet_position = (Vector2){ player.position.x, player.position.y};
+    playerbullets[player_bullet_counter].bullet_radius = 1;
+    playerbullets[player_bullet_counter].bullet_color = BLUE;
+}
+
+
+void DrawBullet()
+{
+    for (int i = 0; i < player_bullet_counter; i++) //Update
+    {
+        playerbullets[i].bullet_position.y -= 1;
+    }
+
+    for (int i = 0; i < player_bullet_counter; i++) //Draw
+    {
+        DrawCircle(playerbullets[i].bullet_position.x, playerbullets[i].bullet_position.y, playerbullets[i].bullet_radius, playerbullets[i].bullet_color);
     }
 }
