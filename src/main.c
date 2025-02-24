@@ -85,15 +85,15 @@ int main()
 
 	////// Load textures from the resources directory
     //LOGO
-    Texture GalagaTitleLogo = LoadTexture("GalagaTitleLogo.png");
+    Texture GalagaTitleLogo = LoadTexture("HUD/GalagaTitleLogo.png");
     GameScreen currentScreen = LOGO;
 
     //TITLE
-    Texture Galaga88Logo = LoadTexture("GALAGA88_LOGO.png");
+    Texture Galaga88Logo = LoadTexture("HUD/GALAGA88_LOGO.png");
 
     //Gameplay
-    Texture player_body = LoadTexture("PlayerGalaga88.png");
-    Texture player_bullet = LoadTexture("PlayerBullet.png");
+    Texture player_body = LoadTexture("Player/PlayerGalaga88.png");
+    Texture player_bullet = LoadTexture("Player/PlayerBullet.png");
 
     //Frame
     unsigned int framesCounter = 0;
@@ -184,13 +184,7 @@ int main()
         }
 
         //DRAWING
-
-
-
-
-
 		BeginDrawing();
-
 
 
         switch (currentScreen)
