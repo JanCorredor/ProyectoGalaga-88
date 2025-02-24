@@ -45,6 +45,13 @@ typedef struct Bullet {
     Color bullet_color;
 } Bullet;
 
+typedef struct Enemy {
+    Vector2 enemy_position;
+    int enemy_radius;
+    Color enemy_color;
+    bool enemy_alive;
+} Enemy;
+
 
 
 //-------------------------------------------------------------------------------------
@@ -69,6 +76,10 @@ int player_bullet_counter = -1;
 void ShootBullet();  //Create
 void DrawBullet();  //Update
 
+#define MAXENEMIES 5
+Enemy enemies[MAXENEMIES];
+void createEnemies();
+void DrawEnemies();
 //-------------------------------------------------------------------------------------
 // Main
 //-------------------------------------------------------------------------------------
@@ -109,6 +120,13 @@ int main()
     player.radius = 25;
     player.position = (Vector2){ GetScreenWidth()/2, GetScreenHeight()*9/10 };
 
+    for (int i = 0; i < MAXENEMIES; i++)
+    {
+        enemies[i].enemy_position.y = 100;
+        enemies[i].enemy_position.x = 50 + (i * 100);
+        enemies[i].enemy_alive = true;
+        enemies[i].enemy_radius = 20;
+    }
 
 
     //-------------------------------------------------------------------------------------
@@ -166,8 +184,17 @@ int main()
                 ShootBullet();
             }
 
-
-
+            //Enemy Collisions
+            for (int i = 0; i < MAXENEMIES; i++)
+            {
+                for (int j = 0; j < player_bullet_counter; j++)
+                {
+                    if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius,enemies[i].enemy_position,enemies[i].enemy_radius))
+                    {
+                        enemies[i].enemy_alive = false;
+                    }
+                }
+            }
 
         } break;
         case ENDING:
@@ -242,6 +269,7 @@ int main()
                 DrawTexture(player_bullet, playerbullets[i].bullet_position.x, playerbullets[i].bullet_position.y, WHITE);
             }
             
+            DrawEnemies();
 
 
         } break;
@@ -328,20 +356,32 @@ void ShootBullet()
     }
 
     playerbullets[player_bullet_counter].bullet_position = (Vector2){ player.position.x, player.position.y};
-    playerbullets[player_bullet_counter].bullet_radius = 1;
+    playerbullets[player_bullet_counter].bullet_radius = 10;
     playerbullets[player_bullet_counter].bullet_color = BLUE;
 }
-
 
 void DrawBullet()
 {
     for (int i = 0; i < player_bullet_counter; i++) //Update
     {
-        playerbullets[i].bullet_position.y -= 20; //Speed
+        playerbullets[i].bullet_position.y -= 20; //Speed (20)
     }
 
     for (int i = 0; i < player_bullet_counter; i++) //Draw
     {
-        DrawCircle(playerbullets[i].bullet_position.x, playerbullets[i].bullet_position.y, playerbullets[i].bullet_radius, playerbullets[i].bullet_color);
+        //DrawCircle(playerbullets[i].bullet_position.x, playerbullets[i].bullet_position.y, playerbullets[i].bullet_radius, playerbullets[i].bullet_color);
     }
+}
+
+void DrawEnemies() 
+{
+
+    for (int i = 0; i < MAXENEMIES; i++)
+    {
+        if (enemies[i].enemy_alive == true) 
+        {
+            DrawCircle(enemies[i].enemy_position.x, enemies[i].enemy_position.y, enemies[i].enemy_radius, RED);
+        }
+    }
+
 }
