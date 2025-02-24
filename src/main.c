@@ -63,7 +63,7 @@ void createParticles(); //Create
 void drawParticles();  //Update
 
 //Disparar
-#define MAXPLAYERBULLETS 100  // MAX PLAYER BULLETS IN the SCREEN at the same time
+#define MAXPLAYERBULLETS 30  // MAX PLAYER BULLETS IN the SCREEN at the same time
 Bullet playerbullets[MAXPLAYERBULLETS];
 int player_bullet_counter = -1;
 void ShootBullet();  //Create
@@ -145,7 +145,7 @@ int main()
         case GAMEPLAY:
         {
             //Player Movement
-            int player_speed = 9;                                                                                       //La he reducido de 12 a 9, pero tal vez un poco más (Jan)
+            int player_speed = 9;
             if (IsKeyDown(KEY_LEFT)) player.position.x -= player_speed;
             if (IsKeyDown(KEY_RIGHT)) player.position.x += player_speed;
 
@@ -237,7 +237,6 @@ int main()
                 //Insertar Puntuacion
 
             //Player
-            //DrawCircle(player.position.x, player.position.y, player.radius, BLUE);                        // Dejamos el circulo o alguna figura geometrica para las colisiones? (Jan)
             DrawTexture(player_body, player.position.x-74, player.position.y-63, WHITE);
 
 
@@ -329,6 +328,11 @@ void ShootBullet()
 {
     player_bullet_counter += 1;
 
+    if (player_bullet_counter >= MAXPLAYERBULLETS)
+    {
+        player_bullet_counter = 0;
+    }
+
     playerbullets[player_bullet_counter].bullet_position = (Vector2){ player.position.x, player.position.y};
     playerbullets[player_bullet_counter].bullet_radius = 1;
     playerbullets[player_bullet_counter].bullet_color = BLUE;
@@ -339,7 +343,7 @@ void DrawBullet()
 {
     for (int i = 0; i < player_bullet_counter; i++) //Update
     {
-        playerbullets[i].bullet_position.y -= 1;
+        playerbullets[i].bullet_position.y -= 20; //Speed
     }
 
     for (int i = 0; i < player_bullet_counter; i++) //Draw
