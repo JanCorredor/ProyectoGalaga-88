@@ -84,6 +84,8 @@ Enemy enemies[MAXENEMIES];
 void createEnemies();
 void DrawEnemies();
 void moveEnemiesCircle();
+
+
 //-------------------------------------------------------------------------------------
 // Main
 //-------------------------------------------------------------------------------------
@@ -169,7 +171,8 @@ int main()
         } break;
         case GAMEPLAY:
         {
-            void HideCursor(void);
+            framesCounter++;
+
             //Player Movement
             int player_speed = 9;
             if (IsKeyDown(KEY_LEFT)) player.position.x -= player_speed;
@@ -190,6 +193,8 @@ int main()
             {    
                 ShootBullet(); //Crear Instancia de bala
             }
+
+            moveEnemiesCircle();
 
             //Enemy Collisions
             for (int i = 0; i < MAXENEMIES; i++)
