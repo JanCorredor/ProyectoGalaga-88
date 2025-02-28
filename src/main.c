@@ -11,6 +11,8 @@ by Jeffery Myers is marked with CC0 1.0. To view a copy of this license, visit h
 
 #include "resource_dir.h"	// utility header for SearchAndSetResourceDir
 
+#include <math.h>
+
 //-------------------------------------------------------------------------------------
 // Defines
 //-------------------------------------------------------------------------------------
@@ -70,8 +72,9 @@ void createParticles(); //Create
 void drawParticles();  //Update
 
 //Disparar
-#define MAXPLAYERBULLETS 30  // MAX PLAYER BULLETS IN the SCREEN at the same time
+#define MAXPLAYERBULLETS 100  // MAX PLAYER BULLETS IN the SCREEN at the same time
 Bullet playerbullets[MAXPLAYERBULLETS];
+
 int player_bullet_counter = -1;
 void ShootBullet();  //Create
 void DrawBullet();  //Update
@@ -80,6 +83,7 @@ void DrawBullet();  //Update
 Enemy enemies[MAXENEMIES];
 void createEnemies();
 void DrawEnemies();
+void moveEnemiesCircle();
 //-------------------------------------------------------------------------------------
 // Main
 //-------------------------------------------------------------------------------------
@@ -106,6 +110,9 @@ int main()
     Texture player_body = LoadTexture("Player/PlayerGalaga88.png");
     Texture player_bullet = LoadTexture("Player/PlayerBullet.png");
 
+    Texture enemy1_0 = LoadTexture("Enemies/Enemy1_0.png");
+    Texture enemy1_1 = LoadTexture("Enemies/Enemy1_1.png");
+
     //Frame
     unsigned int framesCounter = 0;
     SetTargetFPS(60); // Set Game to run 60 Frames per second
@@ -123,7 +130,7 @@ int main()
     for (int i = 0; i < MAXENEMIES; i++)
     {
         enemies[i].enemy_position.y = 100;
-        enemies[i].enemy_position.x = 50 + (i * 100);
+        enemies[i].enemy_position.x = (GetScreenWidth()/MAXENEMIES)+(i * 100);
         enemies[i].enemy_alive = true;
         enemies[i].enemy_radius = 20;
     }
@@ -134,7 +141,6 @@ int main()
     //-------------------------------------------------------------------------------------
 	while (!WindowShouldClose())		// run the loop untill the user presses ESCAPE or presses the Close button on the window
 	{
-
         switch (currentScreen)
         {
         case LOGO:
@@ -144,6 +150,7 @@ int main()
             framesCounter++;    // Count frames
 
             // Wait for 2 seconds (120 frames) before jumping to TITLE screen
+            
             if (framesCounter > 120)
             {
                 UnloadTexture(GalagaTitleLogo);
@@ -162,6 +169,7 @@ int main()
         } break;
         case GAMEPLAY:
         {
+            void HideCursor(void);
             //Player Movement
             int player_speed = 9;
             if (IsKeyDown(KEY_LEFT)) player.position.x -= player_speed;
@@ -179,9 +187,8 @@ int main()
 
             //Shoot
             if (IsKeyPressed(KEY_SPACE))
-            {
-                //Crear Instancia de bala
-                ShootBullet();
+            {    
+                ShootBullet(); //Crear Instancia de bala
             }
 
             //Enemy Collisions
@@ -257,20 +264,27 @@ int main()
             DrawText("SCORE", GetScreenWidth() / 20, GetScreenHeight() / 50, 45, WHITE);
                 //Insertar Puntuacion
 
-            //Player
-            DrawTexture(player_body, player.position.x-74, player.position.y-63, WHITE);
-
 
             //Bullets
             DrawBullet();
 
-            for (int i = 0; i < player_bullet_counter; i++) //Draw
+            for (int i = 0; i < player_bullet_counter; i++) //Esto deberia estar en DrawBullets
             {
                 DrawTexture(player_bullet, playerbullets[i].bullet_position.x, playerbullets[i].bullet_position.y, WHITE);
             }
             
+            //Player
+            DrawTexture(player_body, player.position.x - 74, player.position.y - 63, WHITE);
+
             DrawEnemies();
 
+            for (int i = 0; i < MAXENEMIES; i++)
+            {
+                if (enemies[i].enemy_alive == true)
+                {
+                    DrawTexture(enemy1_0, enemies[i].enemy_position.x-70, enemies[i].enemy_position.y-70, WHITE);
+                }
+            }
 
         } break;
         case ENDING:
@@ -348,14 +362,16 @@ void drawParticles()
 
 void ShootBullet()
 {
-    player_bullet_counter += 1;
-
     if (player_bullet_counter >= MAXPLAYERBULLETS)
     {
         player_bullet_counter = 0;
     }
+    else
+    {
+        player_bullet_counter += 1;
+    }
 
-    playerbullets[player_bullet_counter].bullet_position = (Vector2){ player.position.x, player.position.y};
+    playerbullets[player_bullet_counter].bullet_position = (Vector2){ player.position.x-7, player.position.y-30}; //Correccion x -= 7, y -= 30
     playerbullets[player_bullet_counter].bullet_radius = 10;
     playerbullets[player_bullet_counter].bullet_color = BLUE;
 }
@@ -366,22 +382,42 @@ void DrawBullet()
     {
         playerbullets[i].bullet_position.y -= 20; //Speed (20)
     }
-
-    for (int i = 0; i < player_bullet_counter; i++) //Draw
-    {
-        //DrawCircle(playerbullets[i].bullet_position.x, playerbullets[i].bullet_position.y, playerbullets[i].bullet_radius, playerbullets[i].bullet_color);
-    }
+    
+    //El draw se hace en el main porque no detecta la textura aqui, corregir
 }
 
 void DrawEnemies() 
 {
-
     for (int i = 0; i < MAXENEMIES; i++)
-    {
+    {   
         if (enemies[i].enemy_alive == true) 
         {
             DrawCircle(enemies[i].enemy_position.x, enemies[i].enemy_position.y, enemies[i].enemy_radius, RED);
         }
     }
+}
 
+
+int angle = 0;
+void moveEnemiesCircle()
+{
+    double tiempoa = 0, tiempob = GetTime();
+    bool circletime = false;
+
+    if (tiempob - tiempoa > 3)
+    {
+        circletime = true;
+        tiempoa = GetTime();
+    }
+
+    for (int i = 0; i < MAXENEMIES; i++)
+    {
+        if (circletime == true)
+        {
+            angle++;
+            enemies[i].enemy_position.x += cos(angle) * 100; //Mover en circulos
+            enemies[i].enemy_position.y += sin(angle) * 100; // radio del circulo = 10
+            circletime = false;
+        }
+    }
 }
