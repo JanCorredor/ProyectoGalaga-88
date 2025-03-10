@@ -13,6 +13,9 @@ by Jeffery Myers is marked with CC0 1.0. To view a copy of this license, visit h
 
 #include <math.h>
 
+#include <vector>
+
+
 //-------------------------------------------------------------------------------------
 // Defines
 //-------------------------------------------------------------------------------------
@@ -72,8 +75,7 @@ void createParticles(); //Create
 void drawParticles();  //Update
 
 //Disparar
-#define MAXPLAYERBULLETS 100  // MAX PLAYER BULLETS IN the SCREEN at the same time
-Bullet playerbullets[MAXPLAYERBULLETS];
+std::vector <Bullet> playerbullets;
 
 int player_bullet_counter = -1;
 void ShootBullet();  //Create
@@ -173,11 +175,22 @@ int main()
         {
             framesCounter++;
 
+            //Shoot
+            if (IsKeyPressed(KEY_SPACE))
+            {
+                ShootBullet(); //Crear Instancia de bala
+            }
+
             //Player Movement
             int player_speed = 9;
-            if (IsKeyDown(KEY_LEFT)) player.position.x -= player_speed;
-            if (IsKeyDown(KEY_RIGHT)) player.position.x += player_speed;
-
+            if (IsKeyDown(KEY_LEFT))
+            {
+                player.position.x -= player_speed;
+            }
+            if (IsKeyDown(KEY_RIGHT))
+            {
+                player.position.x += player_speed;
+            }
             //Player Collisions
             if ((player.position.x + player.radius) >= GetScreenWidth()) //Right Side
             {
@@ -188,11 +201,7 @@ int main()
                 player.position.x = 0 + player.radius;
             }
 
-            //Shoot
-            if (IsKeyPressed(KEY_SPACE))
-            {    
-                ShootBullet(); //Crear Instancia de bala
-            }
+
 
             moveEnemiesCircle();
 
@@ -367,18 +376,12 @@ void drawParticles()
 
 void ShootBullet()
 {
-    if (player_bullet_counter >= MAXPLAYERBULLETS)
-    {
-        player_bullet_counter = 0;
-    }
-    else
-    {
-        player_bullet_counter += 1;
-    }
+    Bullet newBullet;
 
-    playerbullets[player_bullet_counter].bullet_position = { player.position.x-7, player.position.y-30}; //Correccion x -= 7, y -= 30
-    playerbullets[player_bullet_counter].bullet_radius = 10;
-    playerbullets[player_bullet_counter].bullet_color = BLUE;
+    newBullet.bullet_position = { player.position.x - 7, player.position.y - 30 };
+    newBullet.bullet_radius = 10;
+    newBullet.bullet_color = BLUE;
+    playerbullets.push_back(newBullet);
 }
 
 void DrawBullet()
