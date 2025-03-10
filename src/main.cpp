@@ -127,7 +127,7 @@ int main()
     //-------------------------------------------------------------------------------------
     //Player
     player.radius = 25;
-    player.position = (Vector2){ GetScreenWidth()/2, GetScreenHeight()*9/10 };
+    player.position = { (float)GetScreenWidth()/2, (float)GetScreenHeight()*9/10 };
 
     for (int i = 0; i < MAXENEMIES; i++)
     {
@@ -322,7 +322,7 @@ void createParticles()
 
     for (int i = 0; i < MAXPARTICLES; i++) //Create
     {
-        particles[i].particle_position = (Vector2){ GetRandomValue(GetScreenWidth()/200, GetScreenWidth()*199/200), GetRandomValue(GetScreenHeight() / 200, GetScreenHeight() * 199 / 200) }; //Random position in screen
+        particles[i].particle_position = { (float)GetRandomValue(GetScreenWidth()/200, GetScreenWidth()*199/200), (float)GetRandomValue(GetScreenHeight() / 200, GetScreenHeight() * 199 / 200) }; //Random position in screen
         particles[i].particle_color = particle_colors[GetRandomValue(0, 5)]; // Pick Random Color
         particles[i].particle_size = 5; // Constant Value
         particles[i].particle_speed = GetRandomValue(1, 3);
@@ -349,7 +349,7 @@ void drawParticles()
 
         if ((particles[i].particle_position.y) >= GetScreenHeight()) // Restart 
         {
-            particles[i].particle_position = (Vector2){ GetRandomValue(GetScreenWidth() / 200, GetScreenWidth() * 199 / 200), GetRandomValue(0, 5) };// Position
+            particles[i].particle_position = {(float)GetRandomValue(GetScreenWidth() / 200, GetScreenWidth() * 199 / 200), (float)GetRandomValue(0, 5) };// Position
             particles[i].particle_color = particle_colors[GetRandomValue(0, 5)];                                                                     //Color
             particles[i].particle_speed = GetRandomValue(1, 3);                                                                                      //Speed
         }
@@ -376,7 +376,7 @@ void ShootBullet()
         player_bullet_counter += 1;
     }
 
-    playerbullets[player_bullet_counter].bullet_position = (Vector2){ player.position.x-7, player.position.y-30}; //Correccion x -= 7, y -= 30
+    playerbullets[player_bullet_counter].bullet_position = { player.position.x-7, player.position.y-30}; //Correccion x -= 7, y -= 30
     playerbullets[player_bullet_counter].bullet_radius = 10;
     playerbullets[player_bullet_counter].bullet_color = BLUE;
 }
