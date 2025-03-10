@@ -1,9 +1,9 @@
-# GrupoDeNombre
-
-## Galaga'88 Project
-TODO: Describe the installation process
-
+# Our Team - GrupoDeNombre
+![Logo](https://github.com/JanCorredor/ProyectoGalaga-88/blob/main/resources/Wiki/Sprites/GrupoDeNombre.png)
 ## Team Members
-  - Jan Corredor
-  - Alexandre Garcia
-  - Arnau Gonzalez
+* **Code/QA**: [Jan Corredor Mayol](https://github.com/JanCorredor)<br>
+* **Art/Design**: [Alexandre Garcia Venegas](https://github.com/Algave2005)<br>
+* **Management**: [Arnau Gonzalez Olivé](https://github.com/Algave2005)
+
+## Wiki
+https://github.com/JanCorredor/ProyectoGalaga-88/wiki
