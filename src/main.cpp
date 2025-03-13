@@ -175,12 +175,6 @@ int main()
         {
             framesCounter++;
 
-            //Shoot
-            if (IsKeyPressed(KEY_SPACE))
-            {
-                ShootBullet(); //Crear Instancia de bala
-            }
-
             //Player Movement
             int player_speed = 9;
             if (IsKeyDown(KEY_LEFT))
@@ -201,7 +195,12 @@ int main()
                 player.position.x = 0 + player.radius;
             }
 
-
+            //Shoot
+            if (IsKeyPressed(KEY_SPACE))
+            {
+                ShootBullet(); //Crear Instancia de bala
+                DrawCircle(player.position.x - 7, player.position.y - 30, 20, WHITE);
+            }
 
             moveEnemiesCircle();
 
@@ -261,11 +260,6 @@ int main()
 
             //Other
             DrawText("PUSH ENTER", GetScreenWidth()/3, GetScreenHeight() /2, 45, GREEN);
-
-
-
-
-
         } break;
         case GAMEPLAY:
         {
@@ -289,6 +283,7 @@ int main()
             
             //Player
             DrawTexture(player_body, player.position.x - 74, player.position.y - 63, WHITE);
+
 
             DrawEnemies();
 
@@ -378,6 +373,7 @@ void ShootBullet()
 {
     Bullet newBullet;
 
+    player_bullet_counter++;
     newBullet.bullet_position = { player.position.x - 7, player.position.y - 30 };
     newBullet.bullet_radius = 10;
     newBullet.bullet_color = BLUE;
@@ -390,7 +386,9 @@ void DrawBullet()
     {
         playerbullets[i].bullet_position.y -= 20; //Speed (20)
     }
-    
+       
+    //Falta eliminar balas despues de que salen de pantalla
+
     //El draw se hace en el main porque no detecta la textura aqui, corregir
 }
 
