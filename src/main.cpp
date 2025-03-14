@@ -32,8 +32,8 @@ typedef enum GameScreen
 typedef struct {
     Vector2 particle_position;
     Color particle_color;
-    bool visible; // 1 visible 0 invisible
-    int particle_size;
+    bool visible = true; // visible, false = invisible
+    int particle_size = 5;
     int particle_speed;
 } Particle;
 
@@ -145,7 +145,7 @@ int main()
         enemies[i].enemy_position.y = 100;
         enemies[i].enemy_position.x = (GetScreenWidth()/MAXENEMIES)+(i * 100);
         enemies[i].enemy_alive = true;
-        enemies[i].enemy_radius = 20;
+        enemies[i].enemy_radius = 50;
     }
 
 
@@ -294,7 +294,7 @@ int main()
 
 
             ////Stage Indicator
-            DrawTexture(stageindicator1, GetScreenWidth()/10, GetScreenHeight() * 9 / 10, WHITE);
+            DrawTexture(stageindicator1, GetScreenWidth()*95/100, GetScreenHeight() * 92 / 100, WHITE);
 
             //Bullets
             DrawBullet();
@@ -317,7 +317,7 @@ int main()
             {
                 if (enemies[i].enemy_alive == true)
                 {
-                    DrawTexture(enemy1_0, enemies[i].enemy_position.x-70, enemies[i].enemy_position.y-70, WHITE);
+                    DrawTexture(enemy1_0, enemies[i].enemy_position.x-70, enemies[i].enemy_position.y-74, WHITE);
                 }
             }
 
@@ -354,9 +354,7 @@ void createParticles()
     {
         particles[i].particle_position = { (float)GetRandomValue(GetScreenWidth()/200, GetScreenWidth()*199/200), (float)GetRandomValue(GetScreenHeight() / 200, GetScreenHeight() * 199 / 200) }; //Random position in screen
         particles[i].particle_color = particle_colors[GetRandomValue(0, 5)]; // Pick Random Color
-        particles[i].particle_size = 5; // Constant Value
         particles[i].particle_speed = GetRandomValue(1, 3);
-        particles[i].visible = true; //Visible by Default
     }
 }
 
@@ -443,26 +441,18 @@ void DrawEnemies()
 }
 
 
-int angle = 0;
+float angle = 0;
+double tiempoa = 0;
 void moveEnemiesCircle()
 {
-    double tiempoa = 0, tiempob = GetTime();
-    bool circletime = false;
-
-    if (tiempob - tiempoa > 3)
+    if (GetTime() - tiempoa > 0.05)
     {
-        circletime = true;
         tiempoa = GetTime();
-    }
-
-    for (int i = 0; i < MAXENEMIES; i++)
-    {
-        if (circletime == true)
+        for (int i = 0; i < MAXENEMIES; i++)
         {
-            angle++;
-            enemies[i].enemy_position.x += cos(angle) * 100; //Mover en circulos
-            enemies[i].enemy_position.y += sin(angle) * 100; // radio del circulo = 10
-            circletime = false;
+            enemies[i].enemy_position.x += cos(angle) * 10; //Mover en circulos
+            enemies[i].enemy_position.y += sin(angle) * 10; // radio del circulo = 10
+            angle += 0.1;
         }
     }
 }
