@@ -42,6 +42,7 @@ typedef struct Player {
     Vector2 position;
     int radius;
     Color color;
+    int lives = 2;
 } Player;
 
 typedef struct Bullet {
@@ -69,7 +70,7 @@ static Player player = { 0 };
 //-------------------------------------------------------------------------------------
 
 //Particle System
-#define MAXPARTICLES 100  //Particles in screen
+#define MAXPARTICLES 200  //Particles in screen
 Particle particles[MAXPARTICLES];
 void createParticles(); //Create
 void drawParticles();  //Update
@@ -77,7 +78,7 @@ void drawParticles();  //Update
 //Disparar
 std::vector <Bullet> playerbullets;
 
-int player_bullet_counter = -1;
+int player_bullet_counter = 0;
 void ShootBullet();  //Create
 void DrawBullet();  //Update
 
@@ -97,7 +98,7 @@ int main()
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
 
 	// Create the window and OpenGL context
-	InitWindow(1280, 800, "Galaga'88");
+	InitWindow(800, 1280, "Galaga'88"); // 1280, 800
 
 	// Utility function from resource_dir.h to find the resources folder and set it as the current working directory so we can load from it
 	SearchAndSetResourceDir("resources");
@@ -111,11 +112,19 @@ int main()
     Texture Galaga88Logo = LoadTexture("HUD/GALAGA88_LOGO.png");
 
     //Gameplay
-    Texture player_body = LoadTexture("Player/PlayerGalaga88.png");
-    Texture player_bullet = LoadTexture("Player/PlayerBullet.png");
+    ////HUD
+    Texture stageindicator1 = LoadTexture("HUD/Galaga_'88_icon_stage_1.png");
 
+
+    ////Player
+    Texture player_body = LoadTexture("Player/PlayerGalaga88.png");
+
+    ////Enemies
     Texture enemy1_0 = LoadTexture("Enemies/Enemy1_0.png");
     Texture enemy1_1 = LoadTexture("Enemies/Enemy1_1.png");
+
+    ////Bullets
+    Texture player_bullet = LoadTexture("Player/PlayerBullet.png");
 
     //Frame
     unsigned int framesCounter = 0;
@@ -129,7 +138,7 @@ int main()
     //-------------------------------------------------------------------------------------
     //Player
     player.radius = 25;
-    player.position = { (float)GetScreenWidth()/2, (float)GetScreenHeight()*9/10 };
+    player.position = { (float)GetScreenWidth()/2, (float)GetScreenHeight()*89/100 }; //9/10
 
     for (int i = 0; i < MAXENEMIES; i++)
     {
@@ -199,7 +208,6 @@ int main()
             if (IsKeyPressed(KEY_SPACE))
             {
                 ShootBullet(); //Crear Instancia de bala
-                DrawCircle(player.position.x - 7, player.position.y - 30, 20, WHITE);
             }
 
             moveEnemiesCircle();
@@ -239,7 +247,9 @@ int main()
         case LOGO:
         {
             ClearBackground(BLACK);
-            DrawText("Jan Corredor, Alexandre Garcia, Arnau Gonzalez", 75, 750, 45, WHITE);
+            DrawText("Jan Corredor", GetScreenWidth()/3, GetScreenHeight() * 5 / 10, 45, WHITE);
+            DrawText("Arnau Gonzalez", GetScreenWidth()/3, GetScreenHeight() * 6 / 10, 45, WHITE);
+            DrawText("Alexandre Garcia", GetScreenWidth()/3, GetScreenHeight() * 7 / 10, 45, WHITE);
             DrawTexture(GalagaTitleLogo, 0, 0, WHITE);
         } break;
         case TITLE:
@@ -250,7 +260,7 @@ int main()
             drawParticles();
 
             //Logo
-            DrawTexture(Galaga88Logo, GetScreenWidth() / 3, GetScreenHeight()/ 10, WHITE);
+            DrawTexture(Galaga88Logo, GetScreenWidth() / 4, GetScreenHeight()/ 10, WHITE);
 
             //Scores
             DrawText("SCORE", GetScreenWidth() / 20, GetScreenHeight() / 50, 45, WHITE);
@@ -268,10 +278,23 @@ int main()
             //Particulas
             drawParticles();
 
-            //Scores
-            DrawText("SCORE", GetScreenWidth() / 20, GetScreenHeight() / 50, 45, WHITE);
-                //Insertar Puntuacion
 
+            //UI
+            ////Scores
+            DrawText("1UP", GetScreenWidth() / 13, GetScreenHeight() / 50, 45, YELLOW);
+                //Insertar Puntuacion
+            DrawText("HIGH SCORE", GetScreenWidth() /3, GetScreenHeight() / 50, 45, RED);
+                //Insertar HIGHSCORE
+             
+            //// Lives Remaining
+            for (int i = 0; i < player.lives; i++)
+            {
+                DrawTexture(player_body, 74 * i - GetScreenWidth()/ 30, GetScreenHeight() * 9/10, WHITE);
+            }
+
+
+            ////Stage Indicator
+            DrawTexture(stageindicator1, GetScreenWidth()/10, GetScreenHeight() * 9 / 10, WHITE);
 
             //Bullets
             DrawBullet();
@@ -285,6 +308,9 @@ int main()
             DrawTexture(player_body, player.position.x - 74, player.position.y - 63, WHITE);
 
 
+
+
+            //Enemies
             DrawEnemies();
 
             for (int i = 0; i < MAXENEMIES; i++)
@@ -375,6 +401,16 @@ void ShootBullet()
 
     player_bullet_counter++;
     newBullet.bullet_position = { player.position.x - 7, player.position.y - 30 };
+
+    if (IsKeyDown(KEY_LEFT))
+    {
+        newBullet.bullet_position.x -= 9; //Player Speed
+    }
+    if (IsKeyDown(KEY_RIGHT))
+    {
+        newBullet.bullet_position.x += 9; //Player Speed
+    }
+
     newBullet.bullet_radius = 10;
     newBullet.bullet_color = BLUE;
     playerbullets.push_back(newBullet);
@@ -385,10 +421,13 @@ void DrawBullet()
     for (int i = 0; i < player_bullet_counter; i++) //Update
     {
         playerbullets[i].bullet_position.y -= 20; //Speed (20)
+        if (playerbullets[i].bullet_position.y <= -20) //Sprite mas o menos fuera de pantalla
+        {
+             playerbullets.erase(playerbullets.begin());
+            player_bullet_counter--;
+        }
     }
-       
-    //Falta eliminar balas despues de que salen de pantalla
-
+  
     //El draw se hace en el main porque no detecta la textura aqui, corregir
 }
 
