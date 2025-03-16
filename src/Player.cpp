@@ -45,4 +45,20 @@ public:
         this->score += n;
     }
 
+    void Shoot() 
+    {
+
+
+
+    }
+
+    void Death() 
+    {
+    
+    
+    
+    }
+
+
+
 };
