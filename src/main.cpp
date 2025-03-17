@@ -15,6 +15,8 @@ by Jeffery Myers is marked with CC0 1.0. To view a copy of this license, visit h
 
 #include <vector>
 
+#include "Player.h"
+
 
 //-------------------------------------------------------------------------------------
 // Defines
@@ -38,11 +40,11 @@ typedef struct {
 } Particle;
 
 //Gameplay
-typedef struct Player {
-    Vector2 position;
-    int radius;
-    Color color;
-} Player;
+//typedef struct Player {
+//    Vector2 position;
+//    int radius;
+//    Color color;
+//} Player;
 
 typedef struct Bullet {
     Vector2 bullet_position;
@@ -62,7 +64,7 @@ typedef struct Enemy {
 //-------------------------------------------------------------------------------------
 // Global Variables 
 //-------------------------------------------------------------------------------------
-static Player player = { 0 };
+static Player player = Player::Player();
 
 //-------------------------------------------------------------------------------------
 // Declaracion de funciones
@@ -128,8 +130,8 @@ int main()
     // Local Variables
     //-------------------------------------------------------------------------------------
     //Player
-    player.radius = 25;
-    player.position = { (float)GetScreenWidth()/2, (float)GetScreenHeight()*9/10 };
+    player.SetRadius(25);
+    player.SetPosition({ (float)GetScreenWidth() / 2, (float)GetScreenHeight() * 9 / 10 });
 
     for (int i = 0; i < MAXENEMIES; i++)
     {
@@ -174,32 +176,33 @@ int main()
         case GAMEPLAY:
         {
             framesCounter++;
-
+            Vector2 playerActualPosition = player.GetPosition();
             //Player Movement
             int player_speed = 9;
             if (IsKeyDown(KEY_LEFT))
             {
-                player.position.x -= player_speed;
+                player.SetPositionX(playerActualPosition.x -= player_speed);
+                //player.SetPositionX(player.GetPosition().x -= player_speed);
             }
             if (IsKeyDown(KEY_RIGHT))
             {
-                player.position.x += player_speed;
+                player.SetPositionX(playerActualPosition.x += player_speed);
             }
             //Player Collisions
-            if ((player.position.x + player.radius) >= GetScreenWidth()) //Right Side
+            if ((playerActualPosition.x + player.GetRadius()) >= GetScreenWidth()) //Right Side
             {
-                player.position.x = GetScreenWidth() - player.radius;
+                playerActualPosition.x = GetScreenWidth() - player.GetRadius();
             }
-            else if ((player.position.x - player.radius) <= 0) //Left Side
+            else if ((playerActualPosition.x - player.GetRadius()) <= 0) //Left Side
             {
-                player.position.x = 0 + player.radius;
+                playerActualPosition.x = 0 + player.GetRadius();
             }
 
             //Shoot
             if (IsKeyPressed(KEY_SPACE))
             {
                 ShootBullet(); //Crear Instancia de bala
-                DrawCircle(player.position.x - 7, player.position.y - 30, 20, WHITE);
+                DrawCircle(playerActualPosition.x - 7, playerActualPosition.y - 30, 20, WHITE);
             }
 
             moveEnemiesCircle();
@@ -282,7 +285,8 @@ int main()
             }
             
             //Player
-            DrawTexture(player_body, player.position.x - 74, player.position.y - 63, WHITE);
+            Vector2 playerActualPosition = player.GetPosition();
+            DrawTexture(player_body, playerActualPosition.x - 74, playerActualPosition.y - 63, WHITE);
 
 
             DrawEnemies();
@@ -372,9 +376,9 @@ void drawParticles()
 void ShootBullet()
 {
     Bullet newBullet;
-
+    Vector2 playerActualPosition = player.GetPosition();
     player_bullet_counter++;
-    newBullet.bullet_position = { player.position.x - 7, player.position.y - 30 };
+    newBullet.bullet_position = { playerActualPosition.x - 7, playerActualPosition.y - 30};
     newBullet.bullet_radius = 10;
     newBullet.bullet_color = BLUE;
     playerbullets.push_back(newBullet);
@@ -405,12 +409,13 @@ void DrawEnemies()
 
 
 int angle = 0;
+double tiempoa = 0;
 void moveEnemiesCircle()
 {
-    double tiempoa = 0, tiempob = GetTime();
+
     bool circletime = false;
 
-    if (tiempob - tiempoa > 3)
+    if (GetTime() - tiempoa > 0.05)
     {
         circletime = true;
         tiempoa = GetTime();

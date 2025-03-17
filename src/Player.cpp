@@ -1,64 +1,66 @@
-#include "raylib.h"
+#include "Player.h"
 
-#include "resource_dir.h"	// utility header for SearchAndSetResourceDir
-
-#include <math.h>
-
-#include <vector>
-
-class Player {
-private:
-    Vector2 position;
-    int radius;
-    Color color;
-    int score;
-    int lifes;
-public:
-    //Constructores
-    Player() 
-    {
-    
-        this->radius = 25;
-        this->position = { (float)GetScreenWidth() / 2, (float)GetScreenHeight() * 9 / 10 };
-    
-    }
-    
-    //Getters y Setters
-    Vector2 GetPosition() { return this->position; }
-    void SetPosition(Vector2 newVector) { this->position = newVector; }
-
-    int GetRadius() { return this->radius; }
-    void SetRadius(int newRadius) { this->radius = newRadius; }
-
-    Color GetColor() { return this->color; }
-    void SetColor(Color newColor) { this->color = newColor; }
-
-    int GetScore() { return this->score; }
-    void SetScore(int newScore) { this->score = newScore; }
-
-    int GetLifes() { return this->lifes; }
-    void SetLifes(int newLifes) { this->lifes = newLifes; }
-
-    //Funciones
-    void SumScore(int n) 
-    {
-        this->score += n;
-    }
-
-    void Shoot() 
-    {
+//------------------------- Defines -------------------------
 
 
 
-    }
+//------------------------- Constructores -------------------------
 
-    void Death() 
-    {
-    
-    
-    
-    }
+Player::Player()
+{
+	this->position = { (float)GetScreenWidth() / 2, (float)GetScreenHeight() * 9 / 10 };
+	this->radius = 25;
 
 
 
-};
+}
+Player::Player(Vector2 _position, int _radius, Color _color, int _score, int _lives)
+{
+	this->position = _position;
+	this->radius = _radius;
+	this->color = _color;
+	this->score = _score;
+	this->lives = _lives;
+}
+
+//------------------------- Getters y setters -------------------------
+
+Vector2 Player::GetPosition() { return this->position; }
+void Player::SetPosition(Vector2 newVector) { this->position = newVector; }
+float Player::GetPositionX() { return this->position.x; }
+void Player::SetPositionX(float newPositionX) { this->position.x = newPositionX; }
+float Player::GetPositionY() { return this->position.y; }
+void Player::SetPositionY(float newPositionY) { this->position.y = newPositionY; }
+
+int Player::GetRadius() { return this->radius; }
+void Player::SetRadius(int newRadius) { this->radius = newRadius; }
+
+Color Player::GetColor() { return this->color; }
+void Player::SetColor(Color newColor) { this->color = newColor; }
+
+int Player::GetScore() { return this->score; }
+void Player::SetScore(int newScore) { this->score = newScore; }
+
+int Player::GetLives() { return this->lives; }
+void Player::SetLives(int newLives) { this->lives = newLives; }
+
+//------------------------- Funciones -------------------------
+
+void Player::SumScore(int n)
+{
+
+	this->score += n;
+
+}
+
+void Player::Shoot()
+{
+
+}
+
+void Player::Death()
+{
+
+}
+
+
