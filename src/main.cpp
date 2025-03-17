@@ -58,12 +58,12 @@ typedef struct Enemy {
     bool enemy_alive;
 } Enemy;
 
-
-
 //-------------------------------------------------------------------------------------
 // Global Variables 
 //-------------------------------------------------------------------------------------
 static Player player = { 0 };
+
+bool hardmode = 0;
 
 //-------------------------------------------------------------------------------------
 // Declaracion de funciones
@@ -84,9 +84,15 @@ void DrawBullet();  //Update
 
 #define MAXENEMIES 5
 Enemy enemies[MAXENEMIES];
+std::vector <Bullet> enemybullets;
 void createEnemies();
 void DrawEnemies();
 void moveEnemiesCircle();
+void enemyshoot();
+void DrawEnemyBullet();
+
+
+void DrawGodShot(); //Harmode
 
 
 //-------------------------------------------------------------------------------------
@@ -125,6 +131,28 @@ int main()
 
     ////Bullets
     Texture player_bullet = LoadTexture("Player/PlayerBullet.png");
+    Texture enemybullet_0 = LoadTexture("Enemies/BalaEnemigo_0.png");
+    Texture enemybullet_1 = LoadTexture("Enemies/BalaEnemigo_1.png");
+
+    //Audio
+    InitAudioDevice();      // Initialize audio device
+
+    ////Ost and Sounds
+    Sound buttonclick = LoadSound("Sounds/Click.wav");
+    Sound GalagaOpening = LoadSound("Sounds/GalagaOpening.wav");
+    Sound GalagaWin = LoadSound("Sounds/GalagaWin.wav");
+    Sound GalagaDefeat = LoadSound("Sounds/GalagaDefeat.wav");
+
+    ////Player
+    Sound playerShoot = LoadSound("Sounds/PlayerShoot.wav");
+    Sound playerDeath = LoadSound("Sounds/PlayerDeath.wav");
+
+    ////Enemy
+    Sound enemyShoot = LoadSound("Sounds/EnemyShoot.wav");
+    Sound enemyFormation = LoadSound("Sounds/EnemyFormation.wav");
+    Sound enemyDeathExplosion = LoadSound("Sounds/EnemyDeathExplosion.wav");
+
+
 
     //Frame
     unsigned int framesCounter = 0;
@@ -140,15 +168,6 @@ int main()
     player.radius = 25;
     player.position = { (float)GetScreenWidth()/2, (float)GetScreenHeight()*89/100 }; //9/10
 
-    for (int i = 0; i < MAXENEMIES; i++)
-    {
-        enemies[i].enemy_position.y = 100;
-        enemies[i].enemy_position.x = (GetScreenWidth()/MAXENEMIES)+(i * 100);
-        enemies[i].enemy_alive = true;
-        enemies[i].enemy_radius = 50;
-    }
-
-
     //-------------------------------------------------------------------------------------
     // Game Loop
     //-------------------------------------------------------------------------------------
@@ -158,8 +177,6 @@ int main()
         {
         case LOGO:
         {
-            // TODO: Update LOGO screen variables here!
-
             framesCounter++;    // Count frames
 
             // Wait for 2 seconds (120 frames) before jumping to TITLE screen
@@ -172,16 +189,23 @@ int main()
         } break;
         case TITLE:
         {
-            // TODO: Update TITLE screen variables here!
-
-            // Press enter to change to GAMEPLAY screen
+            if (IsKeyPressed(KEY_UP))
+            {
+                hardmode = 1;
+            }
             if (IsKeyPressed(KEY_ENTER)) //  || IsGestureDetected(GESTURE_TAP)
             {
+                PlaySound(buttonclick);
                 currentScreen = GAMEPLAY;
             }
         } break;
         case GAMEPLAY:
         {
+            if (enemybullets.empty() == true)
+            {
+                createEnemies();
+            }
+
             framesCounter++;
 
             //Player Movement
@@ -207,6 +231,7 @@ int main()
             //Shoot
             if (IsKeyPressed(KEY_SPACE))
             {
+                PlaySound(playerShoot);
                 ShootBullet(); //Crear Instancia de bala
             }
 
@@ -282,7 +307,6 @@ int main()
             //UI
             ////Scores
             DrawText("1UP", GetScreenWidth() / 13, GetScreenHeight() / 50, 45, YELLOW);
-                //Insertar Puntuacion
             DrawText("HIGH SCORE", GetScreenWidth() /3, GetScreenHeight() / 50, 45, RED);
                 //Insertar HIGHSCORE
              
@@ -304,6 +328,29 @@ int main()
                 DrawTexture(player_bullet, playerbullets[i].bullet_position.x, playerbullets[i].bullet_position.y, WHITE);
             }
             
+            if (hardmode == 0)
+            {
+                DrawEnemyBullet();
+            }
+            else
+            {
+                DrawGodShot();
+            }
+            
+
+            for (int i = 0; i < enemybullets.size(); i++) //Esto deberia estar en DrawBullets
+            {
+                int x = GetRandomValue(0, 1);
+                if (x == 0)
+                {
+                    DrawTexture(enemybullet_0, enemybullets[i].bullet_position.x, enemybullets[i].bullet_position.y, WHITE);
+                }
+                else
+                {
+                    DrawTexture(enemybullet_1, enemybullets[i].bullet_position.x, enemybullets[i].bullet_position.y, WHITE);
+                }
+            }
+
             //Player
             DrawTexture(player_body, player.position.x - 74, player.position.y - 63, WHITE);
 
@@ -337,6 +384,10 @@ int main()
 	// cleanup
 	// unload our texture so it can be cleaned up
 	UnloadTexture(GalagaTitleLogo);
+
+    //Unload sounds
+    UnloadSound(buttonclick);
+    UnloadSound(playerShoot);
 
 	// destroy the window and cleanup the OpenGL context
 	CloseWindow();
@@ -429,6 +480,18 @@ void DrawBullet()
     //El draw se hace en el main porque no detecta la textura aqui, corregir
 }
 
+void createEnemies()
+{
+    for (int i = 0; i < MAXENEMIES; i++)
+    {
+        enemies[i].enemy_position.y = 100;
+        enemies[i].enemy_position.x = (GetScreenWidth() / MAXENEMIES) + (i * 100);
+        enemies[i].enemy_alive = true;
+        enemies[i].enemy_radius = 50;
+    }
+}
+
+
 void DrawEnemies() 
 {
     for (int i = 0; i < MAXENEMIES; i++)
@@ -454,5 +517,90 @@ void moveEnemiesCircle()
             enemies[i].enemy_position.y += sin(angle) * 10; // radio del circulo = 10
             angle += 0.1;
         }
+        enemyshoot();
     }
 }
+
+void enemyshoot()
+{
+    Bullet newBullet;
+    int i = GetRandomValue(0, MAXENEMIES-1);
+
+    if (enemies[i].enemy_alive == true)
+    {
+        newBullet.bullet_position = { enemies[i].enemy_position.x, enemies[i].enemy_position.y};
+
+        if (newBullet.bullet_position.x == player.position.x)
+        {
+            newBullet.bullet_color = RED;
+        }
+        else if (newBullet.bullet_position.x > player.position.x)
+        {
+            newBullet.bullet_color = ORANGE; // MINUS
+        }
+        else
+        {
+            newBullet.bullet_color = PURPLE; // PLUS
+        }
+
+        newBullet.bullet_radius = 10;
+        enemybullets.push_back(newBullet);
+    }
+}
+
+void DrawEnemyBullet()
+{
+    for (int i = 0; i < enemybullets.size(); i++) //Update
+    {
+        enemybullets[i].bullet_position.y += 10; //Speed (10)
+
+        if (ColorIsEqual(enemybullets[i].bullet_color, RED))
+        {
+            enemybullets[i].bullet_position.x -= 0;
+        }
+        if (ColorIsEqual(enemybullets[i].bullet_color, ORANGE))
+        {
+            enemybullets[i].bullet_position.x -= 1;
+        }
+        if (ColorIsEqual(enemybullets[i].bullet_color, PURPLE))
+        {
+            enemybullets[i].bullet_position.x += 1;
+        }
+
+        if (enemybullets[i].bullet_position.y >= GetScreenHeight() + 20 ) //Sprite mas o menos fuera de pantalla
+        {
+            enemybullets.erase(enemybullets.begin());
+        }
+    }
+
+    //El draw se hace en el main porque no detecta la textura aqui, corregir
+}
+
+
+
+void DrawGodShot()
+{
+    for (int i = 0; i < enemybullets.size(); i++) //Update
+    {
+        enemybullets[i].bullet_position.y += 10; //Speed (10)
+
+        if (enemybullets[i].bullet_position.x == player.position.x)
+        {
+            enemybullets[i].bullet_position.x -= 0;
+        }
+        else if (enemybullets[i].bullet_position.x > player.position.x)
+        {
+            enemybullets[i].bullet_position.x -= 3;
+        }
+        else
+        {
+            enemybullets[i].bullet_position.x += 3;
+        }
+
+        if (enemybullets[i].bullet_position.y >= GetScreenHeight() + 20) //Sprite mas o menos fuera de pantalla
+        {
+            enemybullets.erase(enemybullets.begin());
+        }
+    }
+}
+
