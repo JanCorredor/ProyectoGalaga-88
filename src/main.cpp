@@ -34,17 +34,26 @@ typedef enum GameScreen
 typedef struct {
     Vector2 particle_position;
     Color particle_color;
-    bool visible; // 1 visible 0 invisible
-    int particle_size;
+    bool visible = true; // visible, false = invisible
+    int particle_size = 5;
     int particle_speed;
 } Particle;
 
 //Gameplay
+<<<<<<< HEAD
 //typedef struct Player {
 //    Vector2 position;
 //    int radius;
 //    Color color;
 //} Player;
+=======
+typedef struct Player {
+    Vector2 position;
+    int radius;
+    Color color;
+    int lives = 2;
+} Player;
+>>>>>>> ArcadeStyle
 
 typedef struct Bullet {
     Vector2 bullet_position;
@@ -59,19 +68,19 @@ typedef struct Enemy {
     bool enemy_alive;
 } Enemy;
 
-
-
 //-------------------------------------------------------------------------------------
 // Global Variables 
 //-------------------------------------------------------------------------------------
 static Player player = Player::Player();
+
+bool hardmode = 0;
 
 //-------------------------------------------------------------------------------------
 // Declaracion de funciones
 //-------------------------------------------------------------------------------------
 
 //Particle System
-#define MAXPARTICLES 100  //Particles in screen
+#define MAXPARTICLES 200  //Particles in screen
 Particle particles[MAXPARTICLES];
 void createParticles(); //Create
 void drawParticles();  //Update
@@ -79,15 +88,21 @@ void drawParticles();  //Update
 //Disparar
 std::vector <Bullet> playerbullets;
 
-int player_bullet_counter = -1;
+int player_bullet_counter = 0;
 void ShootBullet();  //Create
 void DrawBullet();  //Update
 
 #define MAXENEMIES 5
 Enemy enemies[MAXENEMIES];
+std::vector <Bullet> enemybullets;
 void createEnemies();
 void DrawEnemies();
 void moveEnemiesCircle();
+void enemyshoot();
+void DrawEnemyBullet();
+
+
+void DrawGodShot(); //Harmode
 
 
 //-------------------------------------------------------------------------------------
@@ -99,7 +114,7 @@ int main()
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
 
 	// Create the window and OpenGL context
-	InitWindow(1280, 800, "Galaga'88");
+	InitWindow(800, 1280, "Galaga'88"); // 1280, 800
 
 	// Utility function from resource_dir.h to find the resources folder and set it as the current working directory so we can load from it
 	SearchAndSetResourceDir("resources");
@@ -113,11 +128,41 @@ int main()
     Texture Galaga88Logo = LoadTexture("HUD/GALAGA88_LOGO.png");
 
     //Gameplay
-    Texture player_body = LoadTexture("Player/PlayerGalaga88.png");
-    Texture player_bullet = LoadTexture("Player/PlayerBullet.png");
+    ////HUD
+    Texture stageindicator1 = LoadTexture("HUD/Galaga_'88_icon_stage_1.png");
 
+
+    ////Player
+    Texture player_body = LoadTexture("Player/PlayerGalaga88.png");
+
+    ////Enemies
     Texture enemy1_0 = LoadTexture("Enemies/Enemy1_0.png");
     Texture enemy1_1 = LoadTexture("Enemies/Enemy1_1.png");
+
+    ////Bullets
+    Texture player_bullet = LoadTexture("Player/PlayerBullet.png");
+    Texture enemybullet_0 = LoadTexture("Enemies/BalaEnemigo_0.png");
+    Texture enemybullet_1 = LoadTexture("Enemies/BalaEnemigo_1.png");
+
+    //Audio
+    InitAudioDevice();      // Initialize audio device
+
+    ////Ost and Sounds
+    Sound buttonclick = LoadSound("Sounds/Click.wav");
+    Sound GalagaOpening = LoadSound("Sounds/GalagaOpening.wav");
+    Sound GalagaWin = LoadSound("Sounds/GalagaWin.wav");
+    Sound GalagaDefeat = LoadSound("Sounds/GalagaDefeat.wav");
+
+    ////Player
+    Sound playerShoot = LoadSound("Sounds/PlayerShoot.wav");
+    Sound playerDeath = LoadSound("Sounds/PlayerDeath.wav");
+
+    ////Enemy
+    Sound enemyShoot = LoadSound("Sounds/EnemyShoot.wav");
+    Sound enemyFormation = LoadSound("Sounds/EnemyFormation.wav");
+    Sound enemyDeathExplosion = LoadSound("Sounds/EnemyDeathExplosion.wav");
+
+
 
     //Frame
     unsigned int framesCounter = 0;
@@ -130,6 +175,7 @@ int main()
     // Local Variables
     //-------------------------------------------------------------------------------------
     //Player
+<<<<<<< HEAD
     player.SetRadius(25);
     player.SetPosition({ (float)GetScreenWidth() / 2, (float)GetScreenHeight() * 9 / 10 });
 
@@ -141,6 +187,10 @@ int main()
         enemies[i].enemy_radius = 20;
     }
 
+=======
+    player.radius = 25;
+    player.position = { (float)GetScreenWidth()/2, (float)GetScreenHeight()*89/100 }; //9/10
+>>>>>>> ArcadeStyle
 
     //-------------------------------------------------------------------------------------
     // Game Loop
@@ -151,8 +201,6 @@ int main()
         {
         case LOGO:
         {
-            // TODO: Update LOGO screen variables here!
-
             framesCounter++;    // Count frames
 
             // Wait for 2 seconds (120 frames) before jumping to TITLE screen
@@ -165,16 +213,23 @@ int main()
         } break;
         case TITLE:
         {
-            // TODO: Update TITLE screen variables here!
-
-            // Press enter to change to GAMEPLAY screen
+            if (IsKeyPressed(KEY_UP))
+            {
+                hardmode = 1;
+            }
             if (IsKeyPressed(KEY_ENTER)) //  || IsGestureDetected(GESTURE_TAP)
             {
+                PlaySound(buttonclick);
                 currentScreen = GAMEPLAY;
             }
         } break;
         case GAMEPLAY:
         {
+            if (enemybullets.empty() == true)
+            {
+                createEnemies();
+            }
+
             framesCounter++;
             Vector2 playerActualPosition = player.GetPosition();
             //Player Movement
@@ -201,8 +256,12 @@ int main()
             //Shoot
             if (IsKeyPressed(KEY_SPACE))
             {
+                PlaySound(playerShoot);
                 ShootBullet(); //Crear Instancia de bala
+<<<<<<< HEAD
                 DrawCircle(playerActualPosition.x - 7, playerActualPosition.y - 30, 20, WHITE);
+=======
+>>>>>>> ArcadeStyle
             }
 
             moveEnemiesCircle();
@@ -242,7 +301,9 @@ int main()
         case LOGO:
         {
             ClearBackground(BLACK);
-            DrawText("Jan Corredor, Alexandre Garcia, Arnau Gonzalez", 75, 750, 45, WHITE);
+            DrawText("Jan Corredor", GetScreenWidth()/3, GetScreenHeight() * 5 / 10, 45, WHITE);
+            DrawText("Arnau Gonzalez", GetScreenWidth()/3, GetScreenHeight() * 6 / 10, 45, WHITE);
+            DrawText("Alexandre Garcia", GetScreenWidth()/3, GetScreenHeight() * 7 / 10, 45, WHITE);
             DrawTexture(GalagaTitleLogo, 0, 0, WHITE);
         } break;
         case TITLE:
@@ -253,7 +314,7 @@ int main()
             drawParticles();
 
             //Logo
-            DrawTexture(Galaga88Logo, GetScreenWidth() / 3, GetScreenHeight()/ 10, WHITE);
+            DrawTexture(Galaga88Logo, GetScreenWidth() / 4, GetScreenHeight()/ 10, WHITE);
 
             //Scores
             DrawText("SCORE", GetScreenWidth() / 20, GetScreenHeight() / 50, 45, WHITE);
@@ -271,10 +332,22 @@ int main()
             //Particulas
             drawParticles();
 
-            //Scores
-            DrawText("SCORE", GetScreenWidth() / 20, GetScreenHeight() / 50, 45, WHITE);
-                //Insertar Puntuacion
 
+            //UI
+            ////Scores
+            DrawText("1UP", GetScreenWidth() / 13, GetScreenHeight() / 50, 45, YELLOW);
+            DrawText("HIGH SCORE", GetScreenWidth() /3, GetScreenHeight() / 50, 45, RED);
+                //Insertar HIGHSCORE
+             
+            //// Lives Remaining
+            for (int i = 0; i < player.lives; i++)
+            {
+                DrawTexture(player_body, 74 * i - GetScreenWidth()/ 30, GetScreenHeight() * 9/10, WHITE);
+            }
+
+
+            ////Stage Indicator
+            DrawTexture(stageindicator1, GetScreenWidth()*95/100, GetScreenHeight() * 92 / 100, WHITE);
 
             //Bullets
             DrawBullet();
@@ -284,18 +357,44 @@ int main()
                 DrawTexture(player_bullet, playerbullets[i].bullet_position.x, playerbullets[i].bullet_position.y, WHITE);
             }
             
+            if (hardmode == 0)
+            {
+                DrawEnemyBullet();
+            }
+            else
+            {
+                DrawGodShot();
+            }
+            
+
+            for (int i = 0; i < enemybullets.size(); i++) //Esto deberia estar en DrawBullets
+            {
+                int x = GetRandomValue(0, 1);
+                if (x == 0)
+                {
+                    DrawTexture(enemybullet_0, enemybullets[i].bullet_position.x, enemybullets[i].bullet_position.y, WHITE);
+                }
+                else
+                {
+                    DrawTexture(enemybullet_1, enemybullets[i].bullet_position.x, enemybullets[i].bullet_position.y, WHITE);
+                }
+            }
+
             //Player
             Vector2 playerActualPosition = player.GetPosition();
             DrawTexture(player_body, playerActualPosition.x - 74, playerActualPosition.y - 63, WHITE);
 
 
+
+
+            //Enemies
             DrawEnemies();
 
             for (int i = 0; i < MAXENEMIES; i++)
             {
                 if (enemies[i].enemy_alive == true)
                 {
-                    DrawTexture(enemy1_0, enemies[i].enemy_position.x-70, enemies[i].enemy_position.y-70, WHITE);
+                    DrawTexture(enemy1_0, enemies[i].enemy_position.x-70, enemies[i].enemy_position.y-74, WHITE);
                 }
             }
 
@@ -316,6 +415,10 @@ int main()
 	// unload our texture so it can be cleaned up
 	UnloadTexture(GalagaTitleLogo);
 
+    //Unload sounds
+    UnloadSound(buttonclick);
+    UnloadSound(playerShoot);
+
 	// destroy the window and cleanup the OpenGL context
 	CloseWindow();
 	return 0;
@@ -332,9 +435,7 @@ void createParticles()
     {
         particles[i].particle_position = { (float)GetRandomValue(GetScreenWidth()/200, GetScreenWidth()*199/200), (float)GetRandomValue(GetScreenHeight() / 200, GetScreenHeight() * 199 / 200) }; //Random position in screen
         particles[i].particle_color = particle_colors[GetRandomValue(0, 5)]; // Pick Random Color
-        particles[i].particle_size = 5; // Constant Value
         particles[i].particle_speed = GetRandomValue(1, 3);
-        particles[i].visible = true; //Visible by Default
     }
 }
 
@@ -378,7 +479,21 @@ void ShootBullet()
     Bullet newBullet;
     Vector2 playerActualPosition = player.GetPosition();
     player_bullet_counter++;
+<<<<<<< HEAD
     newBullet.bullet_position = { playerActualPosition.x - 7, playerActualPosition.y - 30};
+=======
+    newBullet.bullet_position = { player.position.x - 7, player.position.y - 30 };
+
+    if (IsKeyDown(KEY_LEFT))
+    {
+        newBullet.bullet_position.x -= 9; //Player Speed
+    }
+    if (IsKeyDown(KEY_RIGHT))
+    {
+        newBullet.bullet_position.x += 9; //Player Speed
+    }
+
+>>>>>>> ArcadeStyle
     newBullet.bullet_radius = 10;
     newBullet.bullet_color = BLUE;
     playerbullets.push_back(newBullet);
@@ -389,12 +504,27 @@ void DrawBullet()
     for (int i = 0; i < player_bullet_counter; i++) //Update
     {
         playerbullets[i].bullet_position.y -= 20; //Speed (20)
+        if (playerbullets[i].bullet_position.y <= -20) //Sprite mas o menos fuera de pantalla
+        {
+             playerbullets.erase(playerbullets.begin());
+            player_bullet_counter--;
+        }
     }
-       
-    //Falta eliminar balas despues de que salen de pantalla
-
+  
     //El draw se hace en el main porque no detecta la textura aqui, corregir
 }
+
+void createEnemies()
+{
+    for (int i = 0; i < MAXENEMIES; i++)
+    {
+        enemies[i].enemy_position.y = 100;
+        enemies[i].enemy_position.x = (GetScreenWidth() / MAXENEMIES) + (i * 100);
+        enemies[i].enemy_alive = true;
+        enemies[i].enemy_radius = 50;
+    }
+}
+
 
 void DrawEnemies() 
 {
@@ -408,6 +538,7 @@ void DrawEnemies()
 }
 
 
+<<<<<<< HEAD
 int angle = 0;
 double tiempoa = 0;
 void moveEnemiesCircle()
@@ -415,20 +546,105 @@ void moveEnemiesCircle()
 
     bool circletime = false;
 
+=======
+float angle = 0;
+double tiempoa = 0;
+void moveEnemiesCircle()
+{
+>>>>>>> ArcadeStyle
     if (GetTime() - tiempoa > 0.05)
     {
-        circletime = true;
         tiempoa = GetTime();
+        for (int i = 0; i < MAXENEMIES; i++)
+        {
+            enemies[i].enemy_position.x += cos(angle) * 10; //Mover en circulos
+            enemies[i].enemy_position.y += sin(angle) * 10; // radio del circulo = 10
+            angle += 0.1;
+        }
+        enemyshoot();
+    }
+}
+
+void enemyshoot()
+{
+    Bullet newBullet;
+    int i = GetRandomValue(0, MAXENEMIES-1);
+
+    if (enemies[i].enemy_alive == true)
+    {
+        newBullet.bullet_position = { enemies[i].enemy_position.x, enemies[i].enemy_position.y};
+
+        if (newBullet.bullet_position.x == player.position.x)
+        {
+            newBullet.bullet_color = RED;
+        }
+        else if (newBullet.bullet_position.x > player.position.x)
+        {
+            newBullet.bullet_color = ORANGE; // MINUS
+        }
+        else
+        {
+            newBullet.bullet_color = PURPLE; // PLUS
+        }
+
+        newBullet.bullet_radius = 10;
+        enemybullets.push_back(newBullet);
+    }
+}
+
+void DrawEnemyBullet()
+{
+    for (int i = 0; i < enemybullets.size(); i++) //Update
+    {
+        enemybullets[i].bullet_position.y += 10; //Speed (10)
+
+        if (ColorIsEqual(enemybullets[i].bullet_color, RED))
+        {
+            enemybullets[i].bullet_position.x -= 0;
+        }
+        if (ColorIsEqual(enemybullets[i].bullet_color, ORANGE))
+        {
+            enemybullets[i].bullet_position.x -= 1;
+        }
+        if (ColorIsEqual(enemybullets[i].bullet_color, PURPLE))
+        {
+            enemybullets[i].bullet_position.x += 1;
+        }
+
+        if (enemybullets[i].bullet_position.y >= GetScreenHeight() + 20 ) //Sprite mas o menos fuera de pantalla
+        {
+            enemybullets.erase(enemybullets.begin());
+        }
     }
 
-    for (int i = 0; i < MAXENEMIES; i++)
+    //El draw se hace en el main porque no detecta la textura aqui, corregir
+}
+
+
+
+void DrawGodShot()
+{
+    for (int i = 0; i < enemybullets.size(); i++) //Update
     {
-        if (circletime == true)
+        enemybullets[i].bullet_position.y += 10; //Speed (10)
+
+        if (enemybullets[i].bullet_position.x == player.position.x)
         {
-            angle++;
-            enemies[i].enemy_position.x += cos(angle) * 100; //Mover en circulos
-            enemies[i].enemy_position.y += sin(angle) * 100; // radio del circulo = 10
-            circletime = false;
+            enemybullets[i].bullet_position.x -= 0;
+        }
+        else if (enemybullets[i].bullet_position.x > player.position.x)
+        {
+            enemybullets[i].bullet_position.x -= 3;
+        }
+        else
+        {
+            enemybullets[i].bullet_position.x += 3;
+        }
+
+        if (enemybullets[i].bullet_position.y >= GetScreenHeight() + 20) //Sprite mas o menos fuera de pantalla
+        {
+            enemybullets.erase(enemybullets.begin());
         }
     }
 }
+
