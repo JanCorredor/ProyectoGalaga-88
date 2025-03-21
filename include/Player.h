@@ -7,10 +7,10 @@
 class Player {
 private:
     Vector2 position;
-    int radius;
+    int radius = 25;
     Color color;
     int score;
-    int lives;
+    int lives = 2;
 public:
     //Constructores
     Player();
@@ -43,6 +43,6 @@ public:
 
     void Death();
 
-
+    void Move();
 
 };

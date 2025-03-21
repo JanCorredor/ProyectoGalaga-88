@@ -10,19 +10,15 @@ typedef struct Bullet {
 
 //------------------------- Constructores -------------------------
 
-Player::Player()
-{
-	this->position = { (float)GetScreenWidth() / 2, (float)GetScreenHeight() * 9 / 10 };
-	this->radius = 25;
-}
+Player::Player() { };
 Player::Player(Vector2 _position, int _radius, Color _color, int _score, int _lives)
 {
-	this->position = _position;
-	this->radius = _radius;
-	this->color = _color;
-	this->score = _score;
-	this->lives = _lives;
-}
+    this->position = _position;
+    this->radius = _radius;
+    this->color = _color;
+    this->score = _score;
+    this->lives = _lives;
+};
 
 //------------------------- Getters y setters -------------------------
 
@@ -82,4 +78,27 @@ void Player::Death()
 
 }
 
+void Player::Move()
+{
+    Vector2 playerActualPosition = this->GetPosition();
+    //Player Movement
+    int player_speed = 9;
+    if (IsKeyDown(KEY_LEFT))
+    {
+        this->SetPositionX(playerActualPosition.x -= player_speed);
+    }
+    if (IsKeyDown(KEY_RIGHT))
+    {
+        this->SetPositionX(playerActualPosition.x += player_speed);
+    }
 
+    //Player Collision With Screen
+    if ((playerActualPosition.x + this->GetRadius()) >= GetScreenWidth()) //Right Side
+    {
+        this->SetPositionX(GetScreenWidth() - this->GetRadius());
+    }
+    else if ((playerActualPosition.x - this->GetRadius()) <= 0) //Left Side
+    {
+        this->SetPositionX(this->GetRadius());
+    }
+}

@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "Player.h"
-
 #include "Particles.h"
 
 
@@ -42,7 +41,7 @@ typedef struct Enemy {
 //-------------------------------------------------------------------------------------
 static Player player = Player::Player();
 
-bool hardmode = 0;
+bool hardmode = false;
 
 //-------------------------------------------------------------------------------------
 // Declaracion de funciones
@@ -55,16 +54,17 @@ int player_bullet_counter = 0;
 void ShootBullet();  //Create
 void DrawBullet();  //Update
 
-#define MAXENEMIES 5
+#define MAXENEMIES 7
 Enemy enemies[MAXENEMIES];
 std::vector <Bullet> enemybullets;
 void createEnemies();
 void DrawEnemies();
+
 void moveEnemiesCircle();
+
 void enemyshoot();
+
 void DrawEnemyBullet();
-
-
 void DrawGodShot(); //Harmode
 
 
@@ -138,16 +138,8 @@ int main()
     // Local Variables
     //-------------------------------------------------------------------------------------
     //Player
-        player.SetRadius(25);
     player.SetPosition({ (float)GetScreenWidth() / 2, (float)GetScreenHeight() * 9 / 10 });
 
-    for (int i = 0; i < MAXENEMIES; i++)
-    {
-        enemies[i].enemy_position.y = 100;
-        enemies[i].enemy_position.x = (GetScreenWidth()/MAXENEMIES)+(i * 100);
-        enemies[i].enemy_alive = true;
-        enemies[i].enemy_radius = 20;
-    }
 
     //-------------------------------------------------------------------------------------
     // Game Loop
@@ -172,7 +164,7 @@ int main()
         {
             if (IsKeyPressed(KEY_UP))
             {
-                hardmode = 1;
+                hardmode = true;
             }
             if (IsKeyPressed(KEY_ENTER)) //  || IsGestureDetected(GESTURE_TAP)
             {
@@ -188,26 +180,9 @@ int main()
             }
 
             framesCounter++;
-            Vector2 playerActualPosition = player.GetPosition();
-            //Player Movement
-            int player_speed = 9;
-            if (IsKeyDown(KEY_LEFT))
-            {
-                player.SetPositionX(playerActualPosition.x -= player_speed);
-            }
-            if (IsKeyDown(KEY_RIGHT))
-            {
-                player.SetPositionX(playerActualPosition.x += player_speed);
-            }
-            //Player Collisions
-            if ((playerActualPosition.x + player.GetRadius()) >= GetScreenWidth()) //Right Side
-            {
-                player.SetPositionX(GetScreenWidth() - player.GetRadius());
-            }
-            else if ((playerActualPosition.x - player.GetRadius()) <= 0) //Left Side
-            {
-                player.SetPositionX(player.GetRadius());
-            }
+
+            //Player
+            player.Move();
 
             //Shoot
             if (IsKeyPressed(KEY_SPACE))
@@ -215,6 +190,7 @@ int main()
                 PlaySound(playerShoot);
                 ShootBullet(); //Crear Instancia de bala
             }
+
 
             moveEnemiesCircle();
 
@@ -229,6 +205,8 @@ int main()
                     }
                 }
             }
+
+
 
         } break;
         case ENDING:
@@ -509,6 +487,11 @@ void DrawEnemyBullet()
         if (ColorIsEqual(enemybullets[i].bullet_color, PURPLE))
         {
             enemybullets[i].bullet_position.x += 1;
+        }
+
+        if (CheckCollisionCircles(enemybullets[i].bullet_position, enemybullets[i].bullet_radius, player.GetPosition(), player.GetRadius()))
+        {
+            player.SetLives(player.GetLives() - 1);
         }
 
         if (enemybullets[i].bullet_position.y >= GetScreenHeight() + 20 ) //Sprite mas o menos fuera de pantalla

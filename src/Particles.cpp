@@ -40,7 +40,6 @@ void drawParticles()
         }
 
     }
-
     for (int i = 0; i < MAXPARTICLES; i++) //Draw
     {
         if (particles[i].visible == true) //Draw only if visible
