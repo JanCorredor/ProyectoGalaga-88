@@ -14,9 +14,6 @@ Player::Player()
 {
 	this->position = { (float)GetScreenWidth() / 2, (float)GetScreenHeight() * 9 / 10 };
 	this->radius = 25;
-
-
-
 }
 Player::Player(Vector2 _position, int _radius, Color _color, int _score, int _lives)
 {

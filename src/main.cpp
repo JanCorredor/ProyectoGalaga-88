@@ -1,12 +1,3 @@
-/*
-Raylib example file.
-This is an example main file for a simple raylib project.
-Use this as a starting point or replace it with your code.
-
-by Jeffery Myers is marked with CC0 1.0. To view a copy of this license, visit https://creativecommons.org/publicdomain/zero/1.0/
-
-*/
-
 #include "raylib.h"
 
 #include "resource_dir.h"	// utility header for SearchAndSetResourceDir
@@ -16,6 +7,8 @@ by Jeffery Myers is marked with CC0 1.0. To view a copy of this license, visit h
 #include <vector>
 
 #include "Player.h"
+
+#include "Particles.h"
 
 
 //-------------------------------------------------------------------------------------
@@ -31,14 +24,6 @@ typedef enum GameScreen
 } GameScreen;
 
 //Title + Gameplay
-typedef struct {
-    Vector2 particle_position;
-    Color particle_color;
-    bool visible = true; // visible, false = invisible
-    int particle_size = 5;
-    int particle_speed;
-} Particle;
-
 typedef struct Bullet {
     Vector2 bullet_position;
     int bullet_radius;
@@ -62,12 +47,6 @@ bool hardmode = 0;
 //-------------------------------------------------------------------------------------
 // Declaracion de funciones
 //-------------------------------------------------------------------------------------
-
-//Particle System
-#define MAXPARTICLES 200  //Particles in screen
-Particle particles[MAXPARTICLES];
-void createParticles(); //Create
-void drawParticles();  //Update
 
 //Disparar
 std::vector <Bullet> playerbullets;
@@ -159,8 +138,7 @@ int main()
     // Local Variables
     //-------------------------------------------------------------------------------------
     //Player
-
-    player.SetRadius(25);
+        player.SetRadius(25);
     player.SetPosition({ (float)GetScreenWidth() / 2, (float)GetScreenHeight() * 9 / 10 });
 
     for (int i = 0; i < MAXENEMIES; i++)
@@ -216,7 +194,6 @@ int main()
             if (IsKeyDown(KEY_LEFT))
             {
                 player.SetPositionX(playerActualPosition.x -= player_speed);
-                //player.SetPositionX(player.GetPosition().x -= player_speed);
             }
             if (IsKeyDown(KEY_RIGHT))
             {
@@ -225,11 +202,11 @@ int main()
             //Player Collisions
             if ((playerActualPosition.x + player.GetRadius()) >= GetScreenWidth()) //Right Side
             {
-                playerActualPosition.x = GetScreenWidth() - player.GetRadius();
+                player.SetPositionX(GetScreenWidth() - player.GetRadius());
             }
             else if ((playerActualPosition.x - player.GetRadius()) <= 0) //Left Side
             {
-                playerActualPosition.x = 0 + player.GetRadius();
+                player.SetPositionX(player.GetRadius());
             }
 
             //Shoot
@@ -407,52 +384,7 @@ int main()
 // Funciones 
 //-------------------------------------------------------------------------------------
 
-void createParticles()
-{
-    Color particle_colors[6] = { GREEN, SKYBLUE, BLUE, RED, WHITE, LIGHTGRAY }; //Particles Possible Colors
 
-    for (int i = 0; i < MAXPARTICLES; i++) //Create
-    {
-        particles[i].particle_position = { (float)GetRandomValue(GetScreenWidth()/200, GetScreenWidth()*199/200), (float)GetRandomValue(GetScreenHeight() / 200, GetScreenHeight() * 199 / 200) }; //Random position in screen
-        particles[i].particle_color = particle_colors[GetRandomValue(0, 5)]; // Pick Random Color
-        particles[i].particle_speed = GetRandomValue(1, 3);
-    }
-}
-
-void drawParticles()
-{
-    Color particle_colors[6] = { GREEN, SKYBLUE, BLUE, RED, WHITE, LIGHTGRAY }; //Particles Possible Colors
-
-    for (int i = 0; i < MAXPARTICLES; i++) //Update
-    {
-        particles[i].particle_position.y += particles[i].particle_speed;
-
-        if (GetRandomValue(0, 100) == 0) // Particles Blink
-        {
-            particles[i].visible = false; // Invisible
-        }
-        else if (GetRandomValue(0, 50) == 50)
-        {
-            particles[i].visible = true; // Visible
-        }
-
-        if ((particles[i].particle_position.y) >= GetScreenHeight()) // Restart 
-        {
-            particles[i].particle_position = {(float)GetRandomValue(GetScreenWidth() / 200, GetScreenWidth() * 199 / 200), (float)GetRandomValue(0, 5) };// Position
-            particles[i].particle_color = particle_colors[GetRandomValue(0, 5)];                                                                     //Color
-            particles[i].particle_speed = GetRandomValue(1, 3);                                                                                      //Speed
-        }
-
-    }
-
-    for (int i = 0; i < MAXPARTICLES; i++) //Draw
-    {
-        if (particles[i].visible == true) //Draw only if visible
-        {
-            DrawRectangle(particles[i].particle_position.x, particles[i].particle_position.y, particles[i].particle_size, particles[i].particle_size, particles[i].particle_color);
-        }
-    }
-}
 
 void ShootBullet()
 {
