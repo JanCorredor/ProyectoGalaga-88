@@ -1,14 +1,11 @@
 #include "raylib.h"
-
-#include "resource_dir.h"	// utility header for SearchAndSetResourceDir
-
+#include "resource_dir.h"
 #include <math.h>
-
 #include <vector>
-
 #include "Player.h"
 #include "Particles.h"
 
+using namespace std;
 
 //-------------------------------------------------------------------------------------
 // Defines
@@ -199,9 +196,12 @@ int main()
             {
                 for (int j = 0; j < player_bullet_counter; j++)
                 {
-                    if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius,enemies[i].enemy_position,enemies[i].enemy_radius))
-                    {
-                        enemies[i].enemy_alive = false;
+                    if (enemies[i].enemy_alive == true) {
+                        if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius, enemies[i].enemy_position, enemies[i].enemy_radius))
+                        {
+                            player.SumScore(100);
+                            enemies[i].enemy_alive = false;
+                        }
                     }
                 }
             }
@@ -270,7 +270,7 @@ int main()
             DrawText("HIGH SCORE", GetScreenWidth() /3, GetScreenHeight() / 50, 45, RED);
 
             DrawText("20000", GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
-            DrawText("500000", GetScreenWidth() / 3, GetScreenHeight() / 20, 45, WHITE);
+            DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 3, GetScreenHeight() / 20, 45, WHITE);
 
                 //Insertar HIGHSCORE
              
