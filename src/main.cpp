@@ -39,28 +39,6 @@ typedef struct {
     int particle_speed;
 } Particle;
 
-//Gameplay
-<<<<<<< HEAD
-//typedef struct Player {
-//    Vector2 position;
-//    int radius;
-//    Color color;
-//} Player;
-=======
-typedef struct Player {
-    Vector2 position;
-    int radius;
-    Color color;
-    int lives = 2;
-} Player;
->>>>>>> ArcadeStyle
-
-typedef struct Bullet {
-    Vector2 bullet_position;
-    int bullet_radius;
-    Color bullet_color;
-} Bullet;
-
 typedef struct Enemy {
     Vector2 enemy_position;
     int enemy_radius;
@@ -175,7 +153,7 @@ int main()
     // Local Variables
     //-------------------------------------------------------------------------------------
     //Player
-<<<<<<< HEAD
+
     player.SetRadius(25);
     player.SetPosition({ (float)GetScreenWidth() / 2, (float)GetScreenHeight() * 9 / 10 });
 
@@ -186,11 +164,6 @@ int main()
         enemies[i].enemy_alive = true;
         enemies[i].enemy_radius = 20;
     }
-
-=======
-    player.radius = 25;
-    player.position = { (float)GetScreenWidth()/2, (float)GetScreenHeight()*89/100 }; //9/10
->>>>>>> ArcadeStyle
 
     //-------------------------------------------------------------------------------------
     // Game Loop
@@ -258,10 +231,6 @@ int main()
             {
                 PlaySound(playerShoot);
                 ShootBullet(); //Crear Instancia de bala
-<<<<<<< HEAD
-                DrawCircle(playerActualPosition.x - 7, playerActualPosition.y - 30, 20, WHITE);
-=======
->>>>>>> ArcadeStyle
             }
 
             moveEnemiesCircle();
@@ -291,8 +260,9 @@ int main()
         } break;
         default: break;
         }
-
+        //-------------------------------------------------------------------------------------
         //DRAWING
+        //-------------------------------------------------------------------------------------
 		BeginDrawing();
 
 
@@ -337,10 +307,14 @@ int main()
             ////Scores
             DrawText("1UP", GetScreenWidth() / 13, GetScreenHeight() / 50, 45, YELLOW);
             DrawText("HIGH SCORE", GetScreenWidth() /3, GetScreenHeight() / 50, 45, RED);
+
+            DrawText("20000", GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
+            DrawText("500000", GetScreenWidth() / 3, GetScreenHeight() / 20, 45, WHITE);
+
                 //Insertar HIGHSCORE
              
             //// Lives Remaining
-            for (int i = 0; i < player.lives; i++)
+            for (int i = 0; i < player.GetLives(); i++)
             {
                 DrawTexture(player_body, 74 * i - GetScreenWidth()/ 30, GetScreenHeight() * 9/10, WHITE);
             }
@@ -479,10 +453,10 @@ void ShootBullet()
     Bullet newBullet;
     Vector2 playerActualPosition = player.GetPosition();
     player_bullet_counter++;
-<<<<<<< HEAD
+
     newBullet.bullet_position = { playerActualPosition.x - 7, playerActualPosition.y - 30};
-=======
-    newBullet.bullet_position = { player.position.x - 7, player.position.y - 30 };
+
+    //newBullet.bullet_position = { player.GetPosition().x - 7, player.GetPosition().y - 30}; -----
 
     if (IsKeyDown(KEY_LEFT))
     {
@@ -493,7 +467,6 @@ void ShootBullet()
         newBullet.bullet_position.x += 9; //Player Speed
     }
 
->>>>>>> ArcadeStyle
     newBullet.bullet_radius = 10;
     newBullet.bullet_color = BLUE;
     playerbullets.push_back(newBullet);
@@ -537,21 +510,10 @@ void DrawEnemies()
     }
 }
 
-
-<<<<<<< HEAD
-int angle = 0;
-double tiempoa = 0;
-void moveEnemiesCircle()
-{
-
-    bool circletime = false;
-
-=======
 float angle = 0;
 double tiempoa = 0;
 void moveEnemiesCircle()
 {
->>>>>>> ArcadeStyle
     if (GetTime() - tiempoa > 0.05)
     {
         tiempoa = GetTime();
@@ -574,11 +536,11 @@ void enemyshoot()
     {
         newBullet.bullet_position = { enemies[i].enemy_position.x, enemies[i].enemy_position.y};
 
-        if (newBullet.bullet_position.x == player.position.x)
+        if (newBullet.bullet_position.x == player.GetPosition().x)
         {
             newBullet.bullet_color = RED;
         }
-        else if (newBullet.bullet_position.x > player.position.x)
+        else if (newBullet.bullet_position.x > player.GetPosition().x)
         {
             newBullet.bullet_color = ORANGE; // MINUS
         }
@@ -628,11 +590,11 @@ void DrawGodShot()
     {
         enemybullets[i].bullet_position.y += 10; //Speed (10)
 
-        if (enemybullets[i].bullet_position.x == player.position.x)
+        if (enemybullets[i].bullet_position.x == player.GetPosition().x)
         {
             enemybullets[i].bullet_position.x -= 0;
         }
-        else if (enemybullets[i].bullet_position.x > player.position.x)
+        else if (enemybullets[i].bullet_position.x > player.GetPosition().x)
         {
             enemybullets[i].bullet_position.x -= 3;
         }
