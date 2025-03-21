@@ -39,6 +39,12 @@ typedef struct {
     int particle_speed;
 } Particle;
 
+typedef struct Bullet {
+    Vector2 bullet_position;
+    int bullet_radius;
+    Color bullet_color;
+} Bullet;
+
 typedef struct Enemy {
     Vector2 enemy_position;
     int enemy_radius;
