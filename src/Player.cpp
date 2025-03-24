@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "Timer.h"
 
 //------------------------- Defines -------------------------
 typedef struct Bullet {
@@ -22,6 +23,7 @@ Player::Player(Vector2 _position, int _radius, Color _color, int _score, int _li
     this->color = _color;
     this->score = _score;
     this->lives = _lives;
+    this->inmortal = false;
 };
 
 //------------------------- Getters y setters -------------------------
@@ -44,6 +46,11 @@ void Player::SetScore(int newScore) { this->score = newScore; }
 
 int Player::GetLives() { return this->lives; }
 void Player::SetLives(int newLives) { this->lives = newLives; }
+
+bool Player::GetInmortal() { return this->inmortal; }
+void Player::SetInmortal(bool newInmortal) { this->inmortal = newInmortal; }
+
+Timer Player::GetTimer() { return this->deathTimer; }
 
 //------------------------- Funciones -------------------------
 
@@ -75,11 +82,6 @@ void Player::Shoot()
     //playerbullets.push_back(newBullet);
 }
 
-void Player::Death()
-{
-
-}
-
 void Player::Move()
 {
     Vector2 playerActualPosition = this->GetPosition();
@@ -104,4 +106,33 @@ void Player::Move()
     {
         this->SetPositionX(this->GetRadius());
     }
+}
+
+
+void Player::Death()
+{
+    this->lives = this->lives -1;
+    double time = GetTime();
+    double endTime = GetTime() + 3;
+    this->inmortal = true;
+
+    //Animation
+    this->color = RED;
+
+    if (this->lives < 0) 
+    {
+    //Gameover
+    }
+    else {
+        
+        
+
+        this->inmortal = false;
+    }
+
+}
+
+bool Player::CheckDeath() 
+{
+
 }

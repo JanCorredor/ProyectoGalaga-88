@@ -423,7 +423,8 @@ void moveEnemiesCircle()
             enemies[i].enemy_position.y += sin(angle) * 10; // radio del circulo = 10
             angle += 0.1;
         }
-        enemyshoot();
+            enemyshoot();
+        
     }
 }
 
@@ -475,7 +476,10 @@ void DrawEnemyBullet()
 
         if (CheckCollisionCircles(enemybullets[i].bullet_position, enemybullets[i].bullet_radius, player.GetPosition(), player.GetRadius()))
         {
-            player.SetLives(player.GetLives() - 1);
+            enemybullets.erase(enemybullets.begin()+i);
+            if (player.GetInmortal() == false) {
+                player.Death();
+            }
         }
 
         if (enemybullets[i].bullet_position.y >= GetScreenHeight() + 20 ) //Sprite mas o menos fuera de pantalla

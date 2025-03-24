@@ -11,6 +11,8 @@ private:
     Color color;
     int score = 0;
     int lives = 2;
+    bool inmortal = false;
+    Timer deathTimer;
 public:
     //Constructores
     Player();
@@ -35,6 +37,12 @@ public:
 
     int GetLives();
     void SetLives(int newLives);
+    
+    bool GetInmortal();
+    void SetInmortal(bool newInmortal);
+
+    Timer GetTimer();
+    void SetTimer(Timer newTimer);
 
     //Funciones
     void SumScore(int n);
@@ -42,6 +50,7 @@ public:
     void Shoot();
 
     void Death();
+    bool CheckDeath();
 
     void Move();
 
