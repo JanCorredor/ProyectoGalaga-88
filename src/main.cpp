@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 /*
 Raylib example file.
 This is an example main file for a simple raylib project.
@@ -14,6 +15,16 @@ by Jeffery Myers is marked with CC0 1.0. To view a copy of this license, visit h
 #include <math.h>
 
 #include <vector>
+=======
+#include "raylib.h"
+#include "resource_dir.h"
+#include <math.h>
+#include <string> 
+#include <vector>
+
+#include "Player.h"
+#include "Particles.h"
+>>>>>>> Stashed changes
 
 
 //-------------------------------------------------------------------------------------
@@ -79,12 +90,25 @@ void drawParticles();  //Update
 std::vector <Bullet> playerbullets;
 
 int player_bullet_counter = 0;
+int hit_counter = 0;
+
 void ShootBullet();  //Create
 void DrawBullet();  //Update
 
+<<<<<<< Updated upstream
 #define MAXENEMIES 5
+=======
+
+
+#define MAXENEMIES 60
+>>>>>>> Stashed changes
 Enemy enemies[MAXENEMIES];
 std::vector <Bullet> enemybullets;
+
+Vector2 enemiesFormationPositions[10][6];
+void FormationPositions();
+
+
 void createEnemies();
 void DrawEnemies();
 void moveEnemiesCircle();
@@ -93,6 +117,8 @@ void DrawEnemyBullet();
 
 
 void DrawGodShot(); //Harmode
+
+
 
 
 //-------------------------------------------------------------------------------------
@@ -201,6 +227,8 @@ int main()
         } break;
         case GAMEPLAY:
         {
+            FormationPositions();
+
             if (enemybullets.empty() == true)
             {
                 createEnemies();
@@ -240,24 +268,47 @@ int main()
             //Enemy Collisions
             for (int i = 0; i < MAXENEMIES; i++)
             {
-                for (int j = 0; j < player_bullet_counter; j++)
+                for (int j = 0; j < playerbullets.size(); j++)
                 {
+<<<<<<< Updated upstream
                     if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius,enemies[i].enemy_position,enemies[i].enemy_radius))
                     {
                         enemies[i].enemy_alive = false;
+=======
+                    if (enemies[i].enemy_alive == true) {
+                        if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius, enemies[i].enemy_position, enemies[i].enemy_radius))
+                        {
+                            player.SumScore(100);
+                            hit_counter++;
+                            enemies[i].enemy_alive = false;
+                        }
+>>>>>>> Stashed changes
                     }
                 }
             }
 
+<<<<<<< Updated upstream
+=======
+
+            if (player.GetLives() < 0)
+            {
+                currentScreen = ENDING;
+            }
+>>>>>>> Stashed changes
         } break;
         case ENDING:
         {
-            // TODO: Update ENDING screen variables here!
+            int score = player.GetScore();
+            player = Player::Player();
+            player.SetScore(score);
+
+            enemybullets.clear();
+            playerbullets.clear();
 
             // Press enter to return to TITLE screen
             if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
             {
-                //currentScreen = TITLE;
+                currentScreen = TITLE;
             }
         } break;
         default: break;
@@ -289,7 +340,8 @@ int main()
 
             //Scores
             DrawText("SCORE", GetScreenWidth() / 20, GetScreenHeight() / 50, 45, WHITE);
-                //Insertar Puntuacion
+            DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
+
             DrawText("H I SCORE", GetScreenWidth() *7/ 10, GetScreenHeight() / 50, 45, WHITE);
                 //Insertar Puntuacion Mas alta
 
@@ -321,12 +373,16 @@ int main()
             DrawTexture(stageindicator1, GetScreenWidth()*95/100, GetScreenHeight() * 92 / 100, WHITE);
 
             //Bullets
-            DrawBullet();
-
-            for (int i = 0; i < player_bullet_counter; i++) //Esto deberia estar en DrawBullets
+            if (playerbullets.size() != 0)
             {
-                DrawTexture(player_bullet, playerbullets[i].bullet_position.x, playerbullets[i].bullet_position.y, WHITE);
+                DrawBullet();
+
+                for (int i = 0; i < playerbullets.size(); i++) //Esto deberia estar en DrawBullets
+                {
+                    DrawTexture(player_bullet, playerbullets[i].bullet_position.x, playerbullets[i].bullet_position.y, WHITE);
+                }
             }
+
             
             if (hardmode == 0)
             {
@@ -355,8 +411,6 @@ int main()
             DrawTexture(player_body, player.position.x - 74, player.position.y - 63, WHITE);
 
 
-
-
             //Enemies
             DrawEnemies();
 
@@ -364,14 +418,36 @@ int main()
             {
                 if (enemies[i].enemy_alive == true)
                 {
-                    DrawTexture(enemy1_0, enemies[i].enemy_position.x-70, enemies[i].enemy_position.y-74, WHITE);
+                    DrawTextureEx(enemy1_0, enemies[i].enemy_position, 0, 0.5, WHITE);
                 }
             }
 
         } break;
         case ENDING:
         {
+            ClearBackground(BLACK);
+            DrawText("1UP", GetScreenWidth() / 13, GetScreenHeight() / 50, 45, YELLOW);
+            DrawText("HIGH SCORE", GetScreenWidth() / 3, GetScreenHeight() / 50, 45, RED);
 
+            DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
+            DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 3, GetScreenHeight() / 20, 45, WHITE);
+
+
+            DrawText("SHOTS FIRED", GetScreenWidth() / 13, GetScreenHeight() / 10, 45, YELLOW);
+            DrawText(TextFormat("%i", (char*)player_bullet_counter), GetScreenWidth() *2/ 3, GetScreenHeight() / 10, 45, YELLOW);
+
+            DrawText("NUMBER OF HITS", GetScreenWidth() / 13, GetScreenHeight() / 7, 45, YELLOW);
+            DrawText(TextFormat("%i", (char*)hit_counter), GetScreenWidth() * 2 / 3, GetScreenHeight() / 7, 45, YELLOW);
+
+            float ratio = (hit_counter / player_bullet_counter) * 100;
+
+            DrawText("HIT-MISS RATIO", GetScreenWidth() / 13, GetScreenHeight() / 5, 45, YELLOW);
+            DrawText((char*)to_string(ratio), GetScreenWidth() * 2 / 3, GetScreenHeight() / 5, 45, YELLOW);
+            //DrawText(TextFormat("%.2f", (char)ratio), GetScreenWidth() * 2 / 3, GetScreenHeight() / 5, 45, YELLOW);
+
+            DrawText("You DIED", GetScreenWidth() / 3, GetScreenHeight() * 5 / 10, 45, RED);
+            DrawText("Skill Issue", GetScreenWidth() / 3, GetScreenHeight() * 6 / 10, 45, WHITE);
+            DrawText("Retry?", GetScreenWidth() / 3, GetScreenHeight() * 7 / 10, 45, GREEN);
 
         } break;
         default: break;
@@ -449,7 +525,12 @@ void ShootBullet()
     Bullet newBullet;
 
     player_bullet_counter++;
+<<<<<<< Updated upstream
     newBullet.bullet_position = { player.position.x - 7, player.position.y - 30 };
+=======
+
+    newBullet.bullet_position = { playerActualPosition.x - 7, playerActualPosition.y - 30};
+>>>>>>> Stashed changes
 
     if (IsKeyDown(KEY_LEFT))
     {
@@ -466,28 +547,48 @@ void ShootBullet()
 }
 
 void DrawBullet()
-{
-    for (int i = 0; i < player_bullet_counter; i++) //Update
+ {
+    for (int i = 0; i < playerbullets.size(); i++) //Update
     {
         playerbullets[i].bullet_position.y -= 20; //Speed (20)
         if (playerbullets[i].bullet_position.y <= -20) //Sprite mas o menos fuera de pantalla
         {
-             playerbullets.erase(playerbullets.begin());
-            player_bullet_counter--;
+             playerbullets.erase(playerbullets.begin()+i);
         }
     }
-  
     //El draw se hace en el main porque no detecta la textura aqui, corregir
+}
+
+void FormationPositions()
+{
+    for (int j = 0; j < 6; j++)
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            enemiesFormationPositions[i][j].y = GetScreenHeight() / 10 + (j * 75);
+            enemiesFormationPositions[i][j].x = (GetScreenWidth() / 10) + (i * 60);
+        }
+    }
+
 }
 
 void createEnemies()
 {
-    for (int i = 0; i < MAXENEMIES; i++)
+    int j = 0, i = 0;
+    int count = 0;
+    while (count < MAXENEMIES)
     {
-        enemies[i].enemy_position.y = 100;
-        enemies[i].enemy_position.x = (GetScreenWidth() / MAXENEMIES) + (i * 100);
-        enemies[i].enemy_alive = true;
-        enemies[i].enemy_radius = 50;
+        enemies[count].enemy_position.y = enemiesFormationPositions[i][j].y;
+        enemies[count].enemy_position.x = enemiesFormationPositions[i][j].x;
+        enemies[count].enemy_alive = true;
+        enemies[count].enemy_radius = 50;
+        i++; 
+        count++;
+        if (count % 10 == 0)
+        {
+            j++;
+            i = 0;
+        }
     }
 }
 
