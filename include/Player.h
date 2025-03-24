@@ -9,7 +9,7 @@ private:
     Vector2 position;
     int radius = 25;
     Color color;
-    int score;
+    int score = 0;
     int lives = 2;
 public:
     //Constructores

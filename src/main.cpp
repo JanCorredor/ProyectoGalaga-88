@@ -55,7 +55,6 @@ void DrawBullet();  //Update
 Enemy enemies[MAXENEMIES];
 std::vector <Bullet> enemybullets;
 void createEnemies();
-void DrawEnemies();
 
 void moveEnemiesCircle();
 
@@ -235,7 +234,7 @@ int main()
             DrawText("Jan Corredor", GetScreenWidth()/3, GetScreenHeight() * 5 / 10, 45, WHITE);
             DrawText("Arnau Gonzalez", GetScreenWidth()/3, GetScreenHeight() * 6 / 10, 45, WHITE);
             DrawText("Alexandre Garcia", GetScreenWidth()/3, GetScreenHeight() * 7 / 10, 45, WHITE);
-            DrawTexture(GalagaTitleLogo, 0, 0, WHITE);
+            DrawTextureEx(GalagaTitleLogo, { 0, 0 }, 0, 0.65, WHITE);
         } break;
         case TITLE:
         {
@@ -269,17 +268,14 @@ int main()
             DrawText("1UP", GetScreenWidth() / 13, GetScreenHeight() / 50, 45, YELLOW);
             DrawText("HIGH SCORE", GetScreenWidth() /3, GetScreenHeight() / 50, 45, RED);
 
-            DrawText("20000", GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
+            DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
             DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 3, GetScreenHeight() / 20, 45, WHITE);
-
-                //Insertar HIGHSCORE
              
             //// Lives Remaining
             for (int i = 0; i < player.GetLives(); i++)
             {
                 DrawTexture(player_body, 74 * i - GetScreenWidth()/ 30, GetScreenHeight() * 9/10, WHITE);
             }
-
 
             ////Stage Indicator
             DrawTexture(stageindicator1, GetScreenWidth()*95/100, GetScreenHeight() * 92 / 100, WHITE);
@@ -323,7 +319,6 @@ int main()
 
 
             //Enemies
-            DrawEnemies();
 
             for (int i = 0; i < MAXENEMIES; i++)
             {
@@ -414,17 +409,6 @@ void createEnemies()
     }
 }
 
-
-void DrawEnemies() 
-{
-    for (int i = 0; i < MAXENEMIES; i++)
-    {   
-        if (enemies[i].enemy_alive == true) 
-        {
-            DrawCircle(enemies[i].enemy_position.x, enemies[i].enemy_position.y, enemies[i].enemy_radius, RED);
-        }
-    }
-}
 
 float angle = 0;
 double tiempoa = 0;

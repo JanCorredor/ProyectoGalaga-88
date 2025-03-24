@@ -10,18 +10,11 @@ typedef struct Bullet {
 
 //------------------------- Constructores -------------------------
 
-<<<<<<< Updated upstream
-Player::Player() { };
-=======
 Player::Player()
 {
 	this->position = { (float)GetScreenWidth() / 2, (float)GetScreenHeight() * 9 / 10 };
-	this->radius = 25;
-    this->score = 0;
-
-
 }
->>>>>>> Stashed changes
+
 Player::Player(Vector2 _position, int _radius, Color _color, int _score, int _lives)
 {
     this->position = _position;
@@ -56,9 +49,7 @@ void Player::SetLives(int newLives) { this->lives = newLives; }
 
 void Player::SumScore(int n)
 {
-
 	this->score += n;
-
 }
 
 void Player::Shoot()
@@ -92,6 +83,7 @@ void Player::Death()
 void Player::Move()
 {
     Vector2 playerActualPosition = this->GetPosition();
+
     //Player Movement
     int player_speed = 9;
     if (IsKeyDown(KEY_LEFT))
