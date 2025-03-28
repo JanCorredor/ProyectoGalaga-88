@@ -188,6 +188,7 @@ int main()
             if (IsKeyPressed(KEY_SPACE))
             {
                 PlaySound(playerShoot);
+                player_bullet_counter += 1;
                 ShootBullet(); //Crear Instancia de bala
             }
 
@@ -197,7 +198,7 @@ int main()
             //Enemy Collisions
             for (int i = 0; i < MAXENEMIES; i++)
             {
-                for (int j = 0; j < player_bullet_counter; j++)
+                for (int j = 0; j < playerbullets.size(); j++)
                 {
                     if (enemies[i].enemy_alive == true) {
                         if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius, enemies[i].enemy_position, enemies[i].enemy_radius))
@@ -205,6 +206,7 @@ int main()
                             player.SumScore(100);
                             hit_counter++;
                             enemies[i].enemy_alive = false;
+                            playerbullets.erase(playerbullets.begin()+j);
                         }
                     }
                 }
@@ -228,6 +230,8 @@ int main()
 
             if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
             {
+                player_bullet_counter = 0;
+                hit_counter = 0;
                 currentScreen = TITLE;
             }
         } break;
@@ -360,11 +364,19 @@ int main()
             DrawText("NUMBER OF HITS", GetScreenWidth() / 13, GetScreenHeight() / 7, 45, YELLOW);
             DrawText(TextFormat("%i", (char*)hit_counter), GetScreenWidth() * 2 / 3, GetScreenHeight() / 7, 45, YELLOW);
 
-            float ratio = (hit_counter / player_bullet_counter) * 100;
+            float ratio;
+            if (player_bullet_counter == 0)
+            {
+                ratio = 0.00f;
+            }
+            else
+            {
+                ratio = ((float)hit_counter / (float)player_bullet_counter) * 100;
+                printf("%.2f ", ratio);
+            }
 
             DrawText("HIT-MISS RATIO", GetScreenWidth() / 13, GetScreenHeight() / 5, 45, YELLOW);
-            //DrawText((char*)to_string(ratio), GetScreenWidth() * 2 / 3, GetScreenHeight() / 5, 45, YELLOW);
-            DrawText(TextFormat("%.2f", (char)ratio), GetScreenWidth() * 2 / 3, GetScreenHeight() / 5, 45, YELLOW);
+            DrawText(TextFormat("%d %%", (char)ratio), GetScreenWidth() * 2 / 3, GetScreenHeight() / 5, 45, YELLOW); ///////////////Error: No se dibujan los decimales
 
             DrawText("You DIED", GetScreenWidth() / 3, GetScreenHeight() * 5 / 10, 45, RED);
             DrawText("Skill Issue", GetScreenWidth() / 3, GetScreenHeight() * 6 / 10, 45, WHITE);
@@ -400,7 +412,6 @@ void ShootBullet()
 {
     Bullet newBullet;
     Vector2 playerActualPosition = player.GetPosition();
-    player_bullet_counter++;
 
     newBullet.bullet_position = { playerActualPosition.x - 7, playerActualPosition.y - 30};
 
@@ -426,7 +437,6 @@ void DrawBullet()
         if (playerbullets[i].bullet_position.y <= -20) //Sprite mas o menos fuera de pantalla
         {
              playerbullets.erase(playerbullets.begin());
-            player_bullet_counter--;
         }
     }
   
