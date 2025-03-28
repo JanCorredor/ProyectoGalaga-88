@@ -4,6 +4,7 @@
 #include <vector>
 #include "Player.h"
 #include "Particles.h"
+#include"Enemy.h"
 
 using namespace std;
 
@@ -26,13 +27,6 @@ typedef struct Bullet {
     Color bullet_color;
 } Bullet;
 
-typedef struct Enemy {
-    Vector2 enemy_position;
-    int enemy_radius;
-    Color enemy_color;
-    bool enemy_alive;
-} Enemy;
-
 //-------------------------------------------------------------------------------------
 // Global Variables 
 //-------------------------------------------------------------------------------------
@@ -52,13 +46,11 @@ int hit_counter = 0;
 void ShootBullet();  //Create
 void DrawBullet();  //Update
 
-#define MAXENEMIES 1
+
 Enemy enemies[MAXENEMIES];
 std::vector <Bullet> enemybullets;
-Vector2 enemiesFormationPositions[10][6];
-void FormationPositions();
-void createEnemies();
 
+void createEnemies();
 void moveEnemiesCircle();
 
 void enemyshoot();
@@ -124,8 +116,6 @@ int main()
     Sound enemyFormation = LoadSound("Sounds/EnemyFormation.wav");
     Sound enemyDeathExplosion = LoadSound("Sounds/EnemyDeathExplosion.wav");
 
-
-
     //Frame
     unsigned int framesCounter = 0;
     SetTargetFPS(60); // Set Game to run 60 Frames per second
@@ -150,9 +140,8 @@ int main()
         case LOGO:
         {
             framesCounter++;    // Count frames
-
-            // Wait for 2 seconds (120 frames) before jumping to TITLE screen
             
+            // Wait for 2 seconds (120 frames) before jumping to TITLE 
             if (framesCounter > 120)
             {
                 UnloadTexture(GalagaTitleLogo);
@@ -161,19 +150,20 @@ int main()
         } break;
         case TITLE:
         {
+            PlaySound(GalagaOpening); /////////////////////////////////////////////////No funciona al momento
             if (IsKeyPressed(KEY_UP))
             {
                 hardmode = true;
             }
             if (IsKeyPressed(KEY_ENTER)) //  || IsGestureDetected(GESTURE_TAP)
             {
+                StopSound(GalagaOpening); //////////////////////////////////////////Si comentas esto se escucha en Gameplay
                 PlaySound(buttonclick);
                 currentScreen = GAMEPLAY;
             }
         } break;
         case GAMEPLAY:
         {
-            FormationPositions();
             if (enemybullets.empty() == true)
             {
                 createEnemies();
@@ -200,12 +190,13 @@ int main()
             {
                 for (int j = 0; j < playerbullets.size(); j++)
                 {
-                    if (enemies[i].enemy_alive == true) {
-                        if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius, enemies[i].enemy_position, enemies[i].enemy_radius))
+                    if (enemies[i].isEnemyAlive() == true) {
+                        if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius, enemies[i].getEnemyPosition(), enemies[i].getEnemyRadius()))
                         {
                             player.SumScore(100);
                             hit_counter++;
-                            enemies[i].enemy_alive = false;
+                            PlaySound(enemyDeathExplosion);
+                            enemies[i].setEnemyLife(false);
                             playerbullets.erase(playerbullets.begin()+j);
                         }
                     }
@@ -220,8 +211,17 @@ int main()
         } break;
         case ENDING:
         {
-
             int score = player.GetScore();
+
+            if (player.GetLives() > 0)
+            {
+                PlaySound(GalagaWin);
+            }
+            else
+            {
+                PlaySound(GalagaDefeat);
+            }
+
             player = Player::Player();
             player.SetScore(score);
 
@@ -230,6 +230,8 @@ int main()
 
             if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
             {
+                StopSound(GalagaWin);
+                StopSound(GalagaDefeat);
                 player_bullet_counter = 0;
                 hit_counter = 0;
                 currentScreen = TITLE;
@@ -341,10 +343,10 @@ int main()
 
             for (int i = 0; i < MAXENEMIES; i++)
             {
-                if (enemies[i].enemy_alive == true)
+                if (enemies[i].isEnemyAlive() == true)
                 {
-                    DrawTextureEx(enemy1_0, enemies[i].enemy_position, 0, 0.5, WHITE);
-                    //DrawTexture(enemy1_0, enemies[i].enemy_position.x-70, enemies[i].enemy_position.y-74, WHITE);
+                    Vector2 Correccion = { enemies[i].getEnemyPosition().x - 33, enemies[i].getEnemyPosition().y - 37}; //-70 -74
+                    DrawTextureEx(enemy1_0, Correccion, 0, 0.5, WHITE);
                 }
             }
 
@@ -372,7 +374,6 @@ int main()
             else
             {
                 ratio = ((float)hit_counter / (float)player_bullet_counter) * 100;
-                printf("%.2f ", ratio);
             }
 
             DrawText("HIT-MISS RATIO", GetScreenWidth() / 13, GetScreenHeight() / 5, 45, YELLOW);
@@ -443,17 +444,7 @@ void DrawBullet()
     //El draw se hace en el main porque no detecta la textura aqui, corregir
 }
 
-void FormationPositions()
-{
-    for (int j = 0; j < 6; j++)
-    {
-        for (int i = 0; i < 10; i++)
-        {
-            enemiesFormationPositions[i][j].y = GetScreenHeight() / 10 + (j * 75);
-            enemiesFormationPositions[i][j].x = (GetScreenWidth() / 10) + (i * 60);
-        }
-    }
-}
+
 
 void createEnemies()
 {
@@ -461,10 +452,9 @@ void createEnemies()
     int count = 0;
     while (count < MAXENEMIES)
     {
-        enemies[count].enemy_position.y = enemiesFormationPositions[i][j].y;
-        enemies[count].enemy_position.x = enemiesFormationPositions[i][j].x;
-        enemies[count].enemy_alive = true;
-        enemies[count].enemy_radius = 50;
+        enemies[count].setEnemyPosition(enemies->FormationPositions(i,j));
+        enemies[count].setEnemyLife(true);
+        enemies[count].setEnemyRadius(50);
         i++;
         count++;
         if (count % 10 == 0)
@@ -477,19 +467,20 @@ void createEnemies()
 
 float angle = 0;
 double tiempoa = 0;
-void moveEnemiesCircle()
+void moveEnemiesCircle()  //Mover en circulos
 {
     if (GetTime() - tiempoa > 0.05)
     {
         tiempoa = GetTime();
-        for (int i = 0; i < MAXENEMIES; i++)
+        for (int i = 0; i < MAXENEMIES; i++)  // radio del circulo = 10
         {
-            enemies[i].enemy_position.x += cos(angle) * 10; //Mover en circulos
-            enemies[i].enemy_position.y += sin(angle) * 10; // radio del circulo = 10
+            Vector2 newpos;
+            newpos.x = enemies[i].getEnemyPosition().x + cos(angle) * 10;
+            newpos.y = enemies[i].getEnemyPosition().y + sin(angle) * 10;
+            enemies[i].setEnemyPosition(newpos);
             angle += 0.1;
         }
-            enemyshoot();
-        
+        enemyshoot();
     }
 }
 
@@ -498,9 +489,9 @@ void enemyshoot()
     Bullet newBullet;
     int i = GetRandomValue(0, MAXENEMIES-1);
 
-    if (enemies[i].enemy_alive == true)
+    if (enemies[i].isEnemyAlive() == true)
     {
-        newBullet.bullet_position = { enemies[i].enemy_position.x, enemies[i].enemy_position.y};
+        newBullet.bullet_position = enemies[i].getEnemyPosition();
 
         if (newBullet.bullet_position.x == player.GetPosition().x)
         {
@@ -539,25 +530,25 @@ void DrawEnemyBullet()
             enemybullets[i].bullet_position.x += 1;
         }
 
+        if (enemybullets[i].bullet_position.y >= GetScreenHeight() + 20) //Sprite mas o menos fuera de pantalla
+        {
+            enemybullets.erase(enemybullets.begin());
+            continue;
+        }
+
         if (CheckCollisionCircles(enemybullets[i].bullet_position, enemybullets[i].bullet_radius, player.GetPosition(), player.GetRadius()))
         {
             enemybullets.erase(enemybullets.begin()+i);
-            if (player.GetInmortal() == false) {
+            if (player.GetInmortal() == false) 
+            {
                 player.Death();
             }
-        }
-
-        if (enemybullets[i].bullet_position.y >= GetScreenHeight() + 20 ) //Sprite mas o menos fuera de pantalla
-        {
-            enemybullets.erase(enemybullets.begin());
         }
     }
 
     player.CheckDeath();
     //El draw se hace en el main porque no detecta la textura aqui, corregir
 }
-
-
 
 void DrawGodShot()
 {
