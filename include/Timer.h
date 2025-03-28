@@ -7,8 +7,8 @@
 class Timer 
 {
 private:
+    bool started;
     float startTime;
-    float currentTime;
     float elapsedTime;
     float endTime;
     bool finished;
@@ -16,14 +16,14 @@ private:
     
 public:
     //Constructores
-    Timer(float _endTime);
+    Timer();
 
     float GetStartTime();
-    float GetCurrentTime();
     float GetElapsedTime();
     float GetEndTime();
     bool GetFinished();
     void SetFinished(bool newFinished);
     //Funciones
     bool CheckFinished();
+    void StartTimer(float _duration);
 };

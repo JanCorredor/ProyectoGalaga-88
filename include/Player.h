@@ -3,6 +3,7 @@
 #include "resource_dir.h"
 #include <math.h>
 #include <vector>
+#include "Timer.h"
 
 class Player {
 private:

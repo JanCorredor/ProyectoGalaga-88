@@ -19,6 +19,7 @@ Player::Player(Vector2 _position, int _radius, Color _color, int _score, int _li
     this->score = _score;
     this->lives = _lives;
     this->inmortal = false;
+    this->deathTimer;
 };
 
 //------------------------- Getters y setters -------------------------
@@ -85,8 +86,7 @@ void Player::Move()
 void Player::Death()
 {
     this->lives = this->lives -1;
-    double time = GetTime();
-    double endTime = GetTime() + 3;
+    this->deathTimer.StartTimer(3.0);
     this->inmortal = true;
 
     //Animation
@@ -98,14 +98,19 @@ void Player::Death()
     }
     else {
         
-        
-
-        this->inmortal = false;
     }
 
 }
 
 bool Player::CheckDeath() 
 {
-
+    if (this->deathTimer.CheckFinished() == true) 
+    {
+        this->inmortal = false;
+        return false;
+    }
+    else 
+    {
+        return true;
+    }
 }

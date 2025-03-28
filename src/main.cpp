@@ -52,7 +52,7 @@ int hit_counter = 0;
 void ShootBullet();  //Create
 void DrawBullet();  //Update
 
-#define MAXENEMIES 60
+#define MAXENEMIES 1
 Enemy enemies[MAXENEMIES];
 std::vector <Bullet> enemybullets;
 Vector2 enemiesFormationPositions[10][6];
@@ -327,8 +327,9 @@ int main()
 
             //Player
             Vector2 playerActualPosition = player.GetPosition();
-            DrawTexture(player_body, playerActualPosition.x - 74, playerActualPosition.y - 63, WHITE);
-
+            if (player.GetInmortal() == false) {
+                DrawTexture(player_body, playerActualPosition.x - 74, playerActualPosition.y - 63, WHITE);
+            }
 
 
 
@@ -542,6 +543,7 @@ void DrawEnemyBullet()
         }
     }
 
+    player.CheckDeath();
     //El draw se hace en el main porque no detecta la textura aqui, corregir
 }
 
