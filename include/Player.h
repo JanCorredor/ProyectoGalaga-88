@@ -47,8 +47,6 @@ public:
     //Funciones
     void SumScore(int n);
 
-    void Shoot();
-
     void Death();
     bool CheckDeath();
 

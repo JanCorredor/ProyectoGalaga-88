@@ -2,11 +2,6 @@
 #include "Timer.h"
 
 //------------------------- Defines -------------------------
-typedef struct Bullet {
-    Vector2 bullet_position;
-    int bullet_radius;
-    Color bullet_color;
-} Bullet;
 
 
 //------------------------- Constructores -------------------------
@@ -51,35 +46,13 @@ bool Player::GetInmortal() { return this->inmortal; }
 void Player::SetInmortal(bool newInmortal) { this->inmortal = newInmortal; }
 
 Timer Player::GetTimer() { return this->deathTimer; }
+void Player::SetTimer(Timer newTimer) {}
 
 //------------------------- Funciones -------------------------
 
 void Player::SumScore(int n)
 {
 	this->score += n;
-}
-
-void Player::Shoot()
-{
-    Bullet newBullet;
-    Vector2 playerActualPosition = this->GetPosition();
-    //player_bullet_counter++;
-
-    newBullet.bullet_position = { playerActualPosition.x - 7, playerActualPosition.y - 30 };
-
-    
-    if (IsKeyDown(KEY_LEFT))
-    {
-        newBullet.bullet_position.x -= 9; //Player Speed
-    }
-    if (IsKeyDown(KEY_RIGHT))
-    {
-        newBullet.bullet_position.x += 9; //Player Speed
-    }
-
-    newBullet.bullet_radius = 10;
-    newBullet.bullet_color = BLUE;
-    //playerbullets.push_back(newBullet);
 }
 
 void Player::Move()

@@ -48,12 +48,15 @@ bool hardmode = false;
 std::vector <Bullet> playerbullets;
 
 int player_bullet_counter = 0;
+int hit_counter = 0;
 void ShootBullet();  //Create
 void DrawBullet();  //Update
 
-#define MAXENEMIES 7
+#define MAXENEMIES 60
 Enemy enemies[MAXENEMIES];
 std::vector <Bullet> enemybullets;
+Vector2 enemiesFormationPositions[10][6];
+void FormationPositions();
 void createEnemies();
 
 void moveEnemiesCircle();
@@ -170,6 +173,7 @@ int main()
         } break;
         case GAMEPLAY:
         {
+            FormationPositions();
             if (enemybullets.empty() == true)
             {
                 createEnemies();
@@ -199,23 +203,32 @@ int main()
                         if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius, enemies[i].enemy_position, enemies[i].enemy_radius))
                         {
                             player.SumScore(100);
+                            hit_counter++;
                             enemies[i].enemy_alive = false;
                         }
                     }
                 }
             }
 
-
+            if (player.GetLives() < 0)
+            {
+                currentScreen = ENDING;
+            }
 
         } break;
         case ENDING:
         {
-            // TODO: Update ENDING screen variables here!
 
-            // Press enter to return to TITLE screen
+            int score = player.GetScore();
+            player = Player::Player();
+            player.SetScore(score);
+
+            enemybullets.clear();
+            playerbullets.clear();
+
             if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
             {
-                //currentScreen = TITLE;
+                currentScreen = TITLE;
             }
         } break;
         default: break;
@@ -248,7 +261,8 @@ int main()
 
             //Scores
             DrawText("SCORE", GetScreenWidth() / 20, GetScreenHeight() / 50, 45, WHITE);
-                //Insertar Puntuacion
+            DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
+
             DrawText("H I SCORE", GetScreenWidth() *7/ 10, GetScreenHeight() / 50, 45, WHITE);
                 //Insertar Puntuacion Mas alta
 
@@ -283,7 +297,7 @@ int main()
             //Bullets
             DrawBullet();
 
-            for (int i = 0; i < player_bullet_counter; i++) //Esto deberia estar en DrawBullets
+            for (int i = 0; i < playerbullets.size(); i++) //Esto deberia estar en DrawBullets
             {
                 DrawTexture(player_bullet, playerbullets[i].bullet_position.x, playerbullets[i].bullet_position.y, WHITE);
             }
@@ -324,14 +338,36 @@ int main()
             {
                 if (enemies[i].enemy_alive == true)
                 {
-                    DrawTexture(enemy1_0, enemies[i].enemy_position.x-70, enemies[i].enemy_position.y-74, WHITE);
+                    DrawTextureEx(enemy1_0, enemies[i].enemy_position, 0, 0.5, WHITE);
+                    //DrawTexture(enemy1_0, enemies[i].enemy_position.x-70, enemies[i].enemy_position.y-74, WHITE);
                 }
             }
 
         } break;
         case ENDING:
         {
+            ClearBackground(BLACK);
+            DrawText("1UP", GetScreenWidth() / 13, GetScreenHeight() / 50, 45, YELLOW);
+            DrawText("HIGH SCORE", GetScreenWidth() / 3, GetScreenHeight() / 50, 45, RED);
 
+            DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
+            DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 3, GetScreenHeight() / 20, 45, WHITE);
+
+            DrawText("SHOTS FIRED", GetScreenWidth() / 13, GetScreenHeight() / 10, 45, YELLOW);
+            DrawText(TextFormat("%i", (char*)player_bullet_counter), GetScreenWidth() * 2 / 3, GetScreenHeight() / 10, 45, YELLOW);
+
+            DrawText("NUMBER OF HITS", GetScreenWidth() / 13, GetScreenHeight() / 7, 45, YELLOW);
+            DrawText(TextFormat("%i", (char*)hit_counter), GetScreenWidth() * 2 / 3, GetScreenHeight() / 7, 45, YELLOW);
+
+            float ratio = (hit_counter / player_bullet_counter) * 100;
+
+            DrawText("HIT-MISS RATIO", GetScreenWidth() / 13, GetScreenHeight() / 5, 45, YELLOW);
+            //DrawText((char*)to_string(ratio), GetScreenWidth() * 2 / 3, GetScreenHeight() / 5, 45, YELLOW);
+            DrawText(TextFormat("%.2f", (char)ratio), GetScreenWidth() * 2 / 3, GetScreenHeight() / 5, 45, YELLOW);
+
+            DrawText("You DIED", GetScreenWidth() / 3, GetScreenHeight() * 5 / 10, 45, RED);
+            DrawText("Skill Issue", GetScreenWidth() / 3, GetScreenHeight() * 6 / 10, 45, WHITE);
+            DrawText("Retry?", GetScreenWidth() / 3, GetScreenHeight() * 7 / 10, 45, GREEN);
 
         } break;
         default: break;
@@ -367,8 +403,6 @@ void ShootBullet()
 
     newBullet.bullet_position = { playerActualPosition.x - 7, playerActualPosition.y - 30};
 
-    //newBullet.bullet_position = { player.GetPosition().x - 7, player.GetPosition().y - 30}; -----
-
     if (IsKeyDown(KEY_LEFT))
     {
         newBullet.bullet_position.x -= 9; //Player Speed
@@ -385,7 +419,7 @@ void ShootBullet()
 
 void DrawBullet()
 {
-    for (int i = 0; i < player_bullet_counter; i++) //Update
+    for (int i = 0; i < playerbullets.size(); i++) //Update
     {
         playerbullets[i].bullet_position.y -= 20; //Speed (20)
         if (playerbullets[i].bullet_position.y <= -20) //Sprite mas o menos fuera de pantalla
@@ -398,17 +432,37 @@ void DrawBullet()
     //El draw se hace en el main porque no detecta la textura aqui, corregir
 }
 
-void createEnemies()
+void FormationPositions()
 {
-    for (int i = 0; i < MAXENEMIES; i++)
+    for (int j = 0; j < 6; j++)
     {
-        enemies[i].enemy_position.y = 100;
-        enemies[i].enemy_position.x = (GetScreenWidth() / MAXENEMIES) + (i * 100);
-        enemies[i].enemy_alive = true;
-        enemies[i].enemy_radius = 50;
+        for (int i = 0; i < 10; i++)
+        {
+            enemiesFormationPositions[i][j].y = GetScreenHeight() / 10 + (j * 75);
+            enemiesFormationPositions[i][j].x = (GetScreenWidth() / 10) + (i * 60);
+        }
     }
 }
 
+void createEnemies()
+{
+    int j = 0, i = 0;
+    int count = 0;
+    while (count < MAXENEMIES)
+    {
+        enemies[count].enemy_position.y = enemiesFormationPositions[i][j].y;
+        enemies[count].enemy_position.x = enemiesFormationPositions[i][j].x;
+        enemies[count].enemy_alive = true;
+        enemies[count].enemy_radius = 50;
+        i++;
+        count++;
+        if (count % 10 == 0)
+        {
+            j++;
+            i = 0;
+        }
+    }
+}
 
 float angle = 0;
 double tiempoa = 0;

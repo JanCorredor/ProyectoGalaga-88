@@ -4,7 +4,8 @@
 #include <math.h>
 #include <vector>
 
-class Timer {
+class Timer 
+{
 private:
     float startTime;
     float currentTime;
