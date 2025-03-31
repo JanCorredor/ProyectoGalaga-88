@@ -177,9 +177,11 @@ int main()
             //Shoot
             if (IsKeyPressed(KEY_SPACE))
             {
-                PlaySound(playerShoot);
-                player_bullet_counter += 1;
-                ShootBullet(); //Crear Instancia de bala
+                if (player.GetInmortal() == false) {
+                    PlaySound(playerShoot);
+                    player_bullet_counter += 1;
+                    ShootBullet(); //Crear Instancia de bala
+                }
             }
 
 
