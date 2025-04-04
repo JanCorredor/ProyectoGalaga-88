@@ -172,14 +172,19 @@ int main()
 
             for (int count = 0; count < MAXENEMIES; count++)
             {
-                if (enemies[count].inFormation == false)
+                if (enemies[count].inPosition[0] == false)
                 {
-                    int j = count/10;
-                    int i = count - (j * 10);
-                    enemies[count].moveToInAStraightLine(enemies->FormationPositions(i, j));    
+                    enemies[count].moveToInAStraightLine(enemies[count].semiCirclePoints());
                 }
-                else
+                else if (enemies[count].inPosition[1] == false)
                 {
+                    enemies[count].semiCircleMovement();
+                }
+                else if (enemies[count].inPosition[2] == false)
+                {
+                    int j = count / 10;
+                    int i = count - (j * 10);
+                    enemies[count].moveToInAStraightLine(enemies->formationPositions(i, j));
                     //moveEnemiesCircle();
                 }
             }
@@ -475,8 +480,10 @@ void createEnemies()
 {
     for (int i = 0; i < MAXENEMIES; i++)
     {
+        
         Enemy newEnemy;
         enemies[i] = newEnemy;
+        enemies[i].setEnemyPosition(enemies[i].startingPositions(i));
     }
 }
 

@@ -4,7 +4,7 @@
 #include <math.h>
 #include <vector>
 
-#define MAXENEMIES 60
+#define MAXENEMIES 6
 
 class Enemy
 {
@@ -14,12 +14,16 @@ protected:
     Color enemy_color;
     bool enemy_alive;
     int enemy_speed;
+    float angle;
 public:
     Enemy();
-    bool inFormation;
+    bool inPosition[3] = {false,false,false}; //CircleStart, CricleEnd, Formation
 
     void moveToInAStraightLine(Vector2 destination);
-    Vector2 FormationPositions(int fila, int columna);
+    Vector2 startingPositions(int positionId);
+    Vector2 semiCirclePoints();
+    void semiCircleMovement();
+    Vector2 formationPositions(int fila, int columna);
 
 
     Vector2 getEnemyPosition();
