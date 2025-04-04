@@ -13,9 +13,12 @@ protected:
     int enemy_radius;
     Color enemy_color;
     bool enemy_alive;
+    int enemy_speed;
 public:
     Enemy();
+    bool inFormation;
 
+    void moveToInAStraightLine(Vector2 destination);
     Vector2 FormationPositions(int fila, int columna);
 
 

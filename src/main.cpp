@@ -164,9 +164,23 @@ int main()
         } break;
         case GAMEPLAY:
         {
-            if (enemybullets.empty() == true)
+            if (IsKeyPressed(KEY_S))
             {
                 createEnemies();
+            }
+
+            for (int count = 0; count < MAXENEMIES; count++)
+            {
+                if (enemies[count].inFormation == false)
+                {
+                    int j = count/10;
+                    int i = count - (j * 10);
+                    enemies[count].moveToInAStraightLine(enemies->FormationPositions(i, j));    
+                }
+                else
+                {
+                    moveEnemiesCircle();
+                }
             }
 
             framesCounter++;
@@ -185,7 +199,7 @@ int main()
             }
 
 
-            moveEnemiesCircle();
+
 
             //Enemy Collisions
             for (int i = 0; i < MAXENEMIES; i++)
@@ -446,24 +460,12 @@ void DrawBullet()
     //El draw se hace en el main porque no detecta la textura aqui, corregir
 }
 
-
-
 void createEnemies()
 {
-    int j = 0, i = 0;
-    int count = 0;
-    while (count < MAXENEMIES)
+    for (int i = 0; i < MAXENEMIES; i++)
     {
-        enemies[count].setEnemyPosition(enemies->FormationPositions(i,j));
-        enemies[count].setEnemyLife(true);
-        enemies[count].setEnemyRadius(50);
-        i++;
-        count++;
-        if (count % 10 == 0)
-        {
-            j++;
-            i = 0;
-        }
+        Enemy newEnemy;
+        enemies[i] = newEnemy;
     }
 }
 
