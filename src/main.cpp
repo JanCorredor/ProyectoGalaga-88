@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Particles.h"
 #include"Enemy.h"
+#include "Defines.h"
 
 using namespace std;
 
@@ -21,11 +22,11 @@ typedef enum GameScreen
 } GameScreen;
 
 //Title + Gameplay
-typedef struct Bullet {
-    Vector2 bullet_position;
-    int bullet_radius;
-    Color bullet_color;
-} Bullet;
+//typedef struct Bullet {
+//    Vector2 bullet_position;
+//    int bullet_radius;
+//    Color bullet_color;
+//} Bullet;
 
 //-------------------------------------------------------------------------------------
 // Global Variables 
@@ -139,6 +140,7 @@ int main()
         {
         case LOGO:
         {
+            PlaySound(GalagaOpening); 
             framesCounter++;    // Count frames
             
             // Wait for 2 seconds (120 frames) before jumping to TITLE 
@@ -150,16 +152,15 @@ int main()
         } break;
         case TITLE:
         {
-            PlaySound(GalagaOpening); /////////////////////////////////////////////////No funciona al momento
             if (IsKeyPressed(KEY_UP))
             {
                 hardmode = true;
             }
             if (IsKeyPressed(KEY_ENTER)) //  || IsGestureDetected(GESTURE_TAP)
             {
-                StopSound(GalagaOpening); //////////////////////////////////////////Si comentas esto se escucha en Gameplay
                 PlaySound(buttonclick);
                 currentScreen = GAMEPLAY;
+                StopSound(GalagaOpening); 
             }
         } break;
         case GAMEPLAY:
@@ -195,6 +196,7 @@ int main()
                     PlaySound(playerShoot);
                     player_bullet_counter += 1;
                     ShootBullet(); //Crear Instancia de bala
+                    //player.Shoot();
                 }
             }
 
@@ -456,6 +458,15 @@ void DrawBullet()
              playerbullets.erase(playerbullets.begin());
         }
     }
+
+    //for (int i = 0; i < player.a.size(); i++) //Update
+    //{
+    //    player.a[i].bullet_position.y -= 20; //Speed (20)
+    //    if (player.a[i].bullet_position.y <= -20) //Sprite mas o menos fuera de pantalla
+    //    {
+    //        player.a.erase(player.a.begin());
+    //    }
+    //}
   
     //El draw se hace en el main porque no detecta la textura aqui, corregir
 }

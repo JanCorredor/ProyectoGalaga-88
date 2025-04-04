@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "Timer.h"
+#include "Defines.h"
 
 //------------------------- Defines -------------------------
 
@@ -82,6 +83,27 @@ void Player::Move()
     }
 }
 
+void Player::Shoot() 
+{
+    Defines:Bullet newBullet;
+    Vector2 playerActualPosition = this->GetPosition();
+
+    newBullet.bullet_position = { playerActualPosition.x - 7, playerActualPosition.y - 30 };
+
+    if (IsKeyDown(KEY_LEFT))
+    {
+        newBullet.bullet_position.x -= 9; //Player Speed
+    }
+    if (IsKeyDown(KEY_RIGHT))
+    {
+        newBullet.bullet_position.x += 9; //Player Speed
+    }
+
+    newBullet.bullet_radius = 10;
+    newBullet.bullet_color = BLUE;
+    a.push_back(newBullet);
+
+}
 
 void Player::Death()
 {

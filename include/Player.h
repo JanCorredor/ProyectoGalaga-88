@@ -4,6 +4,7 @@
 #include <math.h>
 #include <vector>
 #include "Timer.h"
+#include "Defines.h"
 
 class Player {
 private:
@@ -15,6 +16,7 @@ private:
     bool inmortal = false;
     Timer deathTimer;
 public:
+    std::vector<Bullet> a;
     //Constructores
     Player();
     Player(Vector2 _position, int _radius, Color _color, int _score, int _lives);
@@ -48,9 +50,11 @@ public:
     //Funciones
     void SumScore(int n);
 
+    void Move();
+    void Shoot();
+
     void Death();
     bool CheckDeath();
 
-    void Move();
 
 };
