@@ -180,7 +180,7 @@ int main()
                 }
                 else
                 {
-                    moveEnemiesCircle();
+                    //moveEnemiesCircle();
                 }
             }
 
@@ -270,7 +270,7 @@ int main()
             ClearBackground(BLACK);
             DrawText("Jan Corredor", GetScreenWidth()/3, GetScreenHeight() * 5 / 10, 45, WHITE);
             DrawText("Arnau Gonzalez", GetScreenWidth()/3, GetScreenHeight() * 6 / 10, 45, WHITE);
-            DrawText("Alexandre Garcia", GetScreenWidth()/3, GetScreenHeight() * 7 / 10, 45, WHITE);
+            DrawText("Videogame Design and Development UPC CITM TRS", GetScreenWidth()/3, GetScreenHeight() * 7 / 10, 45, WHITE);
             DrawTextureEx(GalagaTitleLogo, { 0, 0 }, 0, 0.65, WHITE);
         } break;
         case TITLE:
