@@ -48,11 +48,12 @@ void ShootBullet();  //Create
 void DrawBullet();  //Update
 
 
-Enemy enemies[MAXENEMIES];
+std::vector <Enemy> enemies;
+Enemy callEnemyFunctions;
 std::vector <Bullet> enemybullets;
 
 void createEnemies();
-void moveEnemiesCircle();
+//void moveEnemiesCircle();
 
 void enemyshoot();
 
@@ -167,14 +168,15 @@ int main()
         {
             if (IsKeyPressed(KEY_S))
             {
-                createEnemies();
+                callEnemyFunctions.spawnHorde(&enemies, 3, GetRandomValue(1,6));
+                //createEnemies();
             }
 
-            for (int count = 0; count < MAXENEMIES; count++)
+            for (int count = 0; count < enemies.size(); count++)
             {
                 if (enemies[count].inPosition[0] == false)
                 {
-                    enemies[count].moveToInAStraightLine(enemies[count].semiCirclePoints());
+                    enemies[count].moveToInAStraightLine(enemies[count].semiCirclePoints(),0);
                 }
                 else if (enemies[count].inPosition[1] == false)
                 {
@@ -184,7 +186,7 @@ int main()
                 {
                     int j = count / 10;
                     int i = count - (j * 10);
-                    enemies[count].moveToInAStraightLine(enemies->formationPositions(i, j));
+                    enemies[count].moveToInAStraightLine(enemies[count].formationPositions(i, j),2);
                     //moveEnemiesCircle();
                 }
             }
@@ -209,7 +211,7 @@ int main()
 
 
             //Enemy Collisions
-            for (int i = 0; i < MAXENEMIES; i++)
+            for (int i = 0; i < enemies.size(); i++)
             {
                 for (int j = 0; j < playerbullets.size(); j++)
                 {
@@ -364,7 +366,7 @@ int main()
 
             //Enemies
 
-            for (int i = 0; i < MAXENEMIES; i++)
+            for (int i = 0; i < enemies.size(); i++)
             {
                 if (enemies[i].isEnemyAlive() == true)
                 {
@@ -478,38 +480,38 @@ void DrawBullet()
 
 void createEnemies()
 {
-    for (int i = 0; i < MAXENEMIES; i++)
+    for (int i = 0; i < 60; i++)
     {
         
         Enemy newEnemy;
-        enemies[i] = newEnemy;
+        enemies.push_back(newEnemy);
         enemies[i].setEnemyPosition(enemies[i].startingPositions(i));
     }
 }
 
-float angle = 0;
-double tiempoa = 0;
-void moveEnemiesCircle()  //Mover en circulos
-{
-    if (GetTime() - tiempoa > 0.05)
-    {
-        tiempoa = GetTime();
-        for (int i = 0; i < MAXENEMIES; i++)  // radio del circulo = 10
-        {
-            Vector2 newpos;
-            newpos.x = enemies[i].getEnemyPosition().x + cos(angle) * 10;
-            newpos.y = enemies[i].getEnemyPosition().y + sin(angle) * 10;
-            enemies[i].setEnemyPosition(newpos);
-            angle += 0.1;
-        }
-        enemyshoot();
-    }
-}
+//float angle = 0;
+//double tiempoa = 0;
+//void moveEnemiesCircle()  //Mover en circulos
+//{
+//    if (GetTime() - tiempoa > 0.05)
+//    {
+//        tiempoa = GetTime();
+//        for (int i = 0; i < enemies.size(); i++)  // radio del circulo = 10
+//        {
+//            Vector2 newpos;
+//            newpos.x = enemies[i].getEnemyPosition().x + cos(angle) * 10;
+//            newpos.y = enemies[i].getEnemyPosition().y + sin(angle) * 10;
+//            enemies[i].setEnemyPosition(newpos);
+//            angle += 0.1;
+//        }
+//        enemyshoot();
+//    }
+//}
 
 void enemyshoot()
 {
     Bullet newBullet;
-    int i = GetRandomValue(0, MAXENEMIES-1);
+    int i = GetRandomValue(0, enemies.size() -1);
 
     if (enemies[i].isEnemyAlive() == true)
     {

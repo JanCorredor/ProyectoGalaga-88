@@ -4,123 +4,119 @@
 
 #include "Enemy.h"
 
-
 Enemy::Enemy() {
-    this->enemy_radius = 50; this->enemy_color = RED;  this->enemy_alive = true; this->enemy_speed = 5; this->angle = 0;
+    this->enemy_radius = 50; this->enemy_color = RED;  this->enemy_alive = true; this->enemy_speed = { 5,5 }; this->angle = 0;
 }
 
-void Enemy::moveToInAStraightLine(Vector2 destination)
+void Enemy::spawnHorde(std::vector <Enemy>* manager, int num, int spawnId)
 {
-    int tolerance = 5;
-
-    if (this->enemy_position.y - destination.y < tolerance && this->enemy_position.y - destination.y > -tolerance)
+    for (int i = 0; i < num; i++)
     {
-        if (this->enemy_position.x - destination.x < tolerance && this->enemy_position.x - destination.x > -tolerance)
+        Vector2 spaceBetween = {(1 + i * 0.5)* startingPositions(spawnId).x,(1+i*0.5)*startingPositions(spawnId).y };
+        Enemy newEnemy;
+        newEnemy.setEnemyPosition(newEnemy.startingPositions(spawnId).x + spaceBetween.x, newEnemy.startingPositions(spawnId).y + spaceBetween.y);
+        manager->push_back(newEnemy);
+    }
+}
+
+void Enemy::moveToInAStraightLine(Vector2 destination, int positionId)
+{
+    float distanceX = abs(this->enemy_position.x - destination.x);
+    float distanceY = abs(this->enemy_position.y - destination.y);
+
+    if (distanceY < tolerance)
+    {
+        if (distanceX < tolerance)
         {
-            this->inPosition[0] = true;
-            this->inPosition[2] = true;
+            this->inPosition[positionId] = true;
         }
     }
 
-    if (this->enemy_position.y != destination.y && this->enemy_position.x != destination.x)
+    if (this->enemy_position.x != destination.x)
     {
+        if (distanceX < tolerance)
+        {
+            this->enemy_speed.x = distanceX;
+        }
+
         if (this->enemy_position.x - destination.x > 0)
         {
-            this->enemy_position.x -= this->enemy_speed;
-        }
-        else if (this->enemy_position.x - destination.x < 0)
-        {
-            this->enemy_position.x += this->enemy_speed;
-        }
-        if (this->enemy_position.y - destination.y > 0)
-        {
-            this->enemy_position.y -= this->enemy_speed;
-        }
-        else if (this->enemy_position.y - destination.y < 0)
-        {
-            this->enemy_position.y += this->enemy_speed;
-        }
-    }
-    else if (this->enemy_position.x != destination.x)
-    {
-        //if (this->enemy_position.x - destination.x < tolerance)
-        //{
-        //    this->enemy_speed = this->enemy_position.x - destination.x;
-        //}
-        if (this->enemy_position.x - destination.x > 0)
-        {
-            this->enemy_position.x -= this->enemy_speed;
+            this->enemy_position.x -= this->enemy_speed.x;
 
         }
         else if(this->enemy_position.x - destination.x < 0)
         {
-            this->enemy_position.x += this->enemy_speed;
+            this->enemy_position.x += this->enemy_speed.x;
         }
+        this->enemy_speed.x = 5;
     }
-    else if (this->enemy_position.y != destination.y)
+
+    if (this->enemy_position.y != destination.y)
     {
-        //if (this->enemy_position.y - destination.y < tolerance)
-        //{
-        //    this->enemy_speed = this->enemy_position.y - destination.y;
-        //}
+        if (distanceY < tolerance)
+        {
+            this->enemy_speed.y = distanceY;
+        }
+
         if (this->enemy_position.y - destination.y > 0)
         {
-            this->enemy_position.y -= this->enemy_speed;
+            this->enemy_position.y -= this->enemy_speed.y;
 
         }
         else if (this->enemy_position.y - destination.y < 0)
         {
-            this->enemy_position.y += this->enemy_speed;
+            this->enemy_position.y += this->enemy_speed.y;
         }
+        this->enemy_speed.y = 5;
     }
 }
 
-float ajuste = 100;
-Vector2 Enemy::startingPositions(int positionId)
+Vector2 Enemy::startingPositions(int spawnId)
 {
     //Debug Purposes && FailSave
-    if (positionId >= 7)
+    if (spawnId >= 7)
     {
-        positionId = GetRandomValue(0,6);
+        spawnId = GetRandomValue(0,6);
     }
 
     float centroVertical = GetScreenHeight() / 2;
     float centroHorizonal = GetScreenWidth() / 2;
 
-    if (positionId == 0) //Upper Left
+    if (spawnId == 0) //Upper Left
     {
-        return { -ajuste, -100 };
+        return { -positionAdjustments, -100 };
     }
-    if (positionId == 1) //Upper Center
+    if (spawnId == 1) //Upper Center
     {
         return { centroHorizonal, -100};
     }
-    if (positionId == 2) //Upper Right
+    if (spawnId == 2) //Upper Right
     {
-        return { GetScreenWidth()+ajuste, - 100 };
+        return { (float)GetScreenWidth()+positionAdjustments, - 100 };
     }
-    if (positionId == 3) //Center Left
+    if (spawnId == 3) //Center Left
     {
-        return {-ajuste , centroVertical};
+        return {-positionAdjustments , centroVertical};
     }
-    if (positionId == 4) //Center Right
+    if (spawnId == 4) //Center Right
     {
-        return { GetScreenWidth() + ajuste, centroVertical };
+        return { (float)GetScreenWidth() + positionAdjustments, centroVertical };
     }
-    if (positionId == 5) //Lower Left
+    if (spawnId == 5) //Lower Left
     {
-        return { -ajuste, GetScreenHeight()-ajuste };
+        return { -positionAdjustments, (float)GetScreenHeight()-positionAdjustments };
     }
-    if (positionId == 6) //Lower Right
+    if (spawnId == 6) //Lower Right
     {
-        return { GetScreenWidth() + ajuste, GetScreenHeight() - ajuste };
+        return { (float)GetScreenWidth() + positionAdjustments, (float)GetScreenHeight() - positionAdjustments };
     }
 }
 
 Vector2 Enemy::semiCirclePoints()
 {
-    Vector2 LeftPoint = { ajuste, GetScreenHeight()/3};
-    Vector2 RightPoint = {GetScreenWidth() - ajuste, GetScreenHeight() / 3};
+    int verticalCirclePosition = GetScreenHeight() / 2;
+    Vector2 LeftPoint = { positionAdjustments, verticalCirclePosition};
+    Vector2 RightPoint = {GetScreenWidth() - positionAdjustments, verticalCirclePosition};
 
     float distanceLeft = abs(this->enemy_position.x - LeftPoint.x);
     float distanceRight = abs(this->enemy_position.x - RightPoint.x);
@@ -132,21 +128,23 @@ Vector2 Enemy::semiCirclePoints()
     }
     else
     {
+        this->angle = 90;
         return RightPoint;
     }
 }
 
 void Enemy::semiCircleMovement()
 {
-    int radius = 10;
-    
+    int radius = 15;
+    int verticalCirclePosition = GetScreenHeight() / 2;
+
     float distanceLeft = abs(this->enemy_position.x - 0);
     float distanceRight = abs(this->enemy_position.x - GetScreenWidth());
 
     if (distanceLeft <= distanceRight)
     {
         this->enemy_position.x -= cos(this->angle) * radius;
-        this->enemy_position.y += sin(this->angle) * radius;;
+        this->enemy_position.y += sin(this->angle) * radius;
     }
     else
     {
@@ -154,19 +152,22 @@ void Enemy::semiCircleMovement()
         this->enemy_position.y += sin(this->angle) * radius;;
     }
 
-
     this->angle += 0.1;
-    if (this->enemy_position.y - GetScreenHeight() / 3 <= 1)
+
+    if ((positionAdjustments + radius) - this->enemy_position.x < tolerance || this->enemy_position.x - (GetScreenWidth() - (positionAdjustments + radius)) < tolerance)
     {
-        this->inPosition[1] = true;
-        this->inPosition[2] = false;
+        if (this->enemy_position.y - verticalCirclePosition <= 1)
+        {
+            this->inPosition[1] = true;
+        }
     }
+
 }
 
 Vector2 Enemy:: formationPositions(int fila,int columna)     //Vector2 enemiesFormationPositions[10][6];
 {
     Vector2 formationPosition;
-    formationPosition.x = (GetScreenWidth() / 10) + (fila * 60);
+    formationPosition.x = GetScreenWidth() / 7 + (fila * 60); //Original: GetScreenWidth() / 10
     formationPosition.y = GetScreenHeight() / 10 + (columna * 75);
     return formationPosition;
 }

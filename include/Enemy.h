@@ -4,7 +4,8 @@
 #include <math.h>
 #include <vector>
 
-#define MAXENEMIES 6
+#define tolerance 5
+#define positionAdjustments 100
 
 class Enemy
 {
@@ -13,14 +14,16 @@ protected:
     int enemy_radius;
     Color enemy_color;
     bool enemy_alive;
-    int enemy_speed;
+    Vector2 enemy_speed;
     float angle;
 public:
     Enemy();
     bool inPosition[3] = {false,false,false}; //CircleStart, CricleEnd, Formation
 
-    void moveToInAStraightLine(Vector2 destination);
-    Vector2 startingPositions(int positionId);
+    void spawnHorde(std::vector <Enemy>* manager, int num, int spawnId);
+
+    void moveToInAStraightLine(Vector2 destination, int positionId);
+    Vector2 startingPositions(int spawnId);
     Vector2 semiCirclePoints();
     void semiCircleMovement();
     Vector2 formationPositions(int fila, int columna);
