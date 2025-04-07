@@ -16,7 +16,7 @@ private:
     bool inmortal = false;
     Timer deathTimer;
 public:
-    std::vector<Bullet> a;
+    std::vector<Bullet>* bulletVector;
     //Constructores
     Player();
     Player(Vector2 _position, int _radius, Color _color, int _score, int _lives);
@@ -51,7 +51,7 @@ public:
     void SumScore(int n);
 
     void Move();
-    void Shoot();
+    void Shoot(std::vector <Bullet>* playerbullets);
 
     void Death();
     bool CheckDeath();

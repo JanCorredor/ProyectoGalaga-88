@@ -83,9 +83,9 @@ void Player::Move()
     }
 }
 
-void Player::Shoot() 
+void Player::Shoot(std::vector <Bullet>* playerbullets)
 {
-    Defines:Bullet newBullet;
+    Bullet newBullet;
     Vector2 playerActualPosition = this->GetPosition();
 
     newBullet.bullet_position = { playerActualPosition.x - 7, playerActualPosition.y - 30 };
@@ -98,10 +98,10 @@ void Player::Shoot()
     {
         newBullet.bullet_position.x += 9; //Player Speed
     }
-
+   
     newBullet.bullet_radius = 10;
     newBullet.bullet_color = BLUE;
-    a.push_back(newBullet);
+    playerbullets->push_back(newBullet);
 
 }
 

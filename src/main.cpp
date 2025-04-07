@@ -190,13 +190,10 @@ int main()
                 if (player.GetInmortal() == false) {
                     PlaySound(playerShoot);
                     player_bullet_counter += 1;
-                    ShootBullet(); //Crear Instancia de bala
-                    //player.Shoot();
+                    //ShootBullet(); //Crear Instancia de bala
+                    player.Shoot(&playerbullets);
                 }
             }
-
-
-
 
             //Enemy Collisions
             for (int i = 0; i < enemies.size(); i++)
@@ -421,6 +418,7 @@ int main()
 // Funciones 
 //-------------------------------------------------------------------------------------
 
+<<<<<<< Updated upstream
 void ShootBullet()
 {
     Bullet newBullet;
@@ -442,6 +440,8 @@ void ShootBullet()
     playerbullets.push_back(newBullet);
 }
 
+=======
+>>>>>>> Stashed changes
 void DrawBullet()
 {
     for (int i = 0; i < playerbullets.size(); i++) //Update
@@ -451,10 +451,55 @@ void DrawBullet()
         {
              playerbullets.erase(playerbullets.begin());
         }
+<<<<<<< Updated upstream
     }  
     //El draw se hace en el main porque no detecta la textura aqui, corregir
 }
 
+=======
+    }
+
+}
+
+void createEnemies()
+{
+    for (int i = 0; i < 60; i++)
+    {
+        
+        Enemy newEnemy;
+        enemies.push_back(newEnemy);
+        enemies[i].setEnemyPosition(enemies[i].startingPositions(i));
+    }
+}
+
+void enemyshoot()
+{
+    Bullet newBullet;
+    int i = GetRandomValue(0, enemies.size() -1);
+
+    if (enemies[i].isEnemyAlive() == true)
+    {
+        newBullet.bullet_position = enemies[i].getEnemyPosition();
+
+        if (newBullet.bullet_position.x == player.GetPosition().x)
+        {
+            newBullet.bullet_color = RED;
+        }
+        else if (newBullet.bullet_position.x > player.GetPosition().x)
+        {
+            newBullet.bullet_color = ORANGE; // MINUS
+        }
+        else
+        {
+            newBullet.bullet_color = PURPLE; // PLUS
+        }
+
+        newBullet.bullet_radius = 10;
+        enemybullets.push_back(newBullet);
+    }
+}
+
+>>>>>>> Stashed changes
 void DrawEnemyBullet()
 {
     for (int i = 0; i < enemybullets.size(); i++) //Update
