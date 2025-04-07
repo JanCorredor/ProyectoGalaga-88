@@ -2,7 +2,9 @@
 #include "raylib.h"
 #include "resource_dir.h"
 #include <math.h>
+#include "Defines.h"
 #include <vector>
+#include "Player.h"
 
 #define tolerance 5
 #define positionAdjustments 100
@@ -28,6 +30,7 @@ public:
     void semiCircleMovement();
     Vector2 formationPositions(int fila, int columna);
 
+    void shoot(std::vector <Bullet>* bulletManager, Player player);
 
     Vector2 getEnemyPosition();
     int getEnemyRadius();

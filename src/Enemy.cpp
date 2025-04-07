@@ -1,8 +1,13 @@
 #include "raylib.h"
 #include "resource_dir.h"
 #include <math.h>
+#include "Defines.h"
+#include <vector>
+#include "Player.h"
 
 #include "Enemy.h"
+
+
 
 Enemy::Enemy() {
     this->enemy_radius = 50; this->enemy_color = RED;  this->enemy_alive = true; this->enemy_speed = { 5,5 }; this->angle = 0;
@@ -171,6 +176,34 @@ Vector2 Enemy:: formationPositions(int fila,int columna)     //Vector2 enemiesFo
     formationPosition.y = GetScreenHeight() / 10 + (columna * 75);
     return formationPosition;
 }
+
+void Enemy::shoot(std::vector <Bullet>* bulletManager, Player player)
+{
+    Bullet newBullet;
+
+    if (this->enemy_alive == true)
+    {
+        newBullet.bullet_position = this->enemy_position;
+
+        if (newBullet.bullet_position.x == player.GetPosition().x)
+        {
+            newBullet.bullet_color = RED;
+        }
+        else if (newBullet.bullet_position.x > player.GetPosition().x)
+        {
+            newBullet.bullet_color = ORANGE; // MINUS
+        }
+        else
+        {
+            newBullet.bullet_color = PURPLE; // PLUS
+        }
+
+        newBullet.bullet_radius = 10;
+        bulletManager->push_back(newBullet);
+    }
+
+}
+
 
 Vector2 Enemy::getEnemyPosition() { return enemy_position; }
 int Enemy::getEnemyRadius() { return enemy_radius; }
