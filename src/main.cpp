@@ -6,6 +6,7 @@
 #include "Particles.h"
 #include"Enemy.h"
 #include "Defines.h"
+#include "HighScoreStorage.h"
 
 using namespace std;
 
@@ -28,6 +29,8 @@ static Player player = Player::Player();
 
 bool hardmode = false;
 
+bool areYouWinningSon;
+
 //-------------------------------------------------------------------------------------
 // Declaracion de funciones
 //-------------------------------------------------------------------------------------
@@ -37,7 +40,6 @@ std::vector <Bullet> playerbullets;
 
 int player_bullet_counter = 0;
 int hit_counter = 0;
-void ShootBullet();  //Create
 void DrawBullet();  //Update
 
 std::vector <Enemy> enemies;
@@ -190,7 +192,6 @@ int main()
                 if (player.GetInmortal() == false) {
                     PlaySound(playerShoot);
                     player_bullet_counter += 1;
-                    //ShootBullet(); //Crear Instancia de bala
                     player.Shoot(&playerbullets);
                 }
             }
@@ -212,18 +213,37 @@ int main()
                     }
                 }
             }
-
+            
+            bool allDead = true;
             if (player.GetLives() < 0)
             {
                 currentScreen = ENDING;
+                areYouWinningSon = false; 
             }
+            for (int i = 0; i < enemies.size(); i++)
+            {
+                if (enemies.empty() == false) 
+                {
+                    if (enemies[i].isEnemyAlive() == true)
+                    {
+                        allDead = false;
+                    }
 
+                }
+            }
+            if (allDead == true && enemies.empty() == false)
+            {
+                currentScreen = ENDING;
+                areYouWinningSon = true;
+            }
         } break;
         case ENDING:
         {
             int score = player.GetScore();
 
-            if (player.GetLives() > 0)
+            SaveStorageValue(highestHighScore, score);
+
+            if (areYouWinningSon == true)
             {
                 PlaySound(GalagaWin);
             }
@@ -280,8 +300,8 @@ int main()
             DrawText("SCORE", GetScreenWidth() / 20, GetScreenHeight() / 50, 45, WHITE);
             DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
 
-            DrawText("H I SCORE", GetScreenWidth() *7/ 10, GetScreenHeight() / 50, 45, WHITE);
-                //Insertar Puntuacion Mas alta
+            DrawText("H I SCORE", GetScreenWidth() *7/ 10, GetScreenHeight() / 50, 45, WHITE); 
+                DrawText(TextFormat("%i", LoadStorageValue(highestHighScore)), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
 
             //Other
             DrawText("PUSH ENTER", GetScreenWidth()/3, GetScreenHeight() /2, 45, GREEN);
@@ -390,9 +410,19 @@ int main()
             DrawText("HIT-MISS RATIO", GetScreenWidth() / 13, GetScreenHeight() / 5, 45, YELLOW);
             DrawText(TextFormat("%d %%", (char)ratio), GetScreenWidth() * 2 / 3, GetScreenHeight() / 5, 45, YELLOW); ///////////////Error: No se dibujan los decimales
 
-            DrawText("You DIED", GetScreenWidth() / 3, GetScreenHeight() * 5 / 10, 45, RED);
-            DrawText("Skill Issue", GetScreenWidth() / 3, GetScreenHeight() * 6 / 10, 45, WHITE);
-            DrawText("Retry?", GetScreenWidth() / 3, GetScreenHeight() * 7 / 10, 45, GREEN);
+            if (areYouWinningSon == true)
+            {
+                DrawText("VICTORY ACHIEVED", GetScreenWidth() / 10, GetScreenHeight() * 7 / 10, 45, DARKGREEN);
+                DrawText("Skill Check Passed", GetScreenWidth() / 10, GetScreenHeight() * 8 / 10, 45, WHITE);
+                DrawText("Retry?", GetScreenWidth() / 10, GetScreenHeight() * 9 / 10, 45, GREEN);
+            }
+            else
+            {
+                DrawText("You DIED and LOST", GetScreenWidth() / 10, GetScreenHeight() * 7 / 10, 45, RED);
+                DrawText("Skill Issue", GetScreenWidth() / 10, GetScreenHeight() * 8 / 10, 45, WHITE);
+                DrawText("Retry?", GetScreenWidth() / 10, GetScreenHeight() * 9 / 10, 45, RED);
+            }
+
 
         } break;
         default: break;
@@ -418,30 +448,6 @@ int main()
 // Funciones 
 //-------------------------------------------------------------------------------------
 
-<<<<<<< Updated upstream
-void ShootBullet()
-{
-    Bullet newBullet;
-    Vector2 playerActualPosition = player.GetPosition();
-
-    newBullet.bullet_position = { playerActualPosition.x - 7, playerActualPosition.y - 30};
-
-    if (IsKeyDown(KEY_LEFT))
-    {
-        newBullet.bullet_position.x -= 9; //Player Speed
-    }
-    if (IsKeyDown(KEY_RIGHT))
-    {
-        newBullet.bullet_position.x += 9; //Player Speed
-    }
-
-    newBullet.bullet_radius = 10;
-    newBullet.bullet_color = BLUE;
-    playerbullets.push_back(newBullet);
-}
-
-=======
->>>>>>> Stashed changes
 void DrawBullet()
 {
     for (int i = 0; i < playerbullets.size(); i++) //Update
@@ -451,14 +457,8 @@ void DrawBullet()
         {
              playerbullets.erase(playerbullets.begin());
         }
-<<<<<<< Updated upstream
     }  
     //El draw se hace en el main porque no detecta la textura aqui, corregir
-}
-
-=======
-    }
-
 }
 
 void createEnemies()
@@ -499,7 +499,6 @@ void enemyshoot()
     }
 }
 
->>>>>>> Stashed changes
 void DrawEnemyBullet()
 {
     for (int i = 0; i < enemybullets.size(); i++) //Update
