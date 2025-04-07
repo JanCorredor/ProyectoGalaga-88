@@ -6,7 +6,7 @@
 #include "Particles.h"
 #include"Enemy.h"
 #include "Defines.h"
-#include "HighScoreStorage.h"
+//#include "HighScoreStorage.h"
 
 using namespace std;
 
@@ -121,6 +121,8 @@ int main()
 
     Timer enemyAttackTimer;
     enemyAttackTimer.StartTimer(10.0);
+    Timer logoTimer;
+    logoTimer.StartTimer(2.0);
 
     //-------------------------------------------------------------------------------------
     // Game Loop
@@ -132,10 +134,10 @@ int main()
         case LOGO:
         {
             PlaySound(GalagaOpening); 
-            framesCounter++;    // Count frames
+            //framesCounter++;    // Count frames
             
             // Wait for 2 seconds (120 frames) before jumping to TITLE 
-            if (framesCounter > 120)
+            if (logoTimer.CheckFinished() == true)
             {
                 UnloadTexture(GrupoDeNombreLogo);
                 currentScreen = TITLE;
@@ -314,7 +316,11 @@ int main()
             DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
 
             DrawText("H I SCORE", GetScreenWidth() *7/ 10, GetScreenHeight() / 50, 45, WHITE); 
+<<<<<<< Updated upstream
             DrawText(TextFormat("%i", LoadStorageValue(highestHighScore)), GetScreenWidth() * 7 / 10, GetScreenHeight() / 20, 45, WHITE);
+=======
+                //DrawText(TextFormat("%i", LoadStorageValue(highestHighScore)), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
+>>>>>>> Stashed changes
 
             //Other
             DrawText("PUSH ENTER", GetScreenWidth()/3, GetScreenHeight() /2, 45, GREEN);
