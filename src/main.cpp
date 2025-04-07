@@ -190,7 +190,6 @@ int main()
                enemyAttackTimer.StartTimer(0.1);            
             }
 
-            framesCounter++;
 
             //Player
             player.Move();
@@ -223,6 +222,7 @@ int main()
                 }
             }
             
+            //Winning/Losing Conditions
             bool allDead = true;
             if (player.GetLives() < 0)
             {
@@ -237,7 +237,6 @@ int main()
                     {
                         allDead = false;
                     }
-
                 }
             }
             if (allDead == true && enemies.empty() == false)
@@ -245,12 +244,17 @@ int main()
                 currentScreen = ENDING;
                 areYouWinningSon = true;
             }
+
+            //Score
+            if (player.GetScore() > LoadStorageValue(highestHighScore))
+            {
+                SaveStorageValue(highestHighScore, player.GetScore());
+            }
+
         } break;
         case ENDING:
         {
             int score = player.GetScore();
-
-            SaveStorageValue(highestHighScore, score);
 
             if (areYouWinningSon == true)
             {
@@ -262,10 +266,10 @@ int main()
             }
 
             player = Player::Player();
-            player.SetScore(score);
 
             enemybullets.clear();
             playerbullets.clear();
+            enemies.clear();
 
             if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
             {
@@ -310,7 +314,7 @@ int main()
             DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
 
             DrawText("H I SCORE", GetScreenWidth() *7/ 10, GetScreenHeight() / 50, 45, WHITE); 
-                DrawText(TextFormat("%i", LoadStorageValue(highestHighScore)), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
+            DrawText(TextFormat("%i", LoadStorageValue(highestHighScore)), GetScreenWidth() * 7 / 10, GetScreenHeight() / 20, 45, WHITE);
 
             //Other
             DrawText("PUSH ENTER", GetScreenWidth()/3, GetScreenHeight() /2, 45, GREEN);
@@ -329,7 +333,7 @@ int main()
             DrawText("HIGH SCORE", GetScreenWidth() /3, GetScreenHeight() / 50, 45, RED);
 
             DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
-            DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 3, GetScreenHeight() / 20, 45, WHITE);
+            DrawText(TextFormat("%i", LoadStorageValue(highestHighScore)), GetScreenWidth() / 3, GetScreenHeight() / 20, 45, WHITE);
              
             //// Lives Remaining
             for (int i = 0; i < player.GetLives(); i++)
@@ -398,7 +402,7 @@ int main()
             DrawText("HIGH SCORE", GetScreenWidth() / 3, GetScreenHeight() / 50, 45, RED);
 
             DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
-            DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 3, GetScreenHeight() / 20, 45, WHITE);
+            DrawText(TextFormat("%i", (char*)LoadStorageValue(highestHighScore)), GetScreenWidth() / 3, GetScreenHeight() / 20, 45, WHITE);
 
             DrawText("SHOTS FIRED", GetScreenWidth() / 13, GetScreenHeight() / 10, 45, YELLOW);
             DrawText(TextFormat("%i", (char*)player_bullet_counter), GetScreenWidth() * 2 / 3, GetScreenHeight() / 10, 45, YELLOW);

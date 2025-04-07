@@ -69,9 +69,9 @@ bool SaveStorageValue(unsigned int position, int value)
     return success;
 }
 
-////// Load integer value from storage file (from defined position)
-////// NOTE: If requested position could not be found, value 0 is returned
-int LoadStorageValue(unsigned int position)
+
+
+int LoadStorageValue(unsigned int position) // Load integer value from storage file (from defined position)
 {
     int value = 0;
     int dataSize = 0;
@@ -91,5 +91,5 @@ int LoadStorageValue(unsigned int position)
         TraceLog(LOG_INFO, "FILEIO: [%s] Loaded storage value: %i", highScore_DATA_FILE, value);
     }
 
-    return value;
+    return value;    //If requested position could not be found, value 0 is returned
 }

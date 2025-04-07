@@ -12,5 +12,5 @@ typedef enum {
     fifthHighScore = 4
 } StorageData;
 
-static bool SaveStorageValue(unsigned int position, int value);
-static int LoadStorageValue(unsigned int position);
+bool SaveStorageValue(unsigned int position, int value);
+int LoadStorageValue(unsigned int position);
