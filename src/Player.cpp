@@ -63,13 +63,16 @@ void Player::Move()
 
     //Player Movement
     int player_speed = 9;
-    if (IsKeyDown(KEY_LEFT))
+    if (this->inmortal == false)
     {
-        this->SetPositionX(playerActualPosition.x -= player_speed);
-    }
-    if (IsKeyDown(KEY_RIGHT))
-    {
-        this->SetPositionX(playerActualPosition.x += player_speed);
+        if (IsKeyDown(KEY_LEFT))
+        {
+            this->SetPositionX(playerActualPosition.x -= player_speed);
+        }
+        if (IsKeyDown(KEY_RIGHT))
+        {
+            this->SetPositionX(playerActualPosition.x += player_speed);
+        }
     }
 
     //Player Collision With Screen

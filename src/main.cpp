@@ -119,6 +119,8 @@ int main()
     //Player
     player.SetPosition({ (float)GetScreenWidth() / 2, (float)GetScreenHeight() * 9 / 10 });
 
+    Timer enemyAttackTimer;
+    enemyAttackTimer.StartTimer(10.0);
 
     //-------------------------------------------------------------------------------------
     // Game Loop
@@ -177,8 +179,15 @@ int main()
                 }
                 else if (enemies[count].inPosition[2] == true)
                 {
-                    enemies[count].shoot(&enemybullets, player);
+                    if (enemyAttackTimer.CheckFinished() == true)
+                    {
+                        enemies[count].shoot(&enemybullets, player);
+                    }
                 }
+            }
+            if (enemyAttackTimer.CheckFinished() == true) 
+            {
+               enemyAttackTimer.StartTimer(0.1);            
             }
 
             framesCounter++;
@@ -448,6 +457,26 @@ int main()
 // Funciones 
 //-------------------------------------------------------------------------------------
 
+void ShootBullet()
+{
+    Bullet newBullet;
+    Vector2 playerActualPosition = player.GetPosition();
+
+    newBullet.bullet_position = { playerActualPosition.x - 7, playerActualPosition.y - 30};
+
+    if (IsKeyDown(KEY_LEFT))
+    {
+        newBullet.bullet_position.x -= 9; //Player Speed
+    }
+    if (IsKeyDown(KEY_RIGHT))
+    {
+        newBullet.bullet_position.x += 9; //Player Speed
+    }
+
+    newBullet.bullet_radius = 10;
+    newBullet.bullet_color = BLUE;
+    playerbullets.push_back(newBullet);
+}
 void DrawBullet()
 {
     for (int i = 0; i < playerbullets.size(); i++) //Update

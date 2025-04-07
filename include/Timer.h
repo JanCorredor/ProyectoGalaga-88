@@ -21,7 +21,6 @@ public:
     float GetStartTime();
     float GetElapsedTime();
     float GetEndTime();
-    bool GetFinished();
     void SetFinished(bool newFinished);
     //Funciones
     bool CheckFinished();

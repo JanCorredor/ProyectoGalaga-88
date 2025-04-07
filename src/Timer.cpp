@@ -1,14 +1,12 @@
 #include "Timer.h"
 
-Timer::Timer() {}
+Timer::Timer() 
+{
+	this->started = false;
+}
 float Timer::GetStartTime() { return this->startTime; }
 float Timer::GetElapsedTime() { return GetTime() - this->startTime; }
 float Timer::GetEndTime() { return this->endTime; }
-bool Timer::GetFinished() 
-{
-	CheckFinished();
-	return this->finished; 
-}
 void Timer::SetFinished(bool newFinished) { this->finished = newFinished; }
 
 
@@ -29,10 +27,12 @@ bool Timer::CheckFinished()
 	{
 		if (GetTime() >= this->endTime)
 		{
+			this->finished = true;
 			return true;
 		}
 		else
 		{
+			this->finished = false;
 			return false;
 		}
 	}
