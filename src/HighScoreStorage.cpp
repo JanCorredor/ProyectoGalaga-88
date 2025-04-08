@@ -3,7 +3,7 @@
 
 #include "HighScoreStorage.h"
 
-bool SaveStorageValue(unsigned int position, int value)
+bool SaveNewHighScore(unsigned int position, int value)
 {
     bool success = false;
     int dataSize = 0;
@@ -69,9 +69,7 @@ bool SaveStorageValue(unsigned int position, int value)
     return success;
 }
 
-
-
-int LoadStorageValue(unsigned int position) // Load integer value from storage file (from defined position)
+int LoadHighScore(unsigned int position) // Load integer value from storage file (from defined position)
 {
     int value = 0;
     int dataSize = 0;
@@ -92,4 +90,55 @@ int LoadStorageValue(unsigned int position) // Load integer value from storage f
     }
 
     return value;    //If requested position could not be found, value 0 is returned
+}
+
+void ResetHighScore()
+{
+    SaveNewHighScore(highestHighScore, 0);
+    SaveNewHighScore(secondHighScore, 0);
+    SaveNewHighScore(thirdHighScore, 0);
+    SaveNewHighScore(fourthHighScore, 0);
+    SaveNewHighScore(fifthHighScore, 0);
+}
+
+void UpdateHighScore(int playerScore)
+{
+    while (1)
+    {
+        if (playerScore >= LoadHighScore(highestHighScore))
+        {
+            SaveNewHighScore(fifthHighScore, LoadHighScore(fourthHighScore));
+            SaveNewHighScore(fourthHighScore, LoadHighScore(thirdHighScore));
+            SaveNewHighScore(thirdHighScore, LoadHighScore(secondHighScore));
+            SaveNewHighScore(secondHighScore, LoadHighScore(highestHighScore));
+            SaveNewHighScore(highestHighScore, playerScore);
+            break;
+        }
+        else if (playerScore >= LoadHighScore(secondHighScore))
+        {
+            SaveNewHighScore(fifthHighScore, LoadHighScore(fourthHighScore));
+            SaveNewHighScore(fourthHighScore, LoadHighScore(thirdHighScore));
+            SaveNewHighScore(thirdHighScore, LoadHighScore(secondHighScore));
+            SaveNewHighScore(secondHighScore, playerScore);
+            break;
+        }
+        else if (playerScore >= LoadHighScore(thirdHighScore))
+        {
+            SaveNewHighScore(fifthHighScore, LoadHighScore(fourthHighScore));
+            SaveNewHighScore(fourthHighScore, LoadHighScore(thirdHighScore));
+            SaveNewHighScore(thirdHighScore, playerScore);
+            break;
+        }
+        else if (playerScore >= LoadHighScore(fourthHighScore))
+        {
+            SaveNewHighScore(fifthHighScore, LoadHighScore(fourthHighScore));
+            SaveNewHighScore(fourthHighScore, playerScore);
+            break;
+        }
+        else if (playerScore >= LoadHighScore(fifthHighScore))
+        {
+            SaveNewHighScore(fifthHighScore, playerScore);
+            break;
+        }
+    }
 }

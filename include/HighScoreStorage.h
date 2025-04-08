@@ -12,5 +12,7 @@ typedef enum {
     fifthHighScore = 4
 } StorageData;
 
-bool SaveStorageValue(unsigned int position, int value);
-int LoadStorageValue(unsigned int position);
+bool SaveNewHighScore(unsigned int position, int value);
+int LoadHighScore(unsigned int position);
+void ResetHighScore();
+void UpdateHighScore(int playerScore);

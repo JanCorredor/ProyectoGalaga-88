@@ -6,7 +6,7 @@
 #include "Particles.h"
 #include"Enemy.h"
 #include "Defines.h"
-//#include "HighScoreStorage.h"
+#include "HighScoreStorage.h"
 
 using namespace std;
 
@@ -29,7 +29,8 @@ static Player player = Player::Player();
 
 bool hardmode = false;
 
-bool areYouWinningSon;
+bool hasWon;
+bool updatedScore = false;
 
 //-------------------------------------------------------------------------------------
 // Declaracion de funciones
@@ -155,6 +156,15 @@ int main()
                 currentScreen = GAMEPLAY;
                 StopSound(GalagaOpening); 
             }
+
+            if (IsKeyPressed(KEY_E)) ///Delete after /Tesing Porpuse Only
+            {
+                currentScreen = ENDING;
+            }
+            if (IsKeyPressed(KEY_D)) ///Delete after /Tesing Porpuse Only
+            {
+                ResetHighScore();
+            }
         } break;
         case GAMEPLAY:
         {
@@ -229,7 +239,7 @@ int main()
             if (player.GetLives() < 0)
             {
                 currentScreen = ENDING;
-                areYouWinningSon = false; 
+                hasWon = false; 
             }
             for (int i = 0; i < enemies.size(); i++)
             {
@@ -244,21 +254,33 @@ int main()
             if (allDead == true && enemies.empty() == false)
             {
                 currentScreen = ENDING;
-                areYouWinningSon = true;
+                hasWon = true;
             }
 
             //Score
-            if (player.GetScore() > LoadStorageValue(highestHighScore))
+            if (player.GetScore() > LoadHighScore(highestHighScore))
             {
-                SaveStorageValue(highestHighScore, player.GetScore());
+                if (updatedScore == false)
+                {
+                    UpdateHighScore(player.GetScore());
+                    updatedScore = true;
+                }
+                else
+                {
+                    SaveNewHighScore(highestHighScore, player.GetScore());
+                }
             }
 
         } break;
         case ENDING:
         {
-            int score = player.GetScore();
+            if (updatedScore == false)
+            {
+                UpdateHighScore(player.GetScore());
+                updatedScore = true;
+            }
 
-            if (areYouWinningSon == true)
+            if (hasWon == true)
             {
                 PlaySound(GalagaWin);
             }
@@ -267,14 +289,15 @@ int main()
                 PlaySound(GalagaDefeat);
             }
 
-            player = Player::Player();
-
             enemybullets.clear();
             playerbullets.clear();
             enemies.clear();
 
             if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
             {
+                player = Player::Player();
+                updatedScore = false;
+                hardmode = false;
                 StopSound(GalagaWin);
                 StopSound(GalagaDefeat);
                 player_bullet_counter = 0;
@@ -316,11 +339,7 @@ int main()
             DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
 
             DrawText("H I SCORE", GetScreenWidth() *7/ 10, GetScreenHeight() / 50, 45, WHITE); 
-<<<<<<< Updated upstream
-            DrawText(TextFormat("%i", LoadStorageValue(highestHighScore)), GetScreenWidth() * 7 / 10, GetScreenHeight() / 20, 45, WHITE);
-=======
-                //DrawText(TextFormat("%i", LoadStorageValue(highestHighScore)), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
->>>>>>> Stashed changes
+            DrawText(TextFormat("%i", LoadHighScore(highestHighScore)), GetScreenWidth() * 7 / 10, GetScreenHeight() / 20, 45, WHITE);
 
             //Other
             DrawText("PUSH ENTER", GetScreenWidth()/3, GetScreenHeight() /2, 45, GREEN);
@@ -332,14 +351,13 @@ int main()
             //Particulas
             drawParticles();
 
-
             //UI
             ////Scores
             DrawText("1UP", GetScreenWidth() / 13, GetScreenHeight() / 50, 45, YELLOW);
             DrawText("HIGH SCORE", GetScreenWidth() /3, GetScreenHeight() / 50, 45, RED);
 
             DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
-            DrawText(TextFormat("%i", LoadStorageValue(highestHighScore)), GetScreenWidth() / 3, GetScreenHeight() / 20, 45, WHITE);
+            DrawText(TextFormat("%i", LoadHighScore(highestHighScore)), GetScreenWidth() / 3, GetScreenHeight() / 20, 45, WHITE);
              
             //// Lives Remaining
             for (int i = 0; i < player.GetLives(); i++)
@@ -366,7 +384,6 @@ int main()
             {
                 DrawGodShot();
             }
-            
 
             for (int i = 0; i < enemybullets.size(); i++) //Esto deberia estar en DrawBullets
             {
@@ -387,10 +404,7 @@ int main()
                 DrawTexture(player_body, playerActualPosition.x - 74, playerActualPosition.y - 63, WHITE);
             }
 
-
-
             //Enemies
-
             for (int i = 0; i < enemies.size(); i++)
             {
                 if (enemies[i].isEnemyAlive() == true)
@@ -408,7 +422,7 @@ int main()
             DrawText("HIGH SCORE", GetScreenWidth() / 3, GetScreenHeight() / 50, 45, RED);
 
             DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
-            DrawText(TextFormat("%i", (char*)LoadStorageValue(highestHighScore)), GetScreenWidth() / 3, GetScreenHeight() / 20, 45, WHITE);
+            DrawText(TextFormat("%i", (char*)LoadHighScore(highestHighScore)), GetScreenWidth() / 3, GetScreenHeight() / 20, 45, WHITE);
 
             DrawText("SHOTS FIRED", GetScreenWidth() / 13, GetScreenHeight() / 10, 45, YELLOW);
             DrawText(TextFormat("%i", (char*)player_bullet_counter), GetScreenWidth() * 2 / 3, GetScreenHeight() / 10, 45, YELLOW);
@@ -429,17 +443,29 @@ int main()
             DrawText("HIT-MISS RATIO", GetScreenWidth() / 13, GetScreenHeight() / 5, 45, YELLOW);
             DrawText(TextFormat("%d %%", (char)ratio), GetScreenWidth() * 2 / 3, GetScreenHeight() / 5, 45, YELLOW); ///////////////Error: No se dibujan los decimales
 
-            if (areYouWinningSon == true)
+            DrawText("[1]", GetScreenWidth() / 13, GetScreenHeight() *3/ 10, 50, GOLD);
+            DrawText("[2]", GetScreenWidth() / 13, GetScreenHeight() *4/ 10, 45, WHITE);
+            DrawText("[3]", GetScreenWidth() / 13, GetScreenHeight() *5/ 10, 45, WHITE);
+            DrawText("[4]", GetScreenWidth() / 13, GetScreenHeight() *6/ 10, 45, WHITE);
+            DrawText("[5]", GetScreenWidth() / 13, GetScreenHeight() *7/ 10, 45, WHITE);
+
+            DrawText(TextFormat("%i", (char*)LoadHighScore(highestHighScore)),GetScreenWidth()/ 6,GetScreenHeight() *3/10, 50, GOLD);
+            DrawText(TextFormat("%i", (char*)LoadHighScore(secondHighScore)),GetScreenWidth() / 6,GetScreenHeight() *4/10, 40, WHITE);
+            DrawText(TextFormat("%i", (char*)LoadHighScore(thirdHighScore)),GetScreenWidth()  / 6,GetScreenHeight() *5/10, 40, WHITE);
+            DrawText(TextFormat("%i", (char*)LoadHighScore(fourthHighScore)),GetScreenWidth() / 6,GetScreenHeight() *6/10, 40, WHITE);
+            DrawText(TextFormat("%i", (char*)LoadHighScore(fifthHighScore)),GetScreenWidth()  / 6,GetScreenHeight() *7/10, 40, WHITE);
+
+            if (hasWon == true)
             {
-                DrawText("VICTORY ACHIEVED", GetScreenWidth() / 10, GetScreenHeight() * 7 / 10, 45, DARKGREEN);
-                DrawText("Skill Check Passed", GetScreenWidth() / 10, GetScreenHeight() * 8 / 10, 45, WHITE);
-                DrawText("Retry?", GetScreenWidth() / 10, GetScreenHeight() * 9 / 10, 45, GREEN);
+                DrawText("VICTORY ACHIEVED", GetScreenWidth()  / 10, GetScreenHeight() * 16 / 20, 45, DARKGREEN);
+                DrawText("Skill Check Passed", GetScreenWidth()/ 10, GetScreenHeight() * 17 / 20, 45, WHITE);
+                DrawText("Retry?", GetScreenWidth()            / 10, GetScreenHeight() * 18 / 20, 45, GREEN);
             }
             else
             {
-                DrawText("You DIED and LOST", GetScreenWidth() / 10, GetScreenHeight() * 7 / 10, 45, RED);
-                DrawText("Skill Issue", GetScreenWidth() / 10, GetScreenHeight() * 8 / 10, 45, WHITE);
-                DrawText("Retry?", GetScreenWidth() / 10, GetScreenHeight() * 9 / 10, 45, RED);
+                DrawText("You DIED and LOST", GetScreenWidth() / 10, GetScreenHeight() * 16 / 20, 45, RED);
+                DrawText("Skill Issue", GetScreenWidth()       / 10, GetScreenHeight() * 17 / 20, 45, WHITE);
+                DrawText("Retry?", GetScreenWidth()            / 10, GetScreenHeight() * 18/ 20, 45, RED);
             }
 
 
