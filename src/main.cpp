@@ -125,6 +125,9 @@ int main()
     Timer logoTimer;
     logoTimer.StartTimer(2.0);
 
+    Timer timerSpawnEnemies;
+    timerSpawnEnemies.StartTimer(5.0);
+    int oleadasSpawneadas = 0;
     //-------------------------------------------------------------------------------------
     // Game Loop
     //-------------------------------------------------------------------------------------
@@ -168,10 +171,13 @@ int main()
         } break;
         case GAMEPLAY:
         {
-            if (IsKeyPressed(KEY_S))
-            {
-                callEnemyFunctions.spawnHorde(&enemies, 3, GetRandomValue(1,6));
-            }
+
+                if (timerSpawnEnemies.CheckFinished() == true && oleadasSpawneadas < 5) 
+                {
+                    callEnemyFunctions.spawnHorde(&enemies, 8, GetRandomValue(1, 6));
+                    oleadasSpawneadas++;
+                    timerSpawnEnemies.StartTimer(5.0);
+                }
 
             for (int count = 0; count < enemies.size(); count++)
             {
@@ -191,15 +197,20 @@ int main()
                 }
                 else if (enemies[count].inPosition[2] == true)
                 {
-                    if (enemyAttackTimer.CheckFinished() == true)
-                    {
-                        enemies[count].shoot(&enemybullets, player);
-                    }
+                    //if (enemyAttackTimer.CheckFinished() == true)
+                    //{
+                    //    enemies[count].shoot(&enemybullets, player);
+                    //}
                 }
+            }
+            int rnd = GetRandomValue(0,enemies.size()-1);
+            if (enemyAttackTimer.CheckFinished() == true)
+            {
+                enemies[rnd].shoot(&enemybullets, player);
             }
             if (enemyAttackTimer.CheckFinished() == true) 
             {
-               enemyAttackTimer.StartTimer(0.1);            
+               enemyAttackTimer.StartTimer(1.0);            
             }
 
 
