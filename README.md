@@ -6,3 +6,15 @@
 
 ## Wiki
 https://github.com/JanCorredor/ProyectoGalaga-88/wiki
+
+## Controls
+Arrows to move left or right
+Space to Shoot
+
+## Things Implemented
+- Main Menu
+- UI and Sounds
+- Basic player mechanics
+- 1st level
+- 1 Enemy
+- Win/lose conditions
