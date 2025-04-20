@@ -17,7 +17,8 @@ void Enemy::spawnHorde(std::vector <Enemy>* manager, int num, int spawnId)
 {
     for (int i = 0; i < num; i++)
     {
-        Vector2 spaceBetween = {(1 + i * 0.5)* startingPositions(spawnId).x,(1+i*0.5)*startingPositions(spawnId).y };
+        float space_manager = (1+i*0.2);
+        Vector2 spaceBetween = { space_manager * startingPositions(spawnId).x, space_manager *startingPositions(spawnId).y };
         Enemy newEnemy;
         newEnemy.setEnemyPosition(newEnemy.startingPositions(spawnId).x + spaceBetween.x, newEnemy.startingPositions(spawnId).y + spaceBetween.y);
         manager->push_back(newEnemy);

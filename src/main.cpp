@@ -172,12 +172,12 @@ int main()
         case GAMEPLAY:
         {
 
-                if (timerSpawnEnemies.CheckFinished() == true && oleadasSpawneadas < 5) 
-                {
-                    callEnemyFunctions.spawnHorde(&enemies, 8, GetRandomValue(1, 6));
-                    oleadasSpawneadas++;
-                    timerSpawnEnemies.StartTimer(5.0);
-                }
+            if (timerSpawnEnemies.CheckFinished() == true && oleadasSpawneadas < 5) 
+            {
+                callEnemyFunctions.spawnHorde(&enemies, 8, GetRandomValue(1, 6));
+                oleadasSpawneadas++;
+                timerSpawnEnemies.StartTimer(5.0);
+            }
 
             for (int count = 0; count < enemies.size(); count++)
             {
@@ -469,13 +469,11 @@ int main()
             if (hasWon == true)
             {
                 DrawText("VICTORY ACHIEVED", GetScreenWidth()  / 10, GetScreenHeight() * 16 / 20, 45, DARKGREEN);
-                DrawText("Skill Check Passed", GetScreenWidth()/ 10, GetScreenHeight() * 17 / 20, 45, WHITE);
                 DrawText("Retry?", GetScreenWidth()            / 10, GetScreenHeight() * 18 / 20, 45, GREEN);
             }
             else
             {
                 DrawText("You DIED and LOST", GetScreenWidth() / 10, GetScreenHeight() * 16 / 20, 45, RED);
-                DrawText("Skill Issue", GetScreenWidth()       / 10, GetScreenHeight() * 17 / 20, 45, WHITE);
                 DrawText("Retry?", GetScreenWidth()            / 10, GetScreenHeight() * 18/ 20, 45, RED);
             }
 
@@ -609,9 +607,7 @@ void DrawEnemyBullet()
             }
         }
     }
-
     player.CheckDeath();
-    //El draw se hace en el main porque no detecta la textura aqui, corregir
 }
 
 void DrawGodShot()
@@ -636,6 +632,17 @@ void DrawGodShot()
         if (enemybullets[i].bullet_position.y >= GetScreenHeight() + 20) //Sprite mas o menos fuera de pantalla
         {
             enemybullets.erase(enemybullets.begin());
+            continue;
+        }
+
+        if (CheckCollisionCircles(enemybullets[i].bullet_position, enemybullets[i].bullet_radius, player.GetPosition(), player.GetRadius()))
+        {
+            enemybullets.erase(enemybullets.begin() + i);
+            if (player.GetInmortal() == false)
+            {
+                player.Death();
+            }
         }
     }
+    player.CheckDeath();
 }
