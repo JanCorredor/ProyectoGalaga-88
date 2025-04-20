@@ -159,12 +159,7 @@ int main()
                 currentScreen = GAMEPLAY;
                 StopSound(GalagaOpening); 
             }
-
-            if (IsKeyPressed(KEY_E)) ///Delete after /Tesing Porpuse Only
-            {
-                currentScreen = ENDING;
-            }
-            if (IsKeyPressed(KEY_D)) ///Delete after /Tesing Porpuse Only
+            if (IsKeyPressed(KEY_R))
             {
                 ResetHighScore();
             }
