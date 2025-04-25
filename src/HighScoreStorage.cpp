@@ -49,11 +49,11 @@ bool SaveNewHighScore(unsigned int position, int value)
         success = SaveFileData(highScore_DATA_FILE, newFileData, newDataSize);
         RL_FREE(newFileData);
 
-        TraceLog(LOG_INFO, "FILEIO: [%s] Saved storage value: %i", highScore_DATA_FILE, value);
+        //TraceLog(LOG_INFO, "FILEIO: [%s] Saved storage value: %i", highScore_DATA_FILE, value);
     }
     else
     {
-        TraceLog(LOG_INFO, "FILEIO: [%s] File created successfully", highScore_DATA_FILE);
+        //TraceLog(LOG_INFO, "FILEIO: [%s] File created successfully", highScore_DATA_FILE);
 
         dataSize = (position + 1) * sizeof(int);
         fileData = (unsigned char*)RL_MALLOC(dataSize);
@@ -63,7 +63,7 @@ bool SaveNewHighScore(unsigned int position, int value)
         success = SaveFileData(highScore_DATA_FILE, fileData, dataSize);
         UnloadFileData(fileData);
 
-        TraceLog(LOG_INFO, "FILEIO: [%s] Saved storage value: %i", highScore_DATA_FILE, value);
+        //TraceLog(LOG_INFO, "FILEIO: [%s] Saved storage value: %i", highScore_DATA_FILE, value);
     }
 
     return success;
@@ -86,7 +86,7 @@ int LoadHighScore(unsigned int position) // Load integer value from storage file
 
         UnloadFileData(fileData);
 
-        TraceLog(LOG_INFO, "FILEIO: [%s] Loaded storage value: %i", highScore_DATA_FILE, value);
+        //TraceLog(LOG_INFO, "FILEIO: [%s] Loaded storage value: %i", highScore_DATA_FILE, value);
     }
 
     return value;    //If requested position could not be found, value 0 is returned

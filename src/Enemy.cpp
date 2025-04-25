@@ -7,7 +7,9 @@
 
 #include "Enemy.h"
 
+#include "loadResources.h"
 
+ResourceManager r;
 
 Enemy::Enemy() {
     this->enemy_radius = 50; this->enemy_color = RED;  this->enemy_alive = true; this->enemy_speed = { 5,5 }; this->angle = 0;
@@ -21,6 +23,20 @@ void Enemy::spawnHorde(std::vector <Enemy>* manager, int num, int spawnId)
         Vector2 spaceBetween = { space_manager * startingPositions(spawnId).x, space_manager *startingPositions(spawnId).y };
         Enemy newEnemy;
         newEnemy.setEnemyPosition(newEnemy.startingPositions(spawnId).x + spaceBetween.x, newEnemy.startingPositions(spawnId).y + spaceBetween.y);
+
+        if (i == 0)
+        {
+            newEnemy.enemySprite = r.Goei_0;
+        }
+        else if (i != num -1)
+        {
+            newEnemy.enemySprite = r.Zako;
+        }
+        else
+        {
+            newEnemy.enemySprite = r.Bon;
+        }
+
         manager->push_back(newEnemy);
     }
 }

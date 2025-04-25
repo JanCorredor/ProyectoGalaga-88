@@ -76,13 +76,15 @@ int main()
     ////HUD
     Texture stageindicator1 = LoadTexture("HUD/Galaga_'88_icon_stage_1.png");
 
+        ////Enemies
+    Texture Goei_0 = LoadTexture("Enemies/Goei_0.png");
+    Texture Goei_1 = LoadTexture("Enemies/Goei_1.png");
+
+    Texture Zako = LoadTexture("Enemies/Zako.png");
+    Texture Bon = LoadTexture("Enemies/Bon.png");
 
     ////Player
     Texture player_body = LoadTexture("Player/PlayerGalaga88.png");
-
-    ////Enemies
-    Texture enemy1_0 = LoadTexture("Enemies/Enemy1_0.png");
-    Texture enemy1_1 = LoadTexture("Enemies/Enemy1_1.png");
 
     ////Bullets
     Texture player_bullet = LoadTexture("Player/PlayerBullet.png");
@@ -176,36 +178,45 @@ int main()
 
             for (int count = 0; count < enemies.size(); count++)
             {
-                if (enemies[count].inPosition[0] == false)
+                if (enemies[count].isEnemyAlive() == true)
                 {
-                    enemies[count].moveToInAStraightLine(enemies[count].semiCirclePoints(),0);
+                    if (enemies[count].inPosition[0] == false)
+                    {
+                        enemies[count].moveToInAStraightLine(enemies[count].semiCirclePoints(),0);
+                    }
+                    else if (enemies[count].inPosition[1] == false)
+                    {
+                        enemies[count].semiCircleMovement();
+                    }
+                    else if (enemies[count].inPosition[2] == false)
+                    {
+                        int j = count / 10;
+                        int i = count - (j * 10);
+                        enemies[count].moveToInAStraightLine(enemies[count].formationPositions(i, j),2);
+                    }
+                    else if (enemies[count].inPosition[2] == true)
+                    {
+                         int rndmax = 0;
+                        for (int i = 0; i < enemies.size(); i++)
+                        {
+                            if (enemies[i].inPosition[2] == true)
+                            {
+                                rndmax++;
+                            }
+                        }
+                        int rnd = GetRandomValue(0, rndmax - 1);
+                        if (enemyAttackTimer.CheckFinished() && enemies[rnd].isEnemyAlive() == true && enemies[rnd].inPosition[2] == true)
+                        {
+                            enemies[rnd].shoot(&enemybullets, player);
+                            enemyAttackTimer.StartTimer(1.0);
+                        }
+                    }
                 }
-                else if (enemies[count].inPosition[1] == false)
+                else
                 {
-                    enemies[count].semiCircleMovement();
+                    enemies[count].inPosition[2] = true;
                 }
-                else if (enemies[count].inPosition[2] == false)
-                {
-                    int j = count / 10;
-                    int i = count - (j * 10);
-                    enemies[count].moveToInAStraightLine(enemies[count].formationPositions(i, j),2);
-                }
-                else if (enemies[count].inPosition[2] == true)
-                {
-                    //if (enemyAttackTimer.CheckFinished() == true)
-                    //{
-                    //    enemies[count].shoot(&enemybullets, player);
-                    //}
-                }
-            }
-            int rnd = GetRandomValue(0,enemies.size()-1);
-            if (enemyAttackTimer.CheckFinished() == true)
-            {
-                enemies[rnd].shoot(&enemybullets, player);
-            }
-            if (enemyAttackTimer.CheckFinished() == true) 
-            {
-               enemyAttackTimer.StartTimer(1.0);            
+
             }
 
 
@@ -328,6 +339,7 @@ int main()
             DrawText("Arnau Gonzalez", GetScreenWidth()/4, GetScreenHeight() * 6 / 10, 45, WHITE);
             DrawText("Videogame Design and Development", GetScreenWidth()/100, GetScreenHeight() * 7 / 10, 45, WHITE);
             DrawText("UPC CITM TRS", GetScreenWidth() / 4, GetScreenHeight() * 8 / 10, 45, WHITE);
+            DrawText("Tutor: Alejandro Paris Gomez", GetScreenWidth() / 10, GetScreenHeight() * 9 / 10, 45, WHITE);
             DrawTextureEx(GrupoDeNombreLogo, { (float)GetScreenWidth() / 10, 0 }, 0, 2, WHITE);
         } break;
         case TITLE:
@@ -415,8 +427,21 @@ int main()
             {
                 if (enemies[i].isEnemyAlive() == true)
                 {
-                    Vector2 Correccion = { enemies[i].getEnemyPosition().x - 33, enemies[i].getEnemyPosition().y - 37}; //-70 -74
-                    DrawTextureEx(enemy1_0, Correccion, 0, 0.5, WHITE);
+                    if (enemies[i].enemySprite.id == 9) //Goei
+                    {
+                        Vector2 Correccion = { enemies[i].getEnemyPosition().x - 33, enemies[i].getEnemyPosition().y - 37 }; //-70 -74
+                        DrawTextureEx(enemies[i].enemySprite, Correccion, 0, 0.5, WHITE);
+                    }
+                    else if (enemies[i].enemySprite.id == 11) //Zako
+                    {
+                        Vector2 Correccion = { enemies[i].getEnemyPosition().x, enemies[i].getEnemyPosition().y}; //-70 -74
+                        DrawTextureEx(enemies[i].enemySprite, Correccion, 180, 1, WHITE);
+                    }
+                    else if (enemies[i].enemySprite.id == 12) //Bon
+                    {
+                        Vector2 Correccion = { enemies[i].getEnemyPosition().x, enemies[i].getEnemyPosition().y}; //-70 -74
+                        DrawTextureEx(enemies[i].enemySprite, Correccion, 0, 1, WHITE);
+                    }
                 }
             }
 
@@ -497,26 +522,6 @@ int main()
 // Funciones 
 //-------------------------------------------------------------------------------------
 
-void ShootBullet()
-{
-    Bullet newBullet;
-    Vector2 playerActualPosition = player.GetPosition();
-
-    newBullet.bullet_position = { playerActualPosition.x - 7, playerActualPosition.y - 30};
-
-    if (IsKeyDown(KEY_LEFT))
-    {
-        newBullet.bullet_position.x -= 9; //Player Speed
-    }
-    if (IsKeyDown(KEY_RIGHT))
-    {
-        newBullet.bullet_position.x += 9; //Player Speed
-    }
-
-    newBullet.bullet_radius = 10;
-    newBullet.bullet_color = BLUE;
-    playerbullets.push_back(newBullet);
-}
 void DrawBullet()
 {
     for (int i = 0; i < playerbullets.size(); i++) //Update
@@ -527,7 +532,6 @@ void DrawBullet()
              playerbullets.erase(playerbullets.begin());
         }
     }  
-    //El draw se hace en el main porque no detecta la textura aqui, corregir
 }
 
 void createEnemies()

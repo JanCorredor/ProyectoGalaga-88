@@ -9,6 +9,8 @@
 #define tolerance 5
 #define positionAdjustments 100
 
+
+
 class Enemy
 {
 protected:
@@ -21,6 +23,7 @@ protected:
 public:
     Enemy();
     bool inPosition[3] = {false,false,false}; //CircleStart, CricleEnd, Formation
+    Texture enemySprite;
 
     void spawnHorde(std::vector <Enemy>* manager, int num, int spawnId);
 
