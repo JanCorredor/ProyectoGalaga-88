@@ -7,6 +7,7 @@
 #include"Enemy.h"
 #include "Defines.h"
 #include "HighScoreStorage.h"
+#include "loadResources.h"
 
 using namespace std;
 
@@ -61,35 +62,43 @@ int main()
 	// Create the window and OpenGL context
 	InitWindow(800, 1280, "Galaga'88"); // 1280, 800
 
-	// Utility function from resource_dir.h to find the resources folder and set it as the current working directory so we can load from it
-	SearchAndSetResourceDir("resources");
+
+
+    GameScreen currentScreen = LOGO;
+
+    
+    
+    // Utility function from resource_dir.h to find the resources folder and set it as the current working directory so we can load from it
+	//SearchAndSetResourceDir("resources");
 
 	////// Load textures from the resources directory
     //LOGO
-    Texture GrupoDeNombreLogo = LoadTexture("Wiki/Sprites/GrupoDeNombre.png"); 
-    GameScreen currentScreen = LOGO;
+    //Texture GrupoDeNombreLogo = LoadTexture("Wiki/Sprites/GrupoDeNombre.png"); 
 
-    //TITLE
-    Texture Galaga88Logo = LoadTexture("HUD/GALAGA88_LOGO.png");
 
-    //Gameplay
-    ////HUD
-    Texture stageindicator1 = LoadTexture("HUD/Galaga_'88_icon_stage_1.png");
+    ////TITLE
+    //Texture Galaga88Logo = LoadTexture("HUD/GALAGA88_LOGO.png");
 
-        ////Enemies
-    Texture Goei_0 = LoadTexture("Enemies/Goei_0.png");
-    Texture Goei_1 = LoadTexture("Enemies/Goei_1.png");
+    ////Gameplay
+    //////HUD
+    //Texture stageindicator1 = LoadTexture("HUD/Galaga_'88_icon_stage_1.png");
 
-    Texture Zako = LoadTexture("Enemies/Zako.png");
-    Texture Bon = LoadTexture("Enemies/Bon.png");
+    //    ////Enemies
+    //Texture Goei_0 = LoadTexture("Enemies/Goei_0.png");
+    //Texture Goei_1 = LoadTexture("Enemies/Goei_1.png");
 
-    ////Player
-    Texture player_body = LoadTexture("Player/PlayerGalaga88.png");
+    //Texture Zako = LoadTexture("Enemies/Zako.png");
+    //Texture Bon = LoadTexture("Enemies/Bon.png");
 
-    ////Bullets
-    Texture player_bullet = LoadTexture("Player/PlayerBullet.png");
-    Texture enemybullet_0 = LoadTexture("Enemies/BalaEnemigo_0.png");
-    Texture enemybullet_1 = LoadTexture("Enemies/BalaEnemigo_1.png");
+    //////Player
+    //Texture player_body = LoadTexture("Player/PlayerGalaga88.png");
+
+    //////Bullets
+    //Texture player_bullet = LoadTexture("Player/PlayerBullet.png");
+    //Texture enemybullet_0 = LoadTexture("Enemies/BalaEnemigo_0.png");
+    //Texture enemybullet_1 = LoadTexture("Enemies/BalaEnemigo_1.png");
+
+    ResourceManager r;
 
     //Audio
     InitAudioDevice();      // Initialize audio device
@@ -145,7 +154,7 @@ int main()
             // Wait for 2 seconds (120 frames) before jumping to TITLE 
             if (logoTimer.CheckFinished() == true)
             {
-                UnloadTexture(GrupoDeNombreLogo);
+                UnloadTexture(r.GrupoDeNombreLogo);
                 currentScreen = TITLE;
             }
         } break;
@@ -340,7 +349,7 @@ int main()
             DrawText("Videogame Design and Development", GetScreenWidth()/100, GetScreenHeight() * 7 / 10, 45, WHITE);
             DrawText("UPC CITM TRS", GetScreenWidth() / 4, GetScreenHeight() * 8 / 10, 45, WHITE);
             DrawText("Tutor: Alejandro Paris Gomez", GetScreenWidth() / 10, GetScreenHeight() * 9 / 10, 45, WHITE);
-            DrawTextureEx(GrupoDeNombreLogo, { (float)GetScreenWidth() / 10, 0 }, 0, 2, WHITE);
+            DrawTextureEx(r.GrupoDeNombreLogo, { (float)GetScreenWidth() / 10, 0 }, 0, 2, WHITE);
         } break;
         case TITLE:
         {
@@ -350,7 +359,7 @@ int main()
             drawParticles();
 
             //Logo
-            DrawTexture(Galaga88Logo, GetScreenWidth() / 4, GetScreenHeight()/ 10, WHITE);
+            DrawTexture(r.Galaga88Logo, GetScreenWidth() / 4, GetScreenHeight()/ 10, WHITE);
 
             //Scores
             DrawText("SCORE", GetScreenWidth() / 20, GetScreenHeight() / 50, 45, WHITE);
@@ -380,18 +389,18 @@ int main()
             //// Lives Remaining
             for (int i = 0; i < player.GetLives(); i++)
             {
-                DrawTexture(player_body, 74 * i - GetScreenWidth()/ 30, GetScreenHeight() * 9/10, WHITE);
+                DrawTexture(r.player_body, 74 * i - GetScreenWidth()/ 30, GetScreenHeight() * 9/10, WHITE);
             }
 
             ////Stage Indicator
-            DrawTexture(stageindicator1, GetScreenWidth()*95/100, GetScreenHeight() * 92 / 100, WHITE);
+            DrawTexture(r.stageindicator1, GetScreenWidth()*95/100, GetScreenHeight() * 92 / 100, WHITE);
 
             //Bullets
             DrawBullet();
 
             for (int i = 0; i < playerbullets.size(); i++) //Esto deberia estar en DrawBullets
             {
-                DrawTexture(player_bullet, playerbullets[i].bullet_position.x, playerbullets[i].bullet_position.y, WHITE);
+                DrawTexture(r.player_bullet, playerbullets[i].bullet_position.x, playerbullets[i].bullet_position.y, WHITE);
             }
             
             if (hardmode == 0)
@@ -408,18 +417,18 @@ int main()
                 int x = GetRandomValue(0, 1);
                 if (x == 0)
                 {
-                    DrawTexture(enemybullet_0, enemybullets[i].bullet_position.x, enemybullets[i].bullet_position.y, WHITE);
+                    DrawTexture(r.enemybullet_0, enemybullets[i].bullet_position.x, enemybullets[i].bullet_position.y, WHITE);
                 }
                 else
                 {
-                    DrawTexture(enemybullet_1, enemybullets[i].bullet_position.x, enemybullets[i].bullet_position.y, WHITE);
+                    DrawTexture(r.enemybullet_1, enemybullets[i].bullet_position.x, enemybullets[i].bullet_position.y, WHITE);
                 }
             }
 
             //Player
             Vector2 playerActualPosition = player.GetPosition();
             if (player.GetInmortal() == false) {
-                DrawTexture(player_body, playerActualPosition.x - 74, playerActualPosition.y - 63, WHITE);
+                DrawTexture(r.player_body, playerActualPosition.x - 74, playerActualPosition.y - 63, WHITE);
             }
 
             //Enemies
@@ -508,7 +517,6 @@ int main()
 
 	// cleanup
 	// unload our texture so it can be cleaned up
-	UnloadTexture(GrupoDeNombreLogo);
 
     //Unload sounds
     UnloadSound(buttonclick);

@@ -23,6 +23,8 @@ public:
 
 	ResourceManager()
 	{
+        SearchAndSetResourceDir("resources");
+
         ////// Load textures from the resources directory
         //LOGO
         GrupoDeNombreLogo = LoadTexture("Wiki/Sprites/GrupoDeNombre.png");
