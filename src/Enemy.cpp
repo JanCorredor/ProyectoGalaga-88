@@ -26,15 +26,15 @@ void Enemy::spawnHorde(std::vector <Enemy>* manager, int num, int spawnId)
 
         if (i == 0)
         {
-            newEnemy.enemySprite = r.Goei_0;
+            newEnemy.enemySprite = "Goei";
         }
         else if (i != num -1)
         {
-            newEnemy.enemySprite = r.Zako;
+            newEnemy.enemySprite = "Zako";
         }
         else
         {
-            newEnemy.enemySprite = r.Bon;
+            newEnemy.enemySprite = "Bon";
         }
 
         manager->push_back(newEnemy);

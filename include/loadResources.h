@@ -23,7 +23,7 @@ public:
 
 	ResourceManager()
 	{
-        SearchAndSetResourceDir("resources");
+        //SearchAndSetResourceDir("resources");
 
         ////// Load textures from the resources directory
         //LOGO

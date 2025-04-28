@@ -23,7 +23,10 @@ protected:
 public:
     Enemy();
     bool inPosition[3] = {false,false,false}; //CircleStart, CricleEnd, Formation
-    Texture enemySprite;
+    typedef enum enemyType
+    {
+        "Goei" = 0, "Zako", GAMEPLAY, ENDING
+    } enemyType;
 
     void spawnHorde(std::vector <Enemy>* manager, int num, int spawnId);
 
