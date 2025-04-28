@@ -376,19 +376,19 @@ int main()
             //UI
             ////Scores
             DrawText("1UP", GetScreenWidth() / 13, GetScreenHeight() / 50, 45, YELLOW);
-            DrawText("HIGH SCORE", GetScreenWidth() /3, GetScreenHeight() / 50, 45, RED);
+            DrawText("HIGH SCORE", GetScreenWidth() / 3, GetScreenHeight() / 50, 45, RED);
 
             DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
             DrawText(TextFormat("%i", LoadHighScore(highestHighScore)), GetScreenWidth() / 3, GetScreenHeight() / 20, 45, WHITE);
-             
+
             //// Lives Remaining
             for (int i = 0; i < player.GetLives(); i++)
             {
-                DrawTexture(player_body_t, 74 * i - GetScreenWidth()/ 30, GetScreenHeight() * 9/10, WHITE);
+                DrawTexture(player_body_t, 74 * i - GetScreenWidth() / 30, GetScreenHeight() * 9 / 10, WHITE);
             }
 
             ////Stage Indicator
-            DrawTexture(stageindicator1, GetScreenWidth()*95/100, GetScreenHeight() * 92 / 100, WHITE);
+            DrawTexture(stageindicator1, GetScreenWidth() * 95 / 100, GetScreenHeight() * 92 / 100, WHITE);
 
             //Bullets
             DrawBullet();
@@ -397,7 +397,7 @@ int main()
             {
                 DrawTexture(player_bullet, playerbullets[i].bullet_position.x, playerbullets[i].bullet_position.y, WHITE);
             }
-            
+
             if (hardmode == 0)
             {
                 DrawEnemyBullet();
@@ -422,12 +422,10 @@ int main()
 
             //Player
             Vector2 playerActualPosition = player.GetPosition();
-            if (player.GetInmortal() == false) {
-                DrawTexture(player_body_t, playerActualPosition.x - 74, playerActualPosition.y - 63, WHITE);
             if (player.GetAlive() == true) {
-                DrawTexture(player_body, playerActualPosition.x - 74, playerActualPosition.y - 63, WHITE);
+                DrawTexture(player_body_t, playerActualPosition.x - 74, playerActualPosition.y - 63, WHITE);
             }
-
+            
             //Enemies
             for (int i = 0; i < enemies.size(); i++)
             {
@@ -440,18 +438,18 @@ int main()
                     }
                     else if (enemies[i].type == Zako) //Zako
                     {
-                        Vector2 Correccion = { enemies[i].getEnemyPosition().x -32, enemies[i].getEnemyPosition().y -32}; //-32 -32
+                        Vector2 Correccion = { enemies[i].getEnemyPosition().x - 32, enemies[i].getEnemyPosition().y - 32 }; //-32 -32
                         DrawTextureEx(Zako_t, Correccion, enemies[i].texture_angle, 1, WHITE);
                     }
                     else if (enemies[i].type == Bon) //Bon
                     {
-                        Vector2 Correccion = { enemies[i].getEnemyPosition().x -32, enemies[i].getEnemyPosition().y -32}; //-32 -32
+                        Vector2 Correccion = { enemies[i].getEnemyPosition().x - 32, enemies[i].getEnemyPosition().y - 32 }; //-32 -32
                         DrawTextureEx(Bon_t, Correccion, enemies[i].texture_angle, 1, WHITE);
                     }
                 }
             }
 
-        } break;
+            } break;
         case ENDING:
         {
             ClearBackground(BLACK);
@@ -480,27 +478,27 @@ int main()
             DrawText("HIT-MISS RATIO", GetScreenWidth() / 13, GetScreenHeight() / 5, 45, YELLOW);
             DrawText(TextFormat("%d %%", (char)ratio), GetScreenWidth() * 2 / 3, GetScreenHeight() / 5, 45, YELLOW); ///////////////Error: No se dibujan los decimales
 
-            DrawText("[1]", GetScreenWidth() / 13, GetScreenHeight() *3/ 10, 50, GOLD);
-            DrawText("[2]", GetScreenWidth() / 13, GetScreenHeight() *4/ 10, 45, WHITE);
-            DrawText("[3]", GetScreenWidth() / 13, GetScreenHeight() *5/ 10, 45, WHITE);
-            DrawText("[4]", GetScreenWidth() / 13, GetScreenHeight() *6/ 10, 45, WHITE);
-            DrawText("[5]", GetScreenWidth() / 13, GetScreenHeight() *7/ 10, 45, WHITE);
+            DrawText("[1]", GetScreenWidth() / 13, GetScreenHeight() * 3 / 10, 50, GOLD);
+            DrawText("[2]", GetScreenWidth() / 13, GetScreenHeight() * 4 / 10, 45, WHITE);
+            DrawText("[3]", GetScreenWidth() / 13, GetScreenHeight() * 5 / 10, 45, WHITE);
+            DrawText("[4]", GetScreenWidth() / 13, GetScreenHeight() * 6 / 10, 45, WHITE);
+            DrawText("[5]", GetScreenWidth() / 13, GetScreenHeight() * 7 / 10, 45, WHITE);
 
-            DrawText(TextFormat("%i", (char*)LoadHighScore(highestHighScore)),GetScreenWidth()/ 6,GetScreenHeight() *3/10, 50, GOLD);
-            DrawText(TextFormat("%i", (char*)LoadHighScore(secondHighScore)),GetScreenWidth() / 6,GetScreenHeight() *4/10, 40, WHITE);
-            DrawText(TextFormat("%i", (char*)LoadHighScore(thirdHighScore)),GetScreenWidth()  / 6,GetScreenHeight() *5/10, 40, WHITE);
-            DrawText(TextFormat("%i", (char*)LoadHighScore(fourthHighScore)),GetScreenWidth() / 6,GetScreenHeight() *6/10, 40, WHITE);
-            DrawText(TextFormat("%i", (char*)LoadHighScore(fifthHighScore)),GetScreenWidth()  / 6,GetScreenHeight() *7/10, 40, WHITE);
+            DrawText(TextFormat("%i", (char*)LoadHighScore(highestHighScore)), GetScreenWidth() / 6, GetScreenHeight() * 3 / 10, 50, GOLD);
+            DrawText(TextFormat("%i", (char*)LoadHighScore(secondHighScore)), GetScreenWidth() / 6, GetScreenHeight() * 4 / 10, 40, WHITE);
+            DrawText(TextFormat("%i", (char*)LoadHighScore(thirdHighScore)), GetScreenWidth() / 6, GetScreenHeight() * 5 / 10, 40, WHITE);
+            DrawText(TextFormat("%i", (char*)LoadHighScore(fourthHighScore)), GetScreenWidth() / 6, GetScreenHeight() * 6 / 10, 40, WHITE);
+            DrawText(TextFormat("%i", (char*)LoadHighScore(fifthHighScore)), GetScreenWidth() / 6, GetScreenHeight() * 7 / 10, 40, WHITE);
 
             if (hasWon == true)
             {
-                DrawText("VICTORY ACHIEVED", GetScreenWidth()  / 10, GetScreenHeight() * 16 / 20, 45, DARKGREEN);
-                DrawText("Retry?", GetScreenWidth()            / 10, GetScreenHeight() * 18 / 20, 45, GREEN);
+                DrawText("VICTORY ACHIEVED", GetScreenWidth() / 10, GetScreenHeight() * 16 / 20, 45, DARKGREEN);
+                DrawText("Retry?", GetScreenWidth() / 10, GetScreenHeight() * 18 / 20, 45, GREEN);
             }
             else
             {
                 DrawText("You DIED and LOST", GetScreenWidth() / 10, GetScreenHeight() * 16 / 20, 45, RED);
-                DrawText("Retry?", GetScreenWidth()            / 10, GetScreenHeight() * 18/ 20, 45, RED);
+                DrawText("Retry?", GetScreenWidth() / 10, GetScreenHeight() * 18 / 20, 45, RED);
             }
 
 
