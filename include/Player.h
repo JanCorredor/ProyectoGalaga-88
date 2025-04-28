@@ -13,6 +13,7 @@ private:
     Color color;
     int score = 0;
     int lives = 2;
+    bool alive = true;
     bool inmortal = false;
     Timer deathTimer;
 public:
@@ -44,6 +45,9 @@ public:
     bool GetInmortal();
     void SetInmortal(bool newInmortal);
 
+    bool GetAlive();
+    void SetAlive(bool newAlive);
+
     Timer GetTimer();
     void SetTimer(Timer newTimer);
 
@@ -55,6 +59,7 @@ public:
 
     void Death();
     bool CheckDeath();
+    void ToggleInmortal(bool state);
 
 
 };

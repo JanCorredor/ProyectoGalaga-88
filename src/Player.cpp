@@ -20,6 +20,7 @@ Player::Player(Vector2 _position, int _radius, Color _color, int _score, int _li
     this->score = _score;
     this->lives = _lives;
     this->inmortal = false;
+    this->alive = true;
     this->deathTimer;
 };
 
@@ -47,6 +48,9 @@ void Player::SetLives(int newLives) { this->lives = newLives; }
 bool Player::GetInmortal() { return this->inmortal; }
 void Player::SetInmortal(bool newInmortal) { this->inmortal = newInmortal; }
 
+bool Player::GetAlive() { return this->alive; }
+void Player::SetAlive(bool newAlive) { this->alive = newAlive; }
+
 Timer Player::GetTimer() { return this->deathTimer; }
 void Player::SetTimer(Timer newTimer) {}
 
@@ -63,7 +67,7 @@ void Player::Move()
 
     //Player Movement
     int player_speed = 9;
-    if (this->inmortal == false)
+    if (this->alive == true)
     {
         if (IsKeyDown(KEY_LEFT))
         {
@@ -111,8 +115,9 @@ void Player::Shoot(std::vector <Bullet>* playerbullets)
 void Player::Death()
 {
     this->lives = this->lives -1;
+    this->alive = false;
     this->deathTimer.StartTimer(3.0);
-    this->inmortal = true;
+    this->ToggleInmortal(true);
 
     //Animation
     this->color = RED;
@@ -131,11 +136,17 @@ bool Player::CheckDeath()
 {
     if (this->deathTimer.CheckFinished() == true) 
     {
-        this->inmortal = false;
+        this->ToggleInmortal(false);
+        this->alive = true;
         return false;
     }
     else 
     {
         return true;
     }
+}
+
+void Player::ToggleInmortal(bool state) 
+{
+    this->inmortal = state;
 }

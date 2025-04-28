@@ -173,7 +173,6 @@ int main()
         } break;
         case GAMEPLAY:
         {
-
             if (timerSpawnEnemies.CheckFinished() == true && oleadasSpawneadas < 5) 
             {
                 callEnemyFunctions.spawnHorde(&enemies, 8, GetRandomValue(1, 6));
@@ -231,7 +230,7 @@ int main()
             //Shoot
             if (IsKeyPressed(KEY_SPACE))
             {
-                if (player.GetInmortal() == false) {
+                if (player.GetAlive() == true) {
                     PlaySound(playerShoot);
                     player_bullet_counter += 1;
                     player.Shoot(&playerbullets);
@@ -425,6 +424,8 @@ int main()
             Vector2 playerActualPosition = player.GetPosition();
             if (player.GetInmortal() == false) {
                 DrawTexture(player_body_t, playerActualPosition.x - 74, playerActualPosition.y - 63, WHITE);
+            if (player.GetAlive() == true) {
+                DrawTexture(player_body, playerActualPosition.x - 74, playerActualPosition.y - 63, WHITE);
             }
 
             //Enemies
@@ -604,7 +605,7 @@ void DrawEnemyBullet()
         if (CheckCollisionCircles(enemybullets[i].bullet_position, enemybullets[i].bullet_radius, player.GetPosition(), player.GetRadius()))
         {
             enemybullets.erase(enemybullets.begin()+i);
-            if (player.GetInmortal() == false) 
+            if (player.GetAlive() == true && player.GetInmortal() == false)
             {
                 player.Death();
             }
@@ -641,11 +642,23 @@ void DrawGodShot()
         if (CheckCollisionCircles(enemybullets[i].bullet_position, enemybullets[i].bullet_radius, player.GetPosition(), player.GetRadius()))
         {
             enemybullets.erase(enemybullets.begin() + i);
-            if (player.GetInmortal() == false)
+            if (player.GetAlive() == true && player.GetInmortal() == false)
             {
                 player.Death();
             }
         }
     }
     player.CheckDeath();
+}
+
+void GodMode() 
+{
+    if (IsKeyPressed(KEY_I)) 
+    {
+        player.ToggleInmortal(true);
+    }
+    if (IsKeyPressed(KEY_O)) 
+    {
+        player.ToggleInmortal(false);
+    }
 }
