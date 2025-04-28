@@ -49,6 +49,7 @@ std::vector <Bullet> enemybullets;
 
 void DrawEnemyBullet();
 void DrawGodShot(); //Harmode
+void CheckGodMode();
 
 //-------------------------------------------------------------------------------------
 // Main
@@ -174,6 +175,8 @@ int main()
         case GAMEPLAY:
         {
             if (timerSpawnEnemies.CheckFinished() == true && oleadasSpawneadas <= 5) 
+            CheckGodMode();
+            if (timerSpawnEnemies.CheckFinished() == true && oleadasSpawneadas < 5) 
             {
                 callEnemyFunctions.spawnHorde(&enemies, 8, GetRandomValue(1, 6));
                 oleadasSpawneadas++;
@@ -212,7 +215,10 @@ int main()
                         if (enemyAttackTimer.CheckFinished() && enemies[rnd].isEnemyAlive() == true && enemies[rnd].inPosition[2] == true)
                         {
                             enemies[rnd].shoot(&enemybullets, player);
+                            if (hardmode) { enemyAttackTimer.StartTimer(0.1); }
+                            else {
                             enemyAttackTimer.StartTimer(1.0);
+                            }
                         }
                     }
                 }
@@ -653,7 +659,7 @@ void DrawGodShot()
     player.CheckDeath();
 }
 
-void GodMode() 
+void CheckGodMode() 
 {
     if (IsKeyPressed(KEY_I)) 
     {
