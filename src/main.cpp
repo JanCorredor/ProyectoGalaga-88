@@ -173,7 +173,7 @@ int main()
         } break;
         case GAMEPLAY:
         {
-            if (timerSpawnEnemies.CheckFinished() == true && oleadasSpawneadas < 5) 
+            if (timerSpawnEnemies.CheckFinished() == true && oleadasSpawneadas <= 5) 
             {
                 callEnemyFunctions.spawnHorde(&enemies, 8, GetRandomValue(1, 6));
                 oleadasSpawneadas++;
@@ -243,7 +243,7 @@ int main()
                 for (int j = 0; j < playerbullets.size(); j++)
                 {
                     if (enemies[i].isEnemyAlive() == true) {
-                        if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius, enemies[i].getEnemyPosition(), enemies[i].getEnemyRadius()))
+                        if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius, enemies[i].enemy_texture_position, enemies[i].getEnemyRadius()))
                         {
                             player.SumScore(100);
                             hit_counter++;
@@ -272,10 +272,11 @@ int main()
                     }
                 }
             }
-            if (allDead == true && enemies.empty() == false)
+            if (allDead == true && enemies.empty() == false && oleadasSpawneadas == 5)
             {
-                currentScreen = ENDING;
+                oleadasSpawneadas = 0;
                 hasWon = true;
+                currentScreen = ENDING;
             }
 
             //Score
@@ -435,16 +436,19 @@ int main()
                     {
                         Vector2 Correccion = { enemies[i].getEnemyPosition().x - 33, enemies[i].getEnemyPosition().y - 37 }; //-33 -37
                         DrawTextureEx(Goei_0_t, Correccion, enemies[i].texture_angle, 0.5, WHITE);
+                        enemies[i].enemy_texture_position = Correccion;
                     }
                     else if (enemies[i].type == Zako) //Zako
                     {
                         Vector2 Correccion = { enemies[i].getEnemyPosition().x - 32, enemies[i].getEnemyPosition().y - 32 }; //-32 -32
                         DrawTextureEx(Zako_t, Correccion, enemies[i].texture_angle, 1, WHITE);
+                        enemies[i].enemy_texture_position = Correccion;
                     }
                     else if (enemies[i].type == Bon) //Bon
                     {
-                        Vector2 Correccion = { enemies[i].getEnemyPosition().x - 32, enemies[i].getEnemyPosition().y - 32 }; //-32 -32
+                        Vector2 Correccion = { enemies[i].getEnemyPosition().x - 32 , enemies[i].getEnemyPosition().y - 32 }; //-32 -32
                         DrawTextureEx(Bon_t, Correccion, enemies[i].texture_angle, 1, WHITE);
+                        enemies[i].enemy_texture_position = Correccion;
                     }
                 }
             }

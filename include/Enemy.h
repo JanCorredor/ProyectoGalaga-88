@@ -30,6 +30,7 @@ public:
     
     enemyType type;
     float texture_angle = 0;
+    Vector2 enemy_texture_position;
 
     void spawnHorde(std::vector <Enemy>* manager, int num, int spawnId);
 

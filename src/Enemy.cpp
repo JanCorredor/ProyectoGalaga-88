@@ -8,15 +8,31 @@
 #include "Enemy.h"
 
 Enemy::Enemy() {
-    this->enemy_radius = 50; this->enemy_color = RED;  this->enemy_alive = true; this->enemy_speed = { 5,5 }; this->angle = 0;
+    this->enemy_radius = 64; this->enemy_color = RED;  this->enemy_alive = true; this->enemy_speed = { 5,5 }; this->angle = 0;
 }
 
 void Enemy::spawnHorde(std::vector <Enemy>* manager, int num, int spawnId)
 {
     for (int i = 0; i < num; i++)
     {
-        float space_manager = (1+i*0.2);
-        Vector2 spaceBetween = { space_manager * startingPositions(spawnId).x, space_manager *startingPositions(spawnId).y };
+        Vector2 spaceBetween;
+        if (spawnId <= 2) //Up
+        {
+            spaceBetween = { startingPositions(spawnId).x * 0, startingPositions(spawnId).y * i / 10}; // -
+        }
+        else if (spawnId == 3) //Center Left
+        {
+            spaceBetween = { startingPositions(spawnId).x * i / 10, startingPositions(spawnId).y * 0 }; // -
+        }
+        else if (spawnId == 4) //Right
+        {
+            spaceBetween = { startingPositions(spawnId).x * i / 10, startingPositions(spawnId).y * 0 };
+        }
+        else //Lower
+        {
+            spaceBetween = { startingPositions(spawnId).x * 0, startingPositions(spawnId).y * i / 10 };
+        }
+
         Enemy newEnemy;
         newEnemy.setEnemyPosition(newEnemy.startingPositions(spawnId).x + spaceBetween.x, newEnemy.startingPositions(spawnId).y + spaceBetween.y);
 
@@ -147,11 +163,13 @@ Vector2 Enemy::semiCirclePoints()
     if (distanceLeft <= distanceRight)
     {
         this->angle = 90;
+        texture_angle = 180;
         return LeftPoint;
     }
     else
     {
         this->angle = 90;
+        texture_angle = 180;
         return RightPoint;
     }
 }
@@ -176,6 +194,7 @@ void Enemy::semiCircleMovement()
     }
 
     this->angle += 0.1;
+    texture_angle += 7.5;
 
     if ((positionAdjustments + radius) - this->enemy_position.x < tolerance || this->enemy_position.x - (GetScreenWidth() - (positionAdjustments + radius)) < tolerance)
     {
