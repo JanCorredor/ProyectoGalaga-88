@@ -9,7 +9,10 @@
 #define tolerance 5
 #define positionAdjustments 100
 
-
+typedef enum enemyType
+{
+    Goei = 0, Zako, Bon, Bos
+} enemyType;
 
 class Enemy
 {
@@ -20,13 +23,13 @@ protected:
     bool enemy_alive;
     Vector2 enemy_speed;
     float angle;
+
 public:
     Enemy();
     bool inPosition[3] = {false,false,false}; //CircleStart, CricleEnd, Formation
-    typedef enum enemyType
-    {
-        "Goei" = 0, "Zako", GAMEPLAY, ENDING
-    } enemyType;
+    
+    enemyType type;
+    float texture_angle = 0;
 
     void spawnHorde(std::vector <Enemy>* manager, int num, int spawnId);
 
@@ -41,6 +44,7 @@ public:
     Vector2 getEnemyPosition();
     int getEnemyRadius();
     bool isEnemyAlive();
+    float getAngle();
 
     void setEnemyPosition(Vector2 v2);
     void setEnemyPosition(int x, int y);

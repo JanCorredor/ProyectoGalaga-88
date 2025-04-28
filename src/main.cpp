@@ -7,7 +7,6 @@
 #include"Enemy.h"
 #include "Defines.h"
 #include "HighScoreStorage.h"
-//#include "loadResources.h"
 
 using namespace std;
 
@@ -63,11 +62,8 @@ int main()
 	InitWindow(800, 1280, "Galaga'88"); // 1280, 800
 
 
-
     GameScreen currentScreen = LOGO;
 
-    
-    
     // Utility function from resource_dir.h to find the resources folder and set it as the current working directory so we can load from it
 	SearchAndSetResourceDir("resources");
 
@@ -84,14 +80,14 @@ int main()
     Texture stageindicator1 = LoadTexture("HUD/Galaga_'88_icon_stage_1.png");
 
         ////Enemies
-    Texture Goei_0 = LoadTexture("Enemies/Goei_0.png");
-    Texture Goei_1 = LoadTexture("Enemies/Goei_1.png");
+    Texture Goei_0_t = LoadTexture("Enemies/Goei_0.png");
+    Texture Goei_1_t = LoadTexture("Enemies/Goei_1.png");
 
-    Texture Zako = LoadTexture("Enemies/Zako.png");
-    Texture Bon = LoadTexture("Enemies/Bon.png");
+    Texture Zako_t = LoadTexture("Enemies/Zako.png");
+    Texture Bon_t = LoadTexture("Enemies/Bon.png");
 
     ////Player
-    Texture player_body = LoadTexture("Player/PlayerGalaga88.png");
+    Texture player_body_t = LoadTexture("Player/PlayerGalaga88.png");
 
     ////Bullets
     Texture player_bullet = LoadTexture("Player/PlayerBullet.png");
@@ -389,7 +385,7 @@ int main()
             //// Lives Remaining
             for (int i = 0; i < player.GetLives(); i++)
             {
-                DrawTexture(player_body, 74 * i - GetScreenWidth()/ 30, GetScreenHeight() * 9/10, WHITE);
+                DrawTexture(player_body_t, 74 * i - GetScreenWidth()/ 30, GetScreenHeight() * 9/10, WHITE);
             }
 
             ////Stage Indicator
@@ -428,7 +424,7 @@ int main()
             //Player
             Vector2 playerActualPosition = player.GetPosition();
             if (player.GetInmortal() == false) {
-                DrawTexture(player_body, playerActualPosition.x - 74, playerActualPosition.y - 63, WHITE);
+                DrawTexture(player_body_t, playerActualPosition.x - 74, playerActualPosition.y - 63, WHITE);
             }
 
             //Enemies
@@ -436,20 +432,20 @@ int main()
             {
                 if (enemies[i].isEnemyAlive() == true)
                 {
-                    if (enemies[i].enemySprite.id == 9) //Goei
+                    if (enemies[i].type == Goei) //Goei
                     {
-                        Vector2 Correccion = { enemies[i].getEnemyPosition().x - 33, enemies[i].getEnemyPosition().y - 37 }; //-70 -74
-                        DrawTextureEx(enemies[i].enemySprite, Correccion, 0, 0.5, WHITE);
+                        Vector2 Correccion = { enemies[i].getEnemyPosition().x - 33, enemies[i].getEnemyPosition().y - 37 }; //-33 -37
+                        DrawTextureEx(Goei_0_t, Correccion, enemies[i].texture_angle, 0.5, WHITE);
                     }
-                    else if (enemies[i].enemySprite.id == 11) //Zako
+                    else if (enemies[i].type == Zako) //Zako
                     {
-                        Vector2 Correccion = { enemies[i].getEnemyPosition().x, enemies[i].getEnemyPosition().y}; //-70 -74
-                        DrawTextureEx(enemies[i].enemySprite, Correccion, 180, 1, WHITE);
+                        Vector2 Correccion = { enemies[i].getEnemyPosition().x -32, enemies[i].getEnemyPosition().y -32}; //-32 -32
+                        DrawTextureEx(Zako_t, Correccion, enemies[i].texture_angle, 1, WHITE);
                     }
-                    else if (enemies[i].enemySprite.id == 12) //Bon
+                    else if (enemies[i].type == Bon) //Bon
                     {
-                        Vector2 Correccion = { enemies[i].getEnemyPosition().x, enemies[i].getEnemyPosition().y}; //-70 -74
-                        DrawTextureEx(enemies[i].enemySprite, Correccion, 0, 1, WHITE);
+                        Vector2 Correccion = { enemies[i].getEnemyPosition().x -32, enemies[i].getEnemyPosition().y -32}; //-32 -32
+                        DrawTextureEx(Bon_t, Correccion, enemies[i].texture_angle, 1, WHITE);
                     }
                 }
             }

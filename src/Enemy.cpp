@@ -7,10 +7,6 @@
 
 #include "Enemy.h"
 
-#include "loadResources.h"
-
-ResourceManager r;
-
 Enemy::Enemy() {
     this->enemy_radius = 50; this->enemy_color = RED;  this->enemy_alive = true; this->enemy_speed = { 5,5 }; this->angle = 0;
 }
@@ -26,15 +22,15 @@ void Enemy::spawnHorde(std::vector <Enemy>* manager, int num, int spawnId)
 
         if (i == 0)
         {
-            newEnemy.enemySprite = "Goei";
+            newEnemy.type = Goei;
         }
         else if (i != num -1)
         {
-            newEnemy.enemySprite = "Zako";
+            newEnemy.type = Zako;
         }
         else
         {
-            newEnemy.enemySprite = "Bon";
+            newEnemy.type = Bon;
         }
 
         manager->push_back(newEnemy);
@@ -104,13 +100,14 @@ Vector2 Enemy::startingPositions(int spawnId)
     float centroVertical = GetScreenHeight() / 2;
     float centroHorizonal = GetScreenWidth() / 2;
 
-    if (spawnId == 0) //Upper Left
+    if (spawnId == 0) //Upper Center
+    {
+        return { centroHorizonal, -100 }; 
+        
+    }
+    if (spawnId == 1) //Upper Left
     {
         return { -positionAdjustments, -100 };
-    }
-    if (spawnId == 1) //Upper Center
-    {
-        return { centroHorizonal, -100};
     }
     if (spawnId == 2) //Upper Right
     {
@@ -118,18 +115,22 @@ Vector2 Enemy::startingPositions(int spawnId)
     }
     if (spawnId == 3) //Center Left
     {
+        texture_angle = 90;
         return {-positionAdjustments , centroVertical};
     }
     if (spawnId == 4) //Center Right
     {
+        texture_angle = -90;
         return { (float)GetScreenWidth() + positionAdjustments, centroVertical };
     }
     if (spawnId == 5) //Lower Left
     {
+        texture_angle = 180;
         return { -positionAdjustments, (float)GetScreenHeight()-positionAdjustments };
     }
     if (spawnId == 6) //Lower Right
     {
+        texture_angle = 180;
         return { (float)GetScreenWidth() + positionAdjustments, (float)GetScreenHeight() - positionAdjustments };
     }
 }
@@ -225,6 +226,7 @@ void Enemy::shoot(std::vector <Bullet>* bulletManager, Player player)
 Vector2 Enemy::getEnemyPosition() { return enemy_position; }
 int Enemy::getEnemyRadius() { return enemy_radius; }
 bool Enemy::isEnemyAlive() { return enemy_alive; }
+float Enemy::getAngle() { return angle; }
 
 void Enemy::setEnemyPosition(Vector2 v2) { this->enemy_position = v2; }
 void Enemy::setEnemyPosition(int x, int y) { this->enemy_position.x = x; this->enemy_position.y = y; }
