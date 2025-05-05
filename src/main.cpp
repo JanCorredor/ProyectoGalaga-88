@@ -32,6 +32,8 @@ bool hardmode = false;
 bool hasWon;
 bool updatedScore = false;
 
+bool isClean = false;
+
 //-------------------------------------------------------------------------------------
 // Declaracion de funciones
 //-------------------------------------------------------------------------------------
@@ -302,24 +304,27 @@ int main()
         } break;
         case ENDING:
         {
-            if (updatedScore == false)
+            if (isClean = false) 
             {
-                UpdateHighScore(player.GetScore());
-                updatedScore = true;
-            }
+                if (updatedScore == false)
+                {
+                    UpdateHighScore(player.GetScore());
+                    updatedScore = true;
+                }
 
-            if (hasWon == true)
-            {
-                PlaySound(GalagaWin);
+                if (hasWon == true)
+                {
+                    PlaySound(GalagaWin);
+                }
+                else
+                {
+                    PlaySound(GalagaDefeat);
+                }
+                enemybullets.clear();
+                playerbullets.clear();
+                enemies.clear();
+                isClean = true;
             }
-            else
-            {
-                PlaySound(GalagaDefeat);
-            }
-
-            enemybullets.clear();
-            playerbullets.clear();
-            enemies.clear();
 
             if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
             {
