@@ -19,7 +19,7 @@ using namespace std;
 //-------------------------------------------------------------------------------------
 typedef enum GameScreen 
 { 
-	LOGO = 0, TITLE, GAMEPLAY, ENDING 
+	LOGO = 0, TITLE, GAMEPLAY,STAGE2, ENDING 
 } GameScreen;
 
 //-------------------------------------------------------------------------------------
@@ -52,6 +52,7 @@ std::vector <Bullet> enemybullets;
 void DrawEnemyBullet();
 void DrawGodShot(); //Harmode
 void CheckGodMode();
+void ChangeStage(Timer timerChangeStage);
 
 //-------------------------------------------------------------------------------------
 // Main
@@ -133,10 +134,14 @@ int main()
     enemyAttackTimer.StartTimer(10.0);
     Timer logoTimer;
     logoTimer.StartTimer(2.0);
-
     Timer timerSpawnEnemies;
     timerSpawnEnemies.StartTimer(5.0);
+    Timer timerChangeStage;
+    Timer timerStageTitle;
+
     int oleadasSpawneadas = 0;
+    bool activadorTimerStageUnoTitle = false;
+    bool activadorTimerStageDosTitle = false;
     //-------------------------------------------------------------------------------------
     // Game Loop
     //-------------------------------------------------------------------------------------
@@ -287,7 +292,7 @@ int main()
             {
                 oleadasSpawneadas = 0;
                 hasWon = true;
-                currentScreen = ENDING;
+                currentScreen = STAGE2;
             }
 
             //Score
@@ -305,6 +310,141 @@ int main()
             }
 
         } break;
+        case STAGE2:
+        {
+            ChangeStage(timerChangeStage);
+
+            if (timerChangeStage.CheckFinished() == true) 
+            {
+                   
+            }
+
+            CheckGodMode();
+            if (timerSpawnEnemies.CheckFinished() == true && oleadasSpawneadas < 5)
+            {
+                callEnemyFunctions.spawnHorde(&enemies, 8, GetRandomValue(1, 6));
+                oleadasSpawneadas++;
+                timerSpawnEnemies.StartTimer(5.0);
+            }
+
+            for (int count = 0; count < enemies.size(); count++)
+            {
+                if (enemies[count].isEnemyAlive() == true)
+                {
+                    if (enemies[count].inPosition[0] == false)
+                    {
+                        enemies[count].moveToInAStraightLine(enemies[count].semiCirclePoints(), 0);
+                    }
+                    else if (enemies[count].inPosition[1] == false)
+                    {
+                        enemies[count].semiCircleMovement();
+                    }
+                    else if (enemies[count].inPosition[2] == false)
+                    {
+                        int j = count / 10;
+                        int i = count - (j * 10);
+                        enemies[count].moveToInAStraightLine(enemies[count].formationPositions(i, j), 2);
+                    }
+                    else if (enemies[count].inPosition[2] == true)
+                    {
+                        int rndmax = 0;
+                        for (int i = 0; i < enemies.size(); i++)
+                        {
+                            if (enemies[i].inPosition[2] == true)
+                            {
+                                rndmax++;
+                            }
+                        }
+                        int rnd = GetRandomValue(0, rndmax - 1);
+                        if (enemyAttackTimer.CheckFinished() && enemies[rnd].isEnemyAlive() == true && enemies[rnd].inPosition[2] == true)
+                        {
+                            enemies[rnd].shoot(&enemybullets, player);
+                            if (hardmode) { enemyAttackTimer.StartTimer(0.1); }
+                            else {
+                                enemyAttackTimer.StartTimer(1.0);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    enemies[count].inPosition[2] = true;
+                }
+
+            }
+
+
+            //Player
+            player.Move();
+
+            //Shoot
+            if (IsKeyPressed(KEY_SPACE))
+            {
+                if (player.GetAlive() == true) {
+                    PlaySound(playerShoot);
+                    player_bullet_counter += 1;
+                    player.Shoot(&playerbullets);
+                }
+            }
+
+            //Enemy Collisions
+            for (int i = 0; i < enemies.size(); i++)
+            {
+                for (int j = 0; j < playerbullets.size(); j++)
+                {
+                    if (enemies[i].isEnemyAlive() == true) {
+                        if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius, enemies[i].enemy_texture_position, enemies[i].getEnemyRadius()))
+                        {
+                            player.SumScore(100);
+                            hit_counter++;
+                            PlaySound(enemyDeathExplosion);
+                            enemies[i].setEnemyLife(false);
+                            playerbullets.erase(playerbullets.begin() + j);
+                        }
+                    }
+                }
+            }
+
+            //Winning/Losing Conditions
+            bool allDead = true;
+            if (player.GetLives() < 0)
+            {
+                currentScreen = ENDING;
+                hasWon = false;
+            }
+            for (int i = 0; i < enemies.size(); i++)
+            {
+                if (enemies.empty() == false)
+                {
+                    if (enemies[i].isEnemyAlive() == true)
+                    {
+                        allDead = false;
+                    }
+                }
+            }
+            if (allDead == true && enemies.empty() == false && oleadasSpawneadas == 5)
+            {
+                oleadasSpawneadas = 0;
+                hasWon = true;
+                currentScreen = ENDING;
+            }
+
+            //Score
+            if (player.GetScore() > LoadHighScore(highestHighScore))
+            {
+                if (updatedScore == false)
+                {
+                    UpdateHighScore(player.GetScore());
+                    updatedScore = true;
+                }
+                else
+                {
+                    SaveNewHighScore(highestHighScore, player.GetScore());
+                }
+            }
+
+
+        }break;
         case ENDING:
         {
             if (isClean = false)
@@ -348,7 +488,6 @@ int main()
         //DRAWING
         //-------------------------------------------------------------------------------------
 		BeginDrawing();
-
 
         switch (currentScreen)
         {
@@ -467,8 +606,115 @@ int main()
                     }
                 }
             }
+            if (activadorTimerStageUnoTitle == false) 
+            {
+                timerStageTitle.StartTimer(2.0);
+                activadorTimerStageUnoTitle = true;
+            }
+            if (timerStageTitle.CheckFinished() == false)
+            {
+                DrawText("STAGE 1", GetScreenWidth()*9 / 24, GetScreenHeight() / 3, 45, WHITE);
+            }
+
 
             } break;
+        case STAGE2:
+        {
+            ClearBackground(BLACK);
+
+            //Particulas
+            drawParticles();
+
+            //UI
+            ////Scores
+            DrawText("1UP", GetScreenWidth() / 13, GetScreenHeight() / 50, 45, YELLOW);
+            DrawText("HIGH SCORE", GetScreenWidth() / 3, GetScreenHeight() / 50, 45, RED);
+
+            DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
+            DrawText(TextFormat("%i", LoadHighScore(highestHighScore)), GetScreenWidth() / 3, GetScreenHeight() / 20, 45, WHITE);
+
+            //// Lives Remaining
+            for (int i = 0; i < player.GetLives(); i++)
+            {
+                DrawTexture(player_body_t, 74 * i - GetScreenWidth() / 30, GetScreenHeight() * 9 / 10, WHITE);
+            }
+
+            ////Stage Indicator
+            DrawTexture(stageindicator1, GetScreenWidth() * 95 / 100, GetScreenHeight() * 92 / 100, WHITE);
+
+            //Bullets
+            DrawBullet();
+
+            for (int i = 0; i < playerbullets.size(); i++) //Esto deberia estar en DrawBullets
+            {
+                DrawTexture(player_bullet, playerbullets[i].bullet_position.x, playerbullets[i].bullet_position.y, WHITE);
+            }
+
+            if (hardmode == 0)
+            {
+                DrawEnemyBullet();
+            }
+            else
+            {
+                DrawGodShot();
+            }
+
+            for (int i = 0; i < enemybullets.size(); i++) //Esto deberia estar en DrawBullets
+            {
+                int x = GetRandomValue(0, 1);
+                if (x == 0)
+                {
+                    DrawTexture(enemybullet_0, enemybullets[i].bullet_position.x, enemybullets[i].bullet_position.y, WHITE);
+                }
+                else
+                {
+                    DrawTexture(enemybullet_1, enemybullets[i].bullet_position.x, enemybullets[i].bullet_position.y, WHITE);
+                }
+            }
+
+            //Player
+            Vector2 playerActualPosition = player.GetPosition();
+            if (player.GetAlive() == true) {
+                DrawTexture(player_body_t, playerActualPosition.x - 74, playerActualPosition.y - 63, WHITE);
+            }
+
+            //Enemies
+            for (int i = 0; i < enemies.size(); i++)
+            {
+                if (enemies[i].isEnemyAlive() == true)
+                {
+                    if (enemies[i].type == Goei) //Goei
+                    {
+                        Vector2 Correccion = { enemies[i].getEnemyPosition().x - 33, enemies[i].getEnemyPosition().y - 37 }; //-33 -37
+                        DrawTextureEx(Goei_0_t, Correccion, enemies[i].texture_angle, 0.5, WHITE);
+                        enemies[i].enemy_texture_position = Correccion;
+                    }
+                    else if (enemies[i].type == Zako) //Zako
+                    {
+                        Vector2 Correccion = { enemies[i].getEnemyPosition().x - 32, enemies[i].getEnemyPosition().y - 32 }; //-32 -32
+                        DrawTextureEx(Zako_t, Correccion, enemies[i].texture_angle, 1, WHITE);
+                        enemies[i].enemy_texture_position = Correccion;
+                    }
+                    else if (enemies[i].type == Bon) //Bon
+                    {
+                        Vector2 Correccion = { enemies[i].getEnemyPosition().x - 32 , enemies[i].getEnemyPosition().y - 32 }; //-32 -32
+                        DrawTextureEx(Bon_t, Correccion, enemies[i].texture_angle, 1, WHITE);
+                        enemies[i].enemy_texture_position = Correccion;
+                    }
+                }
+            }
+            if (activadorTimerStageDosTitle == false)
+            {
+                timerStageTitle.StartTimer(2.0);
+                activadorTimerStageDosTitle = true;
+            }
+            if (timerStageTitle.CheckFinished() == false)
+            {
+                DrawText("STAGE 2", GetScreenWidth() * 9 / 24, GetScreenHeight() / 3, 45, WHITE);
+            }
+
+
+        } break;
         case ENDING:
         {
             ClearBackground(BLACK);
@@ -628,6 +874,16 @@ void DrawGodShot()
         }
     }
     player.CheckDeath();
+}
+
+void ChangeStage(Timer timerChangeStage)
+{
+    timerChangeStage.StartTimer(5.0f);
+    //Animation
+    if (timerChangeStage.CheckFinished() == true) 
+    {
+        
+    }
 }
 
 void CheckGodMode() 

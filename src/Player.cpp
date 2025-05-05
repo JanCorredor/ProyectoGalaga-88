@@ -122,14 +122,6 @@ void Player::Death()
     //Animation
     this->color = RED;
 
-    if (this->lives < 0) 
-    {
-    //Gameover
-    }
-    else {
-        
-    }
-
 }
 
 bool Player::CheckDeath() 
