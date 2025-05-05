@@ -3,7 +3,7 @@
 #define MAXPARTICLES 200  //Particles in screen
 Particle particles[MAXPARTICLES];
 
-void createParticles()
+void CreateParticles()
 {
     Color particle_colors[6] = { GREEN, SKYBLUE, BLUE, RED, WHITE, LIGHTGRAY }; //Particles Possible Colors
 
@@ -15,7 +15,7 @@ void createParticles()
     }
 }
 
-void drawParticles()
+void DrawParticles()
 {
     Color particle_colors[6] = { GREEN, SKYBLUE, BLUE, RED, WHITE, LIGHTGRAY }; //Particles Possible Colors
 

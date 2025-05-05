@@ -11,30 +11,30 @@ Enemy::Enemy() {
     this->enemy_radius = 64; this->enemy_alive = true; this->enemy_speed = { 5,5 }; this->angle = 0;
 }
 
-void Enemy::spawnHorde(std::vector <Enemy>* manager, int num, int spawnId)
+void Enemy::SpawnHorde(std::vector <Enemy>* manager, int num, int spawnId)
 {
     for (int i = 0; i < num; i++)
     {
         Vector2 spaceBetween;
         if (spawnId <= 2) //Up
         {
-            spaceBetween = { startingPositions(spawnId).x * 0, startingPositions(spawnId).y * i / 10}; // -
+            spaceBetween = { StartingPositions(spawnId).x * 0, StartingPositions(spawnId).y * i / 10}; // -
         }
         else if (spawnId == 3) //Center Left
         {
-            spaceBetween = { startingPositions(spawnId).x * i / 10, startingPositions(spawnId).y * 0 }; // -
+            spaceBetween = { StartingPositions(spawnId).x * i / 10, StartingPositions(spawnId).y * 0 }; // -
         }
         else if (spawnId == 4) //Right
         {
-            spaceBetween = { startingPositions(spawnId).x * i / 10, startingPositions(spawnId).y * 0 };
+            spaceBetween = { StartingPositions(spawnId).x * i / 10, StartingPositions(spawnId).y * 0 };
         }
         else //Lower
         {
-            spaceBetween = { startingPositions(spawnId).x * 0, startingPositions(spawnId).y * i / 10 };
+            spaceBetween = { StartingPositions(spawnId).x * 0, StartingPositions(spawnId).y * i / 10 };
         }
 
         Enemy newEnemy;
-        newEnemy.setEnemyPosition(newEnemy.startingPositions(spawnId).x + spaceBetween.x, newEnemy.startingPositions(spawnId).y + spaceBetween.y);
+        newEnemy.SetEnemyPosition(newEnemy.StartingPositions(spawnId).x + spaceBetween.x, newEnemy.StartingPositions(spawnId).y + spaceBetween.y);
 
         if (i == 0)
         {
@@ -53,7 +53,7 @@ void Enemy::spawnHorde(std::vector <Enemy>* manager, int num, int spawnId)
     }
 }
 
-void Enemy::moveToInAStraightLine(Vector2 destination, int positionId)
+void Enemy::MoveToInAStraightLine(Vector2 destination, int positionId)
 {
     float distanceX = abs(this->enemy_position.x - destination.x);
     float distanceY = abs(this->enemy_position.y - destination.y);
@@ -105,12 +105,12 @@ void Enemy::moveToInAStraightLine(Vector2 destination, int positionId)
     }
 }
 
-Vector2 Enemy::startingPositions(int spawnId)
+Vector2 Enemy::StartingPositions(int spawnId)
 {
     //Debug Purposes && FailSave
-    if (spawnId >= 7)
+    if (spawnId >= 5)
     {
-        spawnId = GetRandomValue(0,6);
+        spawnId = GetRandomValue(0,4);
     }
 
     float centroVertical = GetScreenHeight() / 2;
@@ -139,19 +139,9 @@ Vector2 Enemy::startingPositions(int spawnId)
         texture_angle = -90;
         return { (float)GetScreenWidth() + positionAdjustments, centroVertical };
     }
-    if (spawnId == 5) //Lower Left
-    {
-        texture_angle = 180;
-        return { -positionAdjustments, (float)GetScreenHeight()-positionAdjustments };
-    }
-    if (spawnId == 6) //Lower Right
-    {
-        texture_angle = 180;
-        return { (float)GetScreenWidth() + positionAdjustments, (float)GetScreenHeight() - positionAdjustments };
-    }
 }
 
-Vector2 Enemy::semiCirclePoints()
+Vector2 Enemy::GetSemiCirclePoints()
 {
     int verticalCirclePosition = GetScreenHeight() / 2;
     Vector2 LeftPoint = { positionAdjustments, verticalCirclePosition};
@@ -174,7 +164,7 @@ Vector2 Enemy::semiCirclePoints()
     }
 }
 
-void Enemy::semiCircleMovement()
+void Enemy::SemiCircleMovement()
 {
     int radius = 15;
     int verticalCirclePosition = GetScreenHeight() / 2;
@@ -206,7 +196,7 @@ void Enemy::semiCircleMovement()
 
 }
 
-Vector2 Enemy::formationPositions(int fila, int columna)     //Vector2 enemiesFormationPositions[10][6];
+Vector2 Enemy::GetFormationPositions(int fila, int columna)     //Vector2 enemiesFormationPositions[10][6];
 {
     Vector2 formationPosition;
 
@@ -238,32 +228,33 @@ void Enemy::Launch(Player p)
         if (this->type == Zako)
         {
             int radius = 20;
-            if (this->enemy_position.y + 3*radius < p.GetPosition().y && this->aux == 0)
+            this->angle = 0;
+            if ((this->enemy_position.y + 2 * radius) < p.GetPosition().y && this->aux == 0)
             {
                 this->enemy_position.y += speed; // 10 
             }
-            else if (this->angle < 36)
+            else if (this->angle < 36) //Hardmode
             {
                 this->aux = 1;
 
-                this->enemy_position.x += cos(this->angle) * radius;
+                this->enemy_position.x += cos(this->angle) * radius/4;
                 this->enemy_position.y += sin(this->angle) * radius;
 
                 this->angle += 0.1;
                 this->texture_angle += 7.5;
             }
-            else if (this->enemy_position.y >= GetScreenHeight() && this->angle >= 36)
-            {
-                this->enemy_position.y = -10;
-                this->angle = 0;
-                this->texture_angle = 0;
-                this->aux = 0;
-                enemy_color = RED;
-            }
-            else
-            {
-                this->enemy_position.y += speed; 
-            }
+            //else if (this->enemy_position.y >= GetScreenHeight() && this->angle >= 36)
+            //{
+            //    this->enemy_position.y = -10;
+            //    this->angle = 0;
+            //    this->texture_angle = 0;
+            //    this->aux = 0;
+            //    enemy_color = RED;
+            //}
+            //else
+            //{
+            //    this->enemy_position.y += speed; 
+            //}
 
         }
         if (this->type == Bon)
@@ -293,7 +284,7 @@ void Enemy::Launch(Player p)
     }
     else if (enemy_color.g == RED.g)
     {
-        moveToInAStraightLine(original_position, 3);
+        MoveToInAStraightLine(original_position, 3);
         if (this->enemy_position.y == original_position.y)
         {
             this->inPosition[3] = false;
@@ -303,7 +294,7 @@ void Enemy::Launch(Player p)
 }
 
 
-void Enemy::shoot(std::vector <Bullet>* bulletManager, Player player)
+void Enemy::Shoot(std::vector <Bullet>* bulletManager, Player player)
 {
     Bullet newBullet;
 
@@ -331,12 +322,12 @@ void Enemy::shoot(std::vector <Bullet>* bulletManager, Player player)
 }
 
 
-Vector2 Enemy::getEnemyPosition() { return enemy_position; }
-int Enemy::getEnemyRadius() { return enemy_radius; }
-bool Enemy::isEnemyAlive() { return enemy_alive; }
-float Enemy::getAngle() { return angle; }
+Vector2 Enemy::GetEnemyPosition() { return enemy_position; }
+int Enemy::GetEnemyRadius() { return enemy_radius; }
+bool Enemy::IsEnemyAlive() { return enemy_alive; }
+float Enemy::GetAngle() { return angle; }
 
-void Enemy::setEnemyPosition(Vector2 v2) { this->enemy_position = v2; }
-void Enemy::setEnemyPosition(int x, int y) { this->enemy_position.x = x; this->enemy_position.y = y; }
-void Enemy::setEnemyRadius(int rad) { this->enemy_radius = rad; };
-void Enemy::setEnemyLife(bool alive) { this->enemy_alive = alive; };
+void Enemy::SetEnemyPosition(Vector2 v2) { this->enemy_position = v2; }
+void Enemy::SetEnemyPosition(int x, int y) { this->enemy_position.x = x; this->enemy_position.y = y; }
+void Enemy::SetEnemyRadius(int rad) { this->enemy_radius = rad; };
+void Enemy::SetEnemyLife(bool alive) { this->enemy_alive = alive; };

@@ -19,15 +19,15 @@ using namespace std;
 //-------------------------------------------------------------------------------------
 typedef enum GameScreen 
 { 
-	LOGO = 0, TITLE, GAMEPLAY,STAGE2, ENDING 
+	LOGO = 0, TITLE, STAGE1,STAGE2, ENDING 
 } GameScreen;
 
 //-------------------------------------------------------------------------------------
 // Global Variables 
 //-------------------------------------------------------------------------------------
-static Player player = Player::Player();
+static Player player = Player::Player(); //Create Instance of Player
 
-bool hardmode = false;
+bool hardmode = false; //Is Hardmode on?
 
 bool hasWon;
 bool updatedScore = false;
@@ -39,19 +39,20 @@ bool isClean = false;
 //-------------------------------------------------------------------------------------
 
 //Disparar
-std::vector <Bullet> playerbullets;
+std::vector <Bullet> playerbullets; //Vector to control all the player bullets
 
-int player_bullet_counter = 0;
-int hit_counter = 0;
-void DrawBullet();  //Update
-
-std::vector <Enemy> enemies;
-Enemy callEnemyFunctions;
-std::vector <Bullet> enemybullets;
-
-void DrawEnemyBullet();
-void DrawGodShot(); //Harmode
+int player_bullet_counter = 0; //How many bullets has the player shot
+int hit_counter = 0; //How How many bullets hit an enemy
+void DrawBullet();  //Update all the player bullets
 void CheckGodMode();
+
+std::vector <Enemy> enemies;  //Vector to control all the enemies
+Enemy callEnemyFunctions; // An auxiliary to call functions from the Enemy class
+std::vector <Bullet> enemybullets;  //Vector to control all the enemy bullets
+
+void DrawEnemyBullet();//Update all the enemy bullets (Harmode off)
+void DrawGodShot(); ////Update all the enemy bullets (Harmode on)
+
 void ChangeStage(Timer timerChangeStage);
 
 //-------------------------------------------------------------------------------------
@@ -64,7 +65,6 @@ int main()
 
 	// Create the window and OpenGL context
 	InitWindow(800, 1280, "Galaga'88"); // 1280, 800
-
 
     GameScreen currentScreen = LOGO;
 
@@ -122,14 +122,19 @@ int main()
     SetTargetFPS(60); // Set Game to run 60 Frames per second
 
     //Particles
-    createParticles();
+    CreateParticles();
 
     //-------------------------------------------------------------------------------------
     // Local Variables
     //-------------------------------------------------------------------------------------
-    //Player
-    player.SetPosition({ (float)GetScreenWidth() / 2, (float)GetScreenHeight() * 9 / 10 });
 
+    player.SetPosition({ (float)GetScreenWidth() / 2, (float)GetScreenHeight() * 9 / 10 }); //Set the player position
+
+    int spawnedWaves = 0;
+    bool triggerTimerTitleStageOne = false;
+    bool triggerTimerTitleStageTwo = false;
+
+    //Creation of Timers (and startups)
     Timer enemyAttackTimer;
     enemyAttackTimer.StartTimer(10.0);
     Timer logoTimer;
@@ -139,9 +144,6 @@ int main()
     Timer timerChangeStage;
     Timer timerStageTitle;
 
-    int oleadasSpawneadas = 0;
-    bool activadorTimerStageUnoTitle = false;
-    bool activadorTimerStageDosTitle = false;
     //-------------------------------------------------------------------------------------
     // Game Loop
     //-------------------------------------------------------------------------------------
@@ -164,46 +166,46 @@ int main()
         {
             if (IsKeyPressed(KEY_UP))
             {
-                hardmode = true;
-            }
-            if (IsKeyPressed(KEY_ENTER))
-            {
-                PlaySound(buttonclick);
-                currentScreen = GAMEPLAY;
-                StopSound(GalagaOpening); 
+                hardmode = true; //Hardmode on
             }
             if (IsKeyPressed(KEY_R))
             {
                 ResetHighScore(); //Reset All Scores to 0
             }
-        } break;
-        case GAMEPLAY:
-        {
-            CheckGodMode();
-            if (timerSpawnEnemies.CheckFinished() == true && oleadasSpawneadas < 5) 
+            if (IsKeyPressed(KEY_ENTER))
             {
-                callEnemyFunctions.spawnHorde(&enemies, 8, GetRandomValue(1, 6));
-                oleadasSpawneadas++;
+                PlaySound(buttonclick);
+                currentScreen = STAGE1;
+                StopSound(GalagaOpening);
+            }
+        } break;
+        case STAGE1:
+        {
+            //Enemies
+            if (timerSpawnEnemies.CheckFinished() == true && spawnedWaves < 5)  //Spawn Enemy Waves
+            {
+                callEnemyFunctions.SpawnHorde(&enemies, 8, GetRandomValue(1, 4));
+                spawnedWaves++;
                 timerSpawnEnemies.StartTimer(5.0);
             }
 
-            for (int count = 0; count < enemies.size(); count++)
+            for (int count = 0; count < enemies.size(); count++) //Update all enemyes
             {
-                if (enemies[count].isEnemyAlive() == true)
+                if (enemies[count].IsEnemyAlive() == true)
                 {
                     if (enemies[count].inPosition[0] == false)
                     {
-                        enemies[count].moveToInAStraightLine(enemies[count].semiCirclePoints(),0);
+                        enemies[count].MoveToInAStraightLine(enemies[count].GetSemiCirclePoints(),0); //Move from spawn to screen
                     }
                     else if (enemies[count].inPosition[1] == false)
                     {
-                        enemies[count].semiCircleMovement();
+                        enemies[count].SemiCircleMovement(); // Make the semicircle movement
                     }
                     else if (enemies[count].inPosition[2] == false)
                     {
                         int j = count / 10;
                         int i = count - (j * 10);
-                        enemies[count].moveToInAStraightLine(enemies[count].formationPositions(i, j),2);
+                        enemies[count].MoveToInAStraightLine(enemies[count].GetFormationPositions(i, j),2); // Go to the assigned formation position
                     }
                     else if (enemies[count].inPosition[2] == true)
                     {
@@ -216,29 +218,30 @@ int main()
                             }
                         }
                         int rnd = GetRandomValue(0, rndmax - 1);
-                        if (enemyAttackTimer.CheckFinished() && enemies[rnd].isEnemyAlive() == true && enemies[rnd].inPosition[2] == true && enemies[rnd].inPosition[3] == false)
+                        if (enemyAttackTimer.CheckFinished() && enemies[rnd].IsEnemyAlive() == true && enemies[rnd].inPosition[2] == true && enemies[rnd].inPosition[3] == false)
                         {
-                            enemies[rnd].shoot(&enemybullets, player);
+                            enemies[rnd].Shoot(&enemybullets, player);         // Make a random enemy shoot
                             if (hardmode) { enemyAttackTimer.StartTimer(0.1); }
                             else { enemyAttackTimer.StartTimer(1.0); }
                             enemies[rnd].inPosition[3] = true;
                         }
-                        if (enemies[count].inPosition[3] == true) // Al ataque
+                        if (enemies[count].inPosition[3] == true) 
                         {
-                            enemies[count].Launch(player);
+                            enemies[count].Launch(player); // Launch towards the player
 
                         }
                     }
                 }
                 else
                 {
-                    enemies[count].inPosition[2] = true;
+                    enemies[count].inPosition[2] = true; //If enemy is dead check the positions so functions do not mess up
                 }
 
             }
 
 
             //Player
+            CheckGodMode();
             player.Move();
 
             //Shoot
@@ -256,13 +259,13 @@ int main()
             {
                 for (int j = 0; j < playerbullets.size(); j++)
                 {
-                    if (enemies[i].isEnemyAlive() == true) {
-                        if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius, enemies[i].enemy_texture_position, enemies[i].getEnemyRadius()))
+                    if (enemies[i].IsEnemyAlive() == true) {
+                        if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius, enemies[i].enemy_texture_position, enemies[i].GetEnemyRadius()))
                         {
                             player.SumScore(100);
                             hit_counter++;
                             PlaySound(enemyDeathExplosion);
-                            enemies[i].setEnemyLife(false);
+                            enemies[i].SetEnemyLife(false);
                             playerbullets.erase(playerbullets.begin()+j);
                         }
                     }
@@ -273,7 +276,7 @@ int main()
             bool allDead = true;
             if (player.GetLives() < 0)
             {
-                oleadasSpawneadas = 0;
+                spawnedWaves = 0;
                 hasWon = false;
                 currentScreen = ENDING;
             }
@@ -282,15 +285,15 @@ int main()
             {
                 if (enemies.empty() == false) 
                 {
-                    if (enemies[i].isEnemyAlive() == true)
+                    if (enemies[i].IsEnemyAlive() == true)
                     {
                         allDead = false;
                     }
                 }
             }
-            if (allDead == true && enemies.empty() == false && oleadasSpawneadas == 5)
+            if (allDead == true && enemies.empty() == false && spawnedWaves == 5)
             {
-                oleadasSpawneadas = 0;
+                spawnedWaves = 0;
                 hasWon = true;
                 currentScreen = STAGE2;
             }
@@ -320,30 +323,30 @@ int main()
             }
 
             CheckGodMode();
-            if (timerSpawnEnemies.CheckFinished() == true && oleadasSpawneadas < 5)
+            if (timerSpawnEnemies.CheckFinished() == true && spawnedWaves < 5)
             {
-                callEnemyFunctions.spawnHorde(&enemies, 8, GetRandomValue(1, 6));
-                oleadasSpawneadas++;
+                callEnemyFunctions.SpawnHorde(&enemies, 8, GetRandomValue(1, 4));
+                spawnedWaves++;
                 timerSpawnEnemies.StartTimer(5.0);
             }
 
             for (int count = 0; count < enemies.size(); count++)
             {
-                if (enemies[count].isEnemyAlive() == true)
+                if (enemies[count].IsEnemyAlive() == true)
                 {
                     if (enemies[count].inPosition[0] == false)
                     {
-                        enemies[count].moveToInAStraightLine(enemies[count].semiCirclePoints(), 0);
+                        enemies[count].MoveToInAStraightLine(enemies[count].GetSemiCirclePoints(), 0);
                     }
                     else if (enemies[count].inPosition[1] == false)
                     {
-                        enemies[count].semiCircleMovement();
+                        enemies[count].SemiCircleMovement();
                     }
                     else if (enemies[count].inPosition[2] == false)
                     {
                         int j = count / 10;
                         int i = count - (j * 10);
-                        enemies[count].moveToInAStraightLine(enemies[count].formationPositions(i, j), 2);
+                        enemies[count].MoveToInAStraightLine(enemies[count].GetFormationPositions(i, j), 2);
                     }
                     else if (enemies[count].inPosition[2] == true)
                     {
@@ -356,9 +359,9 @@ int main()
                             }
                         }
                         int rnd = GetRandomValue(0, rndmax - 1);
-                        if (enemyAttackTimer.CheckFinished() && enemies[rnd].isEnemyAlive() == true && enemies[rnd].inPosition[2] == true)
+                        if (enemyAttackTimer.CheckFinished() && enemies[rnd].IsEnemyAlive() == true && enemies[rnd].inPosition[2] == true)
                         {
-                            enemies[rnd].shoot(&enemybullets, player);
+                            enemies[rnd].Shoot(&enemybullets, player);
                             if (hardmode) { enemyAttackTimer.StartTimer(0.1); }
                             else {
                                 enemyAttackTimer.StartTimer(1.0);
@@ -392,13 +395,13 @@ int main()
             {
                 for (int j = 0; j < playerbullets.size(); j++)
                 {
-                    if (enemies[i].isEnemyAlive() == true) {
-                        if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius, enemies[i].enemy_texture_position, enemies[i].getEnemyRadius()))
+                    if (enemies[i].IsEnemyAlive() == true) {
+                        if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius, enemies[i].enemy_texture_position, enemies[i].GetEnemyRadius()))
                         {
                             player.SumScore(100);
                             hit_counter++;
                             PlaySound(enemyDeathExplosion);
-                            enemies[i].setEnemyLife(false);
+                            enemies[i].SetEnemyLife(false);
                             playerbullets.erase(playerbullets.begin() + j);
                         }
                     }
@@ -416,15 +419,15 @@ int main()
             {
                 if (enemies.empty() == false)
                 {
-                    if (enemies[i].isEnemyAlive() == true)
+                    if (enemies[i].IsEnemyAlive() == true)
                     {
                         allDead = false;
                     }
                 }
             }
-            if (allDead == true && enemies.empty() == false && oleadasSpawneadas == 5)
+            if (allDead == true && enemies.empty() == false && spawnedWaves == 5)
             {
-                oleadasSpawneadas = 0;
+                spawnedWaves = 0;
                 hasWon = true;
                 currentScreen = ENDING;
             }
@@ -505,8 +508,8 @@ int main()
         {
             ClearBackground(BLACK);
 
-            //Particulas
-            drawParticles();
+            //Particles
+            DrawParticles();
 
             //Logo
             DrawTexture(Galaga88Logo, GetScreenWidth() / 4, GetScreenHeight()/ 10, WHITE);
@@ -521,12 +524,12 @@ int main()
             //Other
             DrawText("PUSH ENTER", GetScreenWidth()/3, GetScreenHeight() /2, 45, GREEN);
         } break;
-        case GAMEPLAY:
+        case STAGE1:
         {
             ClearBackground(BLACK);
 
-            //Particulas
-            drawParticles();
+            //Particles
+            DrawParticles();
 
             //UI
             ////Scores
@@ -545,10 +548,21 @@ int main()
             ////Stage Indicator
             DrawTexture(stageindicator1, GetScreenWidth() * 95 / 100, GetScreenHeight() * 92 / 100, WHITE);
 
+            //Starting level text
+            if (triggerTimerTitleStageOne == false)
+            {
+                timerStageTitle.StartTimer(2.0);
+                triggerTimerTitleStageOne = true;
+            }
+            if (timerStageTitle.CheckFinished() == false)
+            {
+                DrawText("STAGE 1", GetScreenWidth() * 9 / 24, GetScreenHeight() / 3, 45, WHITE);
+            }
+
             //Bullets
             DrawBullet();
 
-            for (int i = 0; i < playerbullets.size(); i++) //Esto deberia estar en DrawBullets
+            for (int i = 0; i < playerbullets.size(); i++) 
             {
                 DrawTexture(player_bullet, playerbullets[i].bullet_position.x, playerbullets[i].bullet_position.y, WHITE);
             }
@@ -562,7 +576,7 @@ int main()
                 DrawGodShot();
             }
 
-            for (int i = 0; i < enemybullets.size(); i++) //Esto deberia estar en DrawBullets
+            for (int i = 0; i < enemybullets.size(); i++)
             {
                 int x = GetRandomValue(0, 1);
                 if (x == 0)
@@ -584,46 +598,35 @@ int main()
             //Enemies
             for (int i = 0; i < enemies.size(); i++)
             {
-                if (enemies[i].isEnemyAlive() == true)
+                if (enemies[i].IsEnemyAlive() == true)
                 {
                     if (enemies[i].type == Goei) //Goei
                     {
-                        Vector2 Correccion = { enemies[i].getEnemyPosition().x - 33, enemies[i].getEnemyPosition().y - 37 }; //-33 -37
+                        Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 33, enemies[i].GetEnemyPosition().y - 37 }; //-33 -37
                         DrawTextureEx(Goei_0_t, Correccion, enemies[i].texture_angle, 0.5, WHITE);
                         enemies[i].enemy_texture_position = Correccion;
                     }
                     else if (enemies[i].type == Zako) //Zako
                     {
-                        Vector2 Correccion = { enemies[i].getEnemyPosition().x - 32, enemies[i].getEnemyPosition().y - 32 }; //-32 -32
+                        Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32, enemies[i].GetEnemyPosition().y - 32 }; //-32 -32
                         DrawTextureEx(Zako_t, Correccion, enemies[i].texture_angle, 1, WHITE);
                         enemies[i].enemy_texture_position = Correccion;
                     }
                     else if (enemies[i].type == Bon) //Bon
                     {
-                        Vector2 Correccion = { enemies[i].getEnemyPosition().x - 32 , enemies[i].getEnemyPosition().y - 32 }; //-32 -32
+                        Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32 , enemies[i].GetEnemyPosition().y - 32 }; //-32 -32
                         DrawTextureEx(Bon_t, Correccion, enemies[i].texture_angle, 1, WHITE);
                         enemies[i].enemy_texture_position = Correccion;
                     }
                 }
             }
-            if (activadorTimerStageUnoTitle == false) 
-            {
-                timerStageTitle.StartTimer(2.0);
-                activadorTimerStageUnoTitle = true;
-            }
-            if (timerStageTitle.CheckFinished() == false)
-            {
-                DrawText("STAGE 1", GetScreenWidth()*9 / 24, GetScreenHeight() / 3, 45, WHITE);
-            }
-
-
-            } break;
+        } break;
         case STAGE2:
         {
             ClearBackground(BLACK);
 
             //Particulas
-            drawParticles();
+            DrawParticles();
 
             //UI
             ////Scores
@@ -681,32 +684,32 @@ int main()
             //Enemies
             for (int i = 0; i < enemies.size(); i++)
             {
-                if (enemies[i].isEnemyAlive() == true)
+                if (enemies[i].IsEnemyAlive() == true)
                 {
                     if (enemies[i].type == Goei) //Goei
                     {
-                        Vector2 Correccion = { enemies[i].getEnemyPosition().x - 33, enemies[i].getEnemyPosition().y - 37 }; //-33 -37
+                        Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 33, enemies[i].GetEnemyPosition().y - 37 }; //-33 -37
                         DrawTextureEx(Goei_0_t, Correccion, enemies[i].texture_angle, 0.5, WHITE);
                         enemies[i].enemy_texture_position = Correccion;
                     }
                     else if (enemies[i].type == Zako) //Zako
                     {
-                        Vector2 Correccion = { enemies[i].getEnemyPosition().x - 32, enemies[i].getEnemyPosition().y - 32 }; //-32 -32
+                        Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32, enemies[i].GetEnemyPosition().y - 32 }; //-32 -32
                         DrawTextureEx(Zako_t, Correccion, enemies[i].texture_angle, 1, WHITE);
                         enemies[i].enemy_texture_position = Correccion;
                     }
                     else if (enemies[i].type == Bon) //Bon
                     {
-                        Vector2 Correccion = { enemies[i].getEnemyPosition().x - 32 , enemies[i].getEnemyPosition().y - 32 }; //-32 -32
+                        Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32 , enemies[i].GetEnemyPosition().y - 32 }; //-32 -32
                         DrawTextureEx(Bon_t, Correccion, enemies[i].texture_angle, 1, WHITE);
                         enemies[i].enemy_texture_position = Correccion;
                     }
                 }
             }
-            if (activadorTimerStageDosTitle == false)
+            if (triggerTimerTitleStageTwo == false)
             {
                 timerStageTitle.StartTimer(2.0);
-                activadorTimerStageDosTitle = true;
+                triggerTimerTitleStageTwo = true;
             }
             if (timerStageTitle.CheckFinished() == false)
             {
@@ -775,19 +778,19 @@ int main()
 		EndDrawing();
 	}
 
-	// cleanup
-	// unload our texture so it can be cleaned up
+	// Cleanup
+	// Unload textures so it can be cleaned up TODO
 
     //Unload sounds
     UnloadSound(buttonclick);
     UnloadSound(playerShoot);
 
-	// destroy the window and cleanup the OpenGL context
+	//Destroy the window and cleanup the OpenGL context
 	CloseWindow();
 	return 0;
 }
 //-------------------------------------------------------------------------------------
-// Funciones 
+// Functions 
 //-------------------------------------------------------------------------------------
 
 void DrawBullet()
@@ -795,7 +798,7 @@ void DrawBullet()
     for (int i = 0; i < playerbullets.size(); i++) //Update
     {
         playerbullets[i].bullet_position.y -= 20; //Speed (20)
-        if (playerbullets[i].bullet_position.y <= -20) //Sprite mas o menos fuera de pantalla
+        if (playerbullets[i].bullet_position.y <= -20) //Sprite out of screen
         {
              playerbullets.erase(playerbullets.begin());
         }
@@ -808,7 +811,7 @@ void DrawEnemyBullet()
     {
         enemybullets[i].bullet_position.y += 10; //Speed (10)
 
-        if (ColorIsEqual(enemybullets[i].bullet_color, RED))
+        if (ColorIsEqual(enemybullets[i].bullet_color, RED)) //Check bullet trajectory
         {
             enemybullets[i].bullet_position.x -= 0;
         }
@@ -821,22 +824,22 @@ void DrawEnemyBullet()
             enemybullets[i].bullet_position.x += 1;
         }
 
-        if (enemybullets[i].bullet_position.y >= GetScreenHeight() + 20) //Sprite mas o menos fuera de pantalla
+        if (enemybullets[i].bullet_position.y >= GetScreenHeight() + 20) //Sprite out of screen
         {
             enemybullets.erase(enemybullets.begin());
             continue;
         }
 
-        if (CheckCollisionCircles(enemybullets[i].bullet_position, enemybullets[i].bullet_radius, player.GetPosition(), player.GetRadius()))
+        if (CheckCollisionCircles(enemybullets[i].bullet_position, enemybullets[i].bullet_radius, player.GetPosition(), player.GetRadius())) //Check if bullet collides with player
         {
             enemybullets.erase(enemybullets.begin()+i);
-            if (player.GetAlive() == true && player.GetInmortal() == false)
+            if (player.GetAlive() == true && player.GetInmortal() == false) 
             {
-                player.Death();
+                player.Death(); // Player loses one life
             }
         }
     }
-    player.CheckDeath();
+    player.CheckDeath(); //Check if player has lost all lives
 }
 
 void DrawGodShot()
@@ -845,7 +848,7 @@ void DrawGodShot()
     {
         enemybullets[i].bullet_position.y += 10; //Speed (10)
 
-        if (enemybullets[i].bullet_position.x == player.GetPosition().x)
+        if (enemybullets[i].bullet_position.x == player.GetPosition().x) //Bullets change trajectory towards player
         {
             enemybullets[i].bullet_position.x -= 0;
         }
@@ -858,22 +861,22 @@ void DrawGodShot()
             enemybullets[i].bullet_position.x += 3;
         }
 
-        if (enemybullets[i].bullet_position.y >= GetScreenHeight() + 20) //Sprite mas o menos fuera de pantalla
+        if (enemybullets[i].bullet_position.y >= GetScreenHeight() + 20) //Sprite out of screen
         {
             enemybullets.erase(enemybullets.begin());
             continue;
         }
 
-        if (CheckCollisionCircles(enemybullets[i].bullet_position, enemybullets[i].bullet_radius, player.GetPosition(), player.GetRadius()))
+        if (CheckCollisionCircles(enemybullets[i].bullet_position, enemybullets[i].bullet_radius, player.GetPosition(), player.GetRadius())) //Check if bullet collides with player
         {
             enemybullets.erase(enemybullets.begin() + i);
             if (player.GetAlive() == true && player.GetInmortal() == false)
             {
-                player.Death();
+                player.Death(); // Player loses one life
             }
         }
     }
-    player.CheckDeath();
+    player.CheckDeath(); //Check if player has lost all lives
 }
 
 void ChangeStage(Timer timerChangeStage)

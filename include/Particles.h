@@ -11,10 +11,10 @@ private:
     int particle_speed;
 
 public:
-    friend void createParticles();
-    friend void drawParticles();
+    friend void CreateParticles();
+    friend void DrawParticles();
 };
 
 //Particle System
-void createParticles(); //Create
-void drawParticles();  //Update
+void CreateParticles(); //Create particles
+void DrawParticles();  //Update

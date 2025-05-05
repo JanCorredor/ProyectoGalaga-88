@@ -34,26 +34,26 @@ public:
     float texture_angle = 0;
     Vector2 enemy_texture_position;
 
-    void spawnHorde(std::vector <Enemy>* manager, int num, int spawnId);
+    void SpawnHorde(std::vector <Enemy>* manager, int num, int spawnId);
 
-    void moveToInAStraightLine(Vector2 destination, int positionId);
-    Vector2 startingPositions(int spawnId);
-    Vector2 semiCirclePoints();
-    void semiCircleMovement();
-    Vector2 formationPositions(int fila, int columna);
+    void MoveToInAStraightLine(Vector2 destination, int positionId);
+    Vector2 StartingPositions(int spawnId);
+    Vector2 GetSemiCirclePoints();
+    void SemiCircleMovement();
+    Vector2 GetFormationPositions(int fila, int columna);
     void Launch(const Player p);
 
 
-    void shoot(std::vector <Bullet>* bulletManager, Player player);
+    void Shoot(std::vector <Bullet>* bulletManager, Player player);
 
-    Vector2 getEnemyPosition();
-    int getEnemyRadius();
-    bool isEnemyAlive();
-    float getAngle();
+    Vector2 GetEnemyPosition();
+    int GetEnemyRadius();
+    bool IsEnemyAlive();
+    float GetAngle();
 
-    void setEnemyPosition(Vector2 v2);
-    void setEnemyPosition(int x, int y);
-    void setEnemyRadius(int rad);
-    void setEnemyLife(bool alive);
+    void SetEnemyPosition(Vector2 v2);
+    void SetEnemyPosition(int x, int y);
+    void SetEnemyRadius(int rad);
+    void SetEnemyLife(bool alive);
 
 };
