@@ -82,7 +82,7 @@ int main()
     ////HUD
     Texture stageindicator1 = LoadTexture("HUD/Galaga_'88_icon_stage_1.png");
 
-        ////Enemies
+    ////Enemies
     Texture Goei_0_t = LoadTexture("Enemies/Goei_0.png");
     Texture Goei_1_t = LoadTexture("Enemies/Goei_1.png");
 
@@ -117,8 +117,7 @@ int main()
     Sound enemyFormation = LoadSound("Sounds/EnemyFormation.wav");
     Sound enemyDeathExplosion = LoadSound("Sounds/EnemyDeathExplosion.wav");
 
-    //Frame
-    unsigned int framesCounter = 0;
+
     SetTargetFPS(60); // Set Game to run 60 Frames per second
 
     //Particles
@@ -141,14 +140,13 @@ int main()
     //-------------------------------------------------------------------------------------
     // Game Loop
     //-------------------------------------------------------------------------------------
-	while (!WindowShouldClose())		// run the loop untill the user presses ESCAPE or presses the Close button on the window
+	while (!WindowShouldClose()) // run the loop untill the user presses ESCAPE or presses the Close button on the window
 	{
         switch (currentScreen)
         {
         case LOGO:
         {
             PlaySound(GalagaOpening); 
-            //framesCounter++;    // Count frames
             
             // Wait for 2 seconds (120 frames) before jumping to TITLE 
             if (logoTimer.CheckFinished() == true)
@@ -163,7 +161,7 @@ int main()
             {
                 hardmode = true;
             }
-            if (IsKeyPressed(KEY_ENTER)) //  || IsGestureDetected(GESTURE_TAP)
+            if (IsKeyPressed(KEY_ENTER))
             {
                 PlaySound(buttonclick);
                 currentScreen = GAMEPLAY;
@@ -171,12 +169,11 @@ int main()
             }
             if (IsKeyPressed(KEY_R))
             {
-                ResetHighScore();
+                ResetHighScore(); //Reset All Scores to 0
             }
         } break;
         case GAMEPLAY:
         {
-            if (timerSpawnEnemies.CheckFinished() == true && oleadasSpawneadas <= 5) 
             CheckGodMode();
             if (timerSpawnEnemies.CheckFinished() == true && oleadasSpawneadas < 5) 
             {
@@ -205,7 +202,7 @@ int main()
                     }
                     else if (enemies[count].inPosition[2] == true)
                     {
-                         int rndmax = 0;
+                        int rndmax = 0;
                         for (int i = 0; i < enemies.size(); i++)
                         {
                             if (enemies[i].inPosition[2] == true)
@@ -214,13 +211,17 @@ int main()
                             }
                         }
                         int rnd = GetRandomValue(0, rndmax - 1);
-                        if (enemyAttackTimer.CheckFinished() && enemies[rnd].isEnemyAlive() == true && enemies[rnd].inPosition[2] == true)
+                        if (enemyAttackTimer.CheckFinished() && enemies[rnd].isEnemyAlive() == true && enemies[rnd].inPosition[2] == true && enemies[rnd].inPosition[3] == false)
                         {
                             enemies[rnd].shoot(&enemybullets, player);
                             if (hardmode) { enemyAttackTimer.StartTimer(0.1); }
-                            else {
-                            enemyAttackTimer.StartTimer(1.0);
-                            }
+                            else { enemyAttackTimer.StartTimer(1.0); }
+                            enemies[rnd].inPosition[3] = true;
+                        }
+                        if (enemies[count].inPosition[3] == true) // Al ataque
+                        {
+                            enemies[count].Launch(player);
+
                         }
                     }
                 }
@@ -267,9 +268,11 @@ int main()
             bool allDead = true;
             if (player.GetLives() < 0)
             {
+                oleadasSpawneadas = 0;
+                hasWon = false;
                 currentScreen = ENDING;
-                hasWon = false; 
             }
+
             for (int i = 0; i < enemies.size(); i++)
             {
                 if (enemies.empty() == false) 
@@ -304,7 +307,7 @@ int main()
         } break;
         case ENDING:
         {
-            if (isClean = false) 
+            if (isClean = false)
             {
                 if (updatedScore == false)
                 {
@@ -335,6 +338,7 @@ int main()
                 StopSound(GalagaDefeat);
                 player_bullet_counter = 0;
                 hit_counter = 0;
+                isClean = false;
                 currentScreen = TITLE;
             }
         } break;
@@ -550,44 +554,6 @@ void DrawBullet()
              playerbullets.erase(playerbullets.begin());
         }
     }  
-}
-
-void createEnemies()
-{
-    for (int i = 0; i < 60; i++)
-    {
-        
-        Enemy newEnemy;
-        enemies.push_back(newEnemy);
-        enemies[i].setEnemyPosition(enemies[i].startingPositions(i));
-    }
-}
-
-void enemyshoot()
-{
-    Bullet newBullet;
-    int i = GetRandomValue(0, enemies.size() -1);
-
-    if (enemies[i].isEnemyAlive() == true)
-    {
-        newBullet.bullet_position = enemies[i].getEnemyPosition();
-
-        if (newBullet.bullet_position.x == player.GetPosition().x)
-        {
-            newBullet.bullet_color = RED;
-        }
-        else if (newBullet.bullet_position.x > player.GetPosition().x)
-        {
-            newBullet.bullet_color = ORANGE; // MINUS
-        }
-        else
-        {
-            newBullet.bullet_color = PURPLE; // PLUS
-        }
-
-        newBullet.bullet_radius = 10;
-        enemybullets.push_back(newBullet);
-    }
 }
 
 void DrawEnemyBullet()

@@ -19,15 +19,17 @@ class Enemy
 protected:
     Vector2 enemy_position;
     int enemy_radius;
-    Color enemy_color;
+    Color enemy_color = WHITE;
     bool enemy_alive;
     Vector2 enemy_speed;
     float angle;
 
 public:
     Enemy();
-    bool inPosition[3] = {false,false,false}; //CircleStart, CricleEnd, Formation
-    
+    bool inPosition[4] = {false,false,false, false}; //CircleStart, CricleEnd, Formation, Assault
+    Vector2 original_position = { 0,0 };
+    int aux = 0;
+
     enemyType type;
     float texture_angle = 0;
     Vector2 enemy_texture_position;
@@ -39,6 +41,8 @@ public:
     Vector2 semiCirclePoints();
     void semiCircleMovement();
     Vector2 formationPositions(int fila, int columna);
+    void Launch(const Player p);
+
 
     void shoot(std::vector <Bullet>* bulletManager, Player player);
 

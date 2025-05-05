@@ -8,7 +8,7 @@
 #include "Enemy.h"
 
 Enemy::Enemy() {
-    this->enemy_radius = 64; this->enemy_color = RED;  this->enemy_alive = true; this->enemy_speed = { 5,5 }; this->angle = 0;
+    this->enemy_radius = 64; this->enemy_alive = true; this->enemy_speed = { 5,5 }; this->angle = 0;
 }
 
 void Enemy::spawnHorde(std::vector <Enemy>* manager, int num, int spawnId)
@@ -206,13 +206,102 @@ void Enemy::semiCircleMovement()
 
 }
 
-Vector2 Enemy:: formationPositions(int fila,int columna)     //Vector2 enemiesFormationPositions[10][6];
+Vector2 Enemy::formationPositions(int fila, int columna)     //Vector2 enemiesFormationPositions[10][6];
 {
     Vector2 formationPosition;
+
     formationPosition.x = GetScreenWidth() / 7 + (fila * 60); //Original: GetScreenWidth() / 10
     formationPosition.y = GetScreenHeight() / 10 + (columna * 75);
+
+    this->original_position = formationPosition;
     return formationPosition;
 }
+
+void Enemy::Launch(Player p)
+{
+    int speed = 10; // 10
+    if (enemy_color.r == WHITE.r)
+    {
+        if (this->type == Goei)
+        {
+            if (this->enemy_position.y - 100 < GetScreenHeight())
+            {
+                this->enemy_position.y += 10; // 10 
+                this->enemy_position.x += 5;
+            }
+            else if (this->enemy_position.y >= GetScreenHeight())
+            {
+                this->enemy_position.y = -10;
+                enemy_color = RED;
+            }
+        }
+        if (this->type == Zako)
+        {
+            int radius = 20;
+            if (this->enemy_position.y + 3*radius < p.GetPosition().y && this->aux == 0)
+            {
+                this->enemy_position.y += speed; // 10 
+            }
+            else if (this->angle < 36)
+            {
+                this->aux = 1;
+
+                this->enemy_position.x += cos(this->angle) * radius;
+                this->enemy_position.y += sin(this->angle) * radius;
+
+                this->angle += 0.1;
+                this->texture_angle += 7.5;
+            }
+            else if (this->enemy_position.y >= GetScreenHeight() && this->angle >= 36)
+            {
+                this->enemy_position.y = -10;
+                this->angle = 0;
+                this->texture_angle = 0;
+                this->aux = 0;
+                enemy_color = RED;
+            }
+            else
+            {
+                this->enemy_position.y += speed; 
+            }
+
+        }
+        if (this->type == Bon)
+        {
+            if (this->enemy_position.y - 100 < GetScreenHeight())
+            {
+                this->enemy_position.y += 10; // 10 
+            }
+            else if (this->enemy_position.y >= GetScreenHeight())
+            {
+                this->enemy_position.y = -10;
+                enemy_color = RED;
+            }
+        }
+        if (this->type == Bos)
+        {
+            if (this->enemy_position.y - 100 < GetScreenHeight())
+            {
+                this->enemy_position.y += 10; // 10 
+            }
+            else if (this->enemy_position.y >= GetScreenHeight())
+            {
+                this->enemy_position.y = -10;
+                enemy_color = RED;
+            }
+        }
+    }
+    else if (enemy_color.g == RED.g)
+    {
+        moveToInAStraightLine(original_position, 3);
+        if (this->enemy_position.y == original_position.y)
+        {
+            this->inPosition[3] = false;
+            this->enemy_color = WHITE;
+        }
+    }
+}
+
 
 void Enemy::shoot(std::vector <Bullet>* bulletManager, Player player)
 {
