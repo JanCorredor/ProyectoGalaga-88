@@ -45,7 +45,7 @@ void Enemy::SpawnHorde(std::vector <Enemy>* manager, int num, int spawnId, std::
         }
         else if (enemyId[i] == 1)
         {
-            newEnemy.type = Bos; //Zako
+            newEnemy.type = Zako; //Zako
         }
         else if (enemyId[i] == 2)
         {
@@ -86,8 +86,8 @@ void Enemy::SpawnLevel1(std::vector <Enemy>* manager, int wave)
     }
     else if (wave == 4)
     {
-        std::vector <int> ZBZBon = { 1, 2, 1,2 };
-        SpawnHorde(manager, 4, 2, ZBZBon); //Zako Bon Zako Bon Up Righ
+        std::vector <int> ZBZBon = { 1, 2, 1,2, 1, 2, 1,2 };
+        SpawnHorde(manager, 8, 2, ZBZBon); //Zako Bon Zako Bon Up Righ
     }
 }
 
@@ -384,7 +384,7 @@ void Enemy::Launch(Player p)
     else if (enemy_color.g == RED.g)
     {
         MoveToInAStraightLine(original_position, 3);
-        if (this->enemy_position.y == original_position.y)
+        if (this->enemy_position.x == this->original_position.x && this->enemy_position.y == this->original_position.y)
         {
             this->inPosition[3] = false;
             this->enemy_color = WHITE;
