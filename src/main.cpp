@@ -556,7 +556,7 @@ int main()
             }
             if (timerStageTitle.CheckFinished() == false)
             {
-                DrawText("STAGE 1", GetScreenWidth() * 9 / 24, GetScreenHeight() / 3, 45, WHITE);
+                DrawText("STAGE 1", GetScreenWidth() * 9 / 24, GetScreenHeight() / 3, 45, GREEN);
             }
 
             //Bullets
@@ -713,7 +713,7 @@ int main()
             }
             if (timerStageTitle.CheckFinished() == false)
             {
-                DrawText("STAGE 2", GetScreenWidth() * 9 / 24, GetScreenHeight() / 3, 45, WHITE);
+                DrawText("STAGE 2", GetScreenWidth() * 9 / 24, GetScreenHeight() / 3, 45, GREEN);
             }
 
 

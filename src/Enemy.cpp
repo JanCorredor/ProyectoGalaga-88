@@ -239,15 +239,22 @@ void Enemy::Launch(Player p)
             }
 
             this->angle = 0;
-            if ((this->enemy_position.y + 2 * radius) < p.GetPosition().y && this->aux == 0)
+            if ((this->enemy_position.y + 2 * radius) < p.GetPosition().y+100 && this->aux == 0)
             {
                 this->enemy_position.y += speed; // 10 
             }
             else if (this->angle < 3.6/5 && hardmode == false)
             {
                 this->aux = 1;
-
-                this->enemy_position.x += cos(this->angle + 270) * radius / 2;
+                if (this->enemy_position.x > p.GetPosition().x) 
+                {
+                this->enemy_position.x -= cos(this->angle + 270) * radius / 10;
+                    
+                }
+                else 
+                {
+                this->enemy_position.x += cos(this->angle + 270) * radius / 10;
+                }
                 this->enemy_position.y -= sin(this->angle + 270) * radius;
 
                 this->angle += 0.1 / 5;
