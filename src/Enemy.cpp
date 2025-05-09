@@ -5,6 +5,9 @@
 #include <vector>
 #include "Player.h"
 
+#include <iostream>
+using namespace std;
+
 #include "Enemy.h"
 
 Enemy::Enemy() {
@@ -42,7 +45,7 @@ void Enemy::SpawnHorde(std::vector <Enemy>* manager, int num, int spawnId, std::
         }
         else if (enemyId[i] == 1)
         {
-            newEnemy.type = Zako;
+            newEnemy.type = Bos; //Zako
         }
         else if (enemyId[i] == 2)
         {
@@ -358,6 +361,24 @@ void Enemy::Launch(Player p)
                 this->enemy_position.y = -10;
                 enemy_color = RED;
             }
+
+            if (this->enemy_position.y < p.GetPosition().y - 50 && this->aux == 0)
+            {
+                this->enemy_position.y += speed; // 10 
+            }
+            else
+            {
+                
+                if (p.GetPosition().x > this->enemy_position.x - 100 && p.GetPosition().x < this->enemy_position.x + 100) 
+                {
+                    if (p.GetAlive() == true && p.GetInmortal() == false) 
+                    {
+                        p.Death();
+                        p.CheckDeath();
+                    }
+                }
+            }
+
         }
     }
     else if (enemy_color.g == RED.g)

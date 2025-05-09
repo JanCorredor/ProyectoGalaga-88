@@ -2,6 +2,9 @@
 #include "Timer.h"
 #include "Defines.h"
 
+#include <iostream>
+using namespace std;
+
 //------------------------- Defines -------------------------
 
 
@@ -114,6 +117,7 @@ void Player::Shoot(std::vector <Bullet>* playerbullets)
 
 void Player::Death()
 {
+    cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << endl;
     this->lives = this->lives -1;
     this->alive = false;
     this->deathTimer.StartTimer(3.0);
