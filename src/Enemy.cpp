@@ -210,6 +210,7 @@ Vector2 Enemy::GetFormationPositions(int fila, int columna)     //Vector2 enemie
 void Enemy::Launch(Player p)
 {
     int speed = 10; // 10
+    extern bool hardmode;
     if (enemy_color.r == WHITE.r)
     {
         if (this->type == Goei)
@@ -227,17 +228,44 @@ void Enemy::Launch(Player p)
         }
         if (this->type == Zako)
         {
-            int radius = 20;
+            int radius;
+            if (hardmode)
+            {
+                radius = 20;
+            }
+            else
+            {
+                radius = 10;
+            }
+
             this->angle = 0;
             if ((this->enemy_position.y + 2 * radius) < p.GetPosition().y && this->aux == 0)
             {
                 this->enemy_position.y += speed; // 10 
             }
-            else if (this->angle < 36) //Hardmode
+            else if (this->angle < 3.6/5 && hardmode == false)
             {
                 this->aux = 1;
 
-                this->enemy_position.x += cos(this->angle) * radius/4;
+                this->enemy_position.x += cos(this->angle + 270) * radius / 2;
+                this->enemy_position.y -= sin(this->angle + 270) * radius;
+
+                this->angle += 0.1 / 5;
+                this->texture_angle += 7.5 / 5;
+            }
+            else if (this->angle < 36 && hardmode) //Hardmode
+            {
+                this->aux = 1;
+                int rd = GetRandomValue(0, 1);
+
+                if (rd == 0)
+                {
+                    this->enemy_position.x -= cos(this->angle) * radius / 4;
+                }
+                else
+                {
+                    this->enemy_position.x += cos(this->angle) * radius / 4;
+                }
                 this->enemy_position.y += sin(this->angle) * radius;
 
                 this->angle += 0.1;
