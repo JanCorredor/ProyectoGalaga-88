@@ -11,7 +11,7 @@ Enemy::Enemy() {
     this->enemy_radius = 64; this->enemy_alive = true; this->enemy_speed = { 5,5 }; this->angle = 0;
 }
 
-void Enemy::SpawnHorde(std::vector <Enemy>* manager, int num, int spawnId)
+void Enemy::SpawnHorde(std::vector <Enemy>* manager, int num, int spawnId, std::vector <int> enemyId)
 {
     for (int i = 0; i < num; i++)
     {
@@ -36,20 +36,55 @@ void Enemy::SpawnHorde(std::vector <Enemy>* manager, int num, int spawnId)
         Enemy newEnemy;
         newEnemy.SetEnemyPosition(newEnemy.StartingPositions(spawnId).x + spaceBetween.x, newEnemy.StartingPositions(spawnId).y + spaceBetween.y);
 
-        if (i == 0)
+        if (enemyId[i] == 0)
         {
             newEnemy.type = Goei;
         }
-        else if (i != num -1)
+        else if (enemyId[i] == 1)
         {
             newEnemy.type = Zako;
         }
-        else
+        else if (enemyId[i] == 2)
         {
             newEnemy.type = Bon;
         }
+        else
+        {
+            newEnemy.type = Bos;
+        }
 
         manager->push_back(newEnemy);
+    }
+}
+
+void Enemy::SpawnLevel1(std::vector <Enemy>* manager, int wave)
+{
+    //Upper Center = 0 //Upper Left //Upper Right //Center Left //Center Right //Low Left //Low Righ
+    if (wave == 0)
+    {
+        std::vector <int> todoZako = { 1,1,1,1 };
+        SpawnHorde(manager, 4, 3, todoZako); //Zako Cent Left
+        SpawnHorde(manager, 4, 4, todoZako); //Zako Cent Right
+    }
+    else if (wave == 1)
+    {
+        std::vector <int> GBGBGBGBon = { 0, 2,0,2,0,2,0,2 };
+        SpawnHorde(manager, 8, 5, GBGBGBGBon); //Goei Bon Goei Bon Low Left
+    }
+    else if (wave == 2)
+    {
+        std::vector <int> GBGBGBGBos = { 0, 3,0,3, 0, 3,0,3 };
+        SpawnHorde(manager, 8, 6, GBGBGBGBos); //Goei Bos Goei Bos Low Right
+    }
+    else if (wave == 3)
+    {
+        std::vector <int> GBGBon = { 0, 2,0,2,0, 2,0,2 };
+        SpawnHorde(manager, 8, 1, GBGBon); //Goei Bon Goei Bon Up Left
+    }
+    else if (wave == 4)
+    {
+        std::vector <int> ZBZBon = { 1, 2, 1,2 };
+        SpawnHorde(manager, 4, 2, ZBZBon); //Zako Bon Zako Bon Up Righ
     }
 }
 
@@ -108,9 +143,9 @@ void Enemy::MoveToInAStraightLine(Vector2 destination, int positionId)
 Vector2 Enemy::StartingPositions(int spawnId)
 {
     //Debug Purposes && FailSave
-    if (spawnId >= 5)
+    if (spawnId >= 7)
     {
-        spawnId = GetRandomValue(0,4);
+        spawnId = GetRandomValue(0,6);
     }
 
     float centroVertical = GetScreenHeight() / 2;
@@ -138,6 +173,14 @@ Vector2 Enemy::StartingPositions(int spawnId)
     {
         texture_angle = -90;
         return { (float)GetScreenWidth() + positionAdjustments, centroVertical };
+    }
+    if (spawnId == 5) //Lower Left
+    {
+        return { -positionAdjustments, (float)GetScreenHeight() - positionAdjustments };
+    }
+    if (spawnId == 6) //Lower Right
+    {
+        return { (float)GetScreenWidth() + positionAdjustments, (float)GetScreenHeight() - positionAdjustments };
     }
 }
 
@@ -196,12 +239,12 @@ void Enemy::SemiCircleMovement()
 
 }
 
-Vector2 Enemy::GetFormationPositions(int fila, int columna)     //Vector2 enemiesFormationPositions[10][6];
+Vector2 Enemy::GetFormationPositions(int x_pos, int y_pos)     //Vector2 enemiesFormationPositions[10][6];
 {
     Vector2 formationPosition;
 
-    formationPosition.x = GetScreenWidth() / 7 + (fila * 60); //Original: GetScreenWidth() / 10
-    formationPosition.y = GetScreenHeight() / 10 + (columna * 75);
+    formationPosition.x = GetScreenWidth() / 7 + (x_pos * 60); //Original: GetScreenWidth() / 10
+    formationPosition.y = GetScreenHeight() / 10 + (y_pos * 75);
 
     this->original_position = formationPosition;
     return formationPosition;

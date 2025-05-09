@@ -89,6 +89,7 @@ int main()
 
     Texture Zako_t = LoadTexture("Enemies/Zako.png");
     Texture Bon_t = LoadTexture("Enemies/Bon.png");
+    Texture Bos_t = LoadTexture("Enemies/Boos.png");
 
     ////Player
     Texture player_body_t = LoadTexture("Player/PlayerGalaga88.png");
@@ -184,7 +185,64 @@ int main()
             //Enemies
             if (timerSpawnEnemies.CheckFinished() == true && spawnedWaves < 5)  //Spawn Enemy Waves
             {
-                callEnemyFunctions.SpawnHorde(&enemies, 8, GetRandomValue(1, 4));
+                //callEnemyFunctions.SpawnHorde(&enemies, 8, GetRandomValue(1, 6));
+                callEnemyFunctions.SpawnLevel1(&enemies, spawnedWaves);
+                
+                if (spawnedWaves == 0)
+                {
+                    enemies[0].original_position = callEnemyFunctions.GetFormationPositions(7, 3);//Zako
+                    enemies[1].original_position = callEnemyFunctions.GetFormationPositions(8, 3);//Zako
+                    enemies[2].original_position = callEnemyFunctions.GetFormationPositions(8, 4);//Zako
+                    enemies[3].original_position = callEnemyFunctions.GetFormationPositions(9, 4);//Zako
+                    enemies[4].original_position = callEnemyFunctions.GetFormationPositions(1, 3);//Zako
+                    enemies[5].original_position = callEnemyFunctions.GetFormationPositions(2, 3);//Zako
+                    enemies[6].original_position = callEnemyFunctions.GetFormationPositions(0, 4);//Zako
+                    enemies[7].original_position = callEnemyFunctions.GetFormationPositions(1, 4);//Zako
+                }
+                else if (spawnedWaves == 1)
+                {
+                    enemies[8].original_position = callEnemyFunctions.GetFormationPositions(3, 1); // Goei
+                    enemies[9].original_position = callEnemyFunctions.GetFormationPositions(2, 2); //Bon
+                    enemies[10].original_position = callEnemyFunctions.GetFormationPositions(6,1);// Goei
+                    enemies[11].original_position = callEnemyFunctions.GetFormationPositions(7,2);//Bon
+                    enemies[12].original_position = callEnemyFunctions.GetFormationPositions(4,1);// Goei
+                    enemies[13].original_position = callEnemyFunctions.GetFormationPositions(3,2);//Bon
+                    enemies[14].original_position = callEnemyFunctions.GetFormationPositions(5,1);// Goei
+                    enemies[15].original_position = callEnemyFunctions.GetFormationPositions(6,2);//Bon
+                }
+                else if (spawnedWaves == 2)
+                {
+                    enemies[16].original_position = callEnemyFunctions.GetFormationPositions(1, 1); // Goei
+                    enemies[17].original_position = callEnemyFunctions.GetFormationPositions(2, 0); //Bos
+                    enemies[18].original_position = callEnemyFunctions.GetFormationPositions(8, 1);// Goei
+                    enemies[19].original_position = callEnemyFunctions.GetFormationPositions(7, 0);//Bos
+                    enemies[20].original_position = callEnemyFunctions.GetFormationPositions(2, 1);// Goei
+                    enemies[21].original_position = callEnemyFunctions.GetFormationPositions(3, 0);//Bos
+                    enemies[22].original_position = callEnemyFunctions.GetFormationPositions(7, 1);// Goei
+                    enemies[23].original_position = callEnemyFunctions.GetFormationPositions(6, 0);//Bos
+                }
+                else if (spawnedWaves == 0) //Arreglar
+                {
+                    enemies[24].original_position = callEnemyFunctions.GetFormationPositions(3, 1); // Goei
+                    enemies[25].original_position = callEnemyFunctions.GetFormationPositions(2, 2); //Bon
+                    enemies[26].original_position = callEnemyFunctions.GetFormationPositions(6, 1);// Goei
+                    enemies[27].original_position = callEnemyFunctions.GetFormationPositions(7, 2);//Bon
+                    enemies[28].original_position = callEnemyFunctions.GetFormationPositions(4, 1);// Goei
+                    enemies[29].original_position = callEnemyFunctions.GetFormationPositions(3, 2);//Bon
+                    enemies[30].original_position = callEnemyFunctions.GetFormationPositions(5, 1);// Goei
+                    enemies[31].original_position = callEnemyFunctions.GetFormationPositions(6, 2);//Bon
+                }
+                else if (spawnedWaves == 0) //Lo mismo
+                {
+                    enemies[32].original_position = callEnemyFunctions.GetFormationPositions(3, 1); 
+                    enemies[33].original_position = callEnemyFunctions.GetFormationPositions(3, 1);
+                    enemies[34].original_position = callEnemyFunctions.GetFormationPositions(3, 1);
+                    enemies[35].original_position = callEnemyFunctions.GetFormationPositions(3, 1);
+                    enemies[36].original_position = callEnemyFunctions.GetFormationPositions(3, 1);
+                    enemies[37].original_position = callEnemyFunctions.GetFormationPositions(3, 1);
+                    enemies[38].original_position = callEnemyFunctions.GetFormationPositions(3, 1);
+                    enemies[39].original_position = callEnemyFunctions.GetFormationPositions(3, 1);
+                }
                 spawnedWaves++;
                 timerSpawnEnemies.StartTimer(5.0);
             }
@@ -203,33 +261,30 @@ int main()
                     }
                     else if (enemies[count].inPosition[2] == false)
                     {
-                        int j = count / 10;
-                        int i = count - (j * 10);
-                        enemies[count].MoveToInAStraightLine(enemies[count].GetFormationPositions(i, j),2); // Go to the assigned formation position
+                        enemies[count].MoveToInAStraightLine(enemies[count].original_position,2); // Go to the assigned formation position
                     }
                     else if (enemies[count].inPosition[2] == true)
                     {
-                        int rndmax = 0;
-                        for (int i = 0; i < enemies.size(); i++)
-                        {
-                            if (enemies[i].inPosition[2] == true)
-                            {
-                                rndmax++;
-                            }
-                        }
-                        int rnd = GetRandomValue(0, rndmax - 1);
-                        if (enemyAttackTimer.CheckFinished() && enemies[rnd].IsEnemyAlive() == true && enemies[rnd].inPosition[2] == true && enemies[rnd].inPosition[3] == false)
-                        {
-                            enemies[rnd].Shoot(&enemybullets, player);         // Make a random enemy shoot
-                            if (hardmode) { enemyAttackTimer.StartTimer(0.1); }
-                            else { enemyAttackTimer.StartTimer(1.0); }
-                            enemies[rnd].inPosition[3] = true;
-                        }
-                        if (enemies[count].inPosition[3] == true) 
-                        {
-                            enemies[count].Launch(player); // Launch towards the player
-
-                        }
+                        //int rndmax = 0;
+                        //for (int i = 0; i < enemies.size(); i++)
+                        //{
+                        //    if (enemies[i].inPosition[2] == true)
+                        //    {
+                        //        rndmax++;
+                        //    }
+                        //}
+                        //int rnd = GetRandomValue(0, rndmax - 1);
+                        //if (enemyAttackTimer.CheckFinished() && enemies[rnd].IsEnemyAlive() == true && enemies[rnd].inPosition[2] == true && enemies[rnd].inPosition[3] == false)
+                        //{
+                        //    enemies[rnd].Shoot(&enemybullets, player);         // Make a random enemy shoot
+                        //    if (hardmode) { enemyAttackTimer.StartTimer(0.1); }
+                        //    else { enemyAttackTimer.StartTimer(1.0); }
+                        //    enemies[rnd].inPosition[3] = true;
+                        //}
+                        //if (enemies[count].inPosition[3] == true) 
+                        //{
+                        //    enemies[count].Launch(player); // Launch towards the player
+                        //}
                     }
                 }
                 else
@@ -325,7 +380,7 @@ int main()
             CheckGodMode();
             if (timerSpawnEnemies.CheckFinished() == true && spawnedWaves < 5)
             {
-                callEnemyFunctions.SpawnHorde(&enemies, 8, GetRandomValue(1, 4));
+                //callEnemyFunctions.SpawnHorde(&enemies, 8, GetRandomValue(1, 6));
                 spawnedWaves++;
                 timerSpawnEnemies.StartTimer(5.0);
             }
@@ -616,6 +671,12 @@ int main()
                     {
                         Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32 , enemies[i].GetEnemyPosition().y - 32 }; //-32 -32
                         DrawTextureEx(Bon_t, Correccion, enemies[i].texture_angle, 1, WHITE);
+                        enemies[i].enemy_texture_position = Correccion;
+                    }
+                    else if (enemies[i].type == Bos) //Bos
+                    {
+                        Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32 , enemies[i].GetEnemyPosition().y - 32 }; //-32 -32
+                        DrawTextureEx(Bos_t, Correccion, enemies[i].texture_angle, 1, WHITE);
                         enemies[i].enemy_texture_position = Correccion;
                     }
                 }

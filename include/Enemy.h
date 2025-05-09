@@ -34,13 +34,15 @@ public:
     float texture_angle = 0;
     Vector2 enemy_texture_position;
 
-    void SpawnHorde(std::vector <Enemy>* manager, int num, int spawnId);
+    void SpawnHorde(std::vector <Enemy>* manager, int num, int spawnId, std::vector <int> enemyId);
+    void SpawnLevel1(std::vector <Enemy>* manager, int wave);
+
 
     void MoveToInAStraightLine(Vector2 destination, int positionId);
     Vector2 StartingPositions(int spawnId);
     Vector2 GetSemiCirclePoints();
     void SemiCircleMovement();
-    Vector2 GetFormationPositions(int fila, int columna);
+    Vector2 GetFormationPositions(int x_pos, int y_pos);
     void Launch(const Player p);
 
 
@@ -55,5 +57,4 @@ public:
     void SetEnemyPosition(int x, int y);
     void SetEnemyRadius(int rad);
     void SetEnemyLife(bool alive);
-
 };
