@@ -36,6 +36,7 @@ public:
 
     void SpawnHorde(std::vector <Enemy>* manager, int num, int spawnId, std::vector <int> enemyId);
     void SpawnLevel1(std::vector <Enemy>* manager, int wave);
+    void SpawnLevel2(std::vector <Enemy>* manager, int wave);
 
 
     void MoveToInAStraightLine(Vector2 destination, int positionId);

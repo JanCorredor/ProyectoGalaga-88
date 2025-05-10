@@ -90,6 +90,36 @@ void Enemy::SpawnLevel1(std::vector <Enemy>* manager, int wave)
         SpawnHorde(manager, 8, 2, ZBZBon); //Zako Bon Zako Bon Up Righ
     }
 }
+void Enemy::SpawnLevel2(std::vector <Enemy>* manager, int wave)
+{
+    //Upper Center = 0 //Upper Left //Upper Right //Center Left //Center Right //Low Left //Low Righ
+    if (wave == 0)
+    {
+        std::vector <int> todoZako = { 1,1,1,1 };
+        SpawnHorde(manager, 4, 3, todoZako); //Zako Cent Left
+        SpawnHorde(manager, 4, 4, todoZako); //Zako Cent Right
+    }
+    else if (wave == 1)
+    {
+        std::vector <int> GBGBGBGBon = {0,0,0,0, 2,2,2,2};
+        SpawnHorde(manager, 8, 5, GBGBGBGBon); //Goei Goei Bon Bon Low Left
+    }
+    else if (wave == 2)
+    {
+        std::vector <int> GBGBGBGBos = {0,0,0,0, 3,3,3,3};
+        SpawnHorde(manager, 8, 6, GBGBGBGBos); //Goei Goei Bos Bos Low Right
+    }
+    else if (wave == 3)
+    {
+        std::vector <int> GBGBon = { 0,0,0,0, 2,2,2,2 };
+        SpawnHorde(manager, 8, 1, GBGBon); //Goei Goei Bon Bon Up Left
+    }
+    else if (wave == 4)
+    {
+        std::vector <int> ZBZBon = { 1,1,1,1, 2,2,2,2};
+        SpawnHorde(manager, 8, 2, ZBZBon); //Zako Bon Zako Bon Up Righ
+    }
+}
 
 void Enemy::MoveToInAStraightLine(Vector2 destination, int positionId)
 {
