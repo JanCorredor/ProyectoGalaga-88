@@ -60,3 +60,18 @@ public:
     void SetEnemyRadius(int rad);
     void SetEnemyLife(bool alive);
 };
+
+class Boss : public Enemy 
+{
+private:
+    int hp;
+    bool isSpawned;
+
+public:
+    Boss();
+
+    int GetHP();
+    void SetHP(int newHP);
+    void GetHit();
+    void SpawnBoss();
+};

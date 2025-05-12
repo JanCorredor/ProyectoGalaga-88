@@ -19,7 +19,7 @@ using namespace std;
 //-------------------------------------------------------------------------------------
 typedef enum GameScreen 
 { 
-	LOGO = 0, TITLE, STAGE1,STAGE2, ENDING 
+	LOGO = 0, TITLE, STAGE1,STAGE2, BOSS, ENDING 
 } GameScreen;
 
 //-------------------------------------------------------------------------------------
@@ -33,6 +33,12 @@ bool hasWon;
 bool updatedScore = false;
 
 bool isClean = false;
+
+Timer enemyAttackTimer;
+Timer logoTimer;
+Timer timerSpawnEnemies;
+Timer timerChangeStage;
+Timer timerStageTitle;
 
 //-------------------------------------------------------------------------------------
 // Declaracion de funciones
@@ -50,8 +56,11 @@ std::vector <Enemy> enemies;  //Vector to control all the enemies
 Enemy callEnemyFunctions; // An auxiliary to call functions from the Enemy class
 std::vector <Bullet> enemybullets;  //Vector to control all the enemy bullets
 
+Boss boss;
+
 void DrawEnemyBullet();//Update all the enemy bullets (Harmode off)
 void DrawGodShot(); ////Update all the enemy bullets (Harmode on)
+void EnemyManager(); //Manages enemy spawn waves
 
 void ChangeStage(Timer timerChangeStage);
 
@@ -90,6 +99,8 @@ int main()
     Texture Zako_t = LoadTexture("Enemies/Zako.png");
     Texture Bon_t = LoadTexture("Enemies/Bon.png");
     Texture Bos_t = LoadTexture("Enemies/Boos.png");
+
+    Texture Boss_t = LoadTexture("Enemies/Galaga_'88_Giant Zako.png");
 
     ////Player
     Texture player_body_t = LoadTexture("Player/PlayerGalaga88.png");
@@ -136,14 +147,9 @@ int main()
     bool triggerTimerTitleStageTwo = false;
 
     //Creation of Timers (and startups)
-    Timer enemyAttackTimer;
     enemyAttackTimer.StartTimer(10.0);
-    Timer logoTimer;
     logoTimer.StartTimer(2.0);
-    Timer timerSpawnEnemies;
     timerSpawnEnemies.StartTimer(5.0);
-    Timer timerChangeStage;
-    Timer timerStageTitle;
 
     //-------------------------------------------------------------------------------------
     // Game Loop
@@ -176,7 +182,7 @@ int main()
             if (IsKeyPressed(KEY_ENTER))
             {
                 PlaySound(buttonclick);
-                currentScreen = STAGE1;
+                currentScreen = STAGE1; // STAGE 1 
                 StopSound(GalagaOpening);
             }
         } break;
@@ -292,6 +298,7 @@ int main()
                 }
 
             }
+            EnemyManager();
 
 
             //Player
@@ -444,52 +451,7 @@ int main()
                 //SPAWN BOSS EL JEFE NO EL MOB
             }
 
-            for (int count = 0; count < enemies.size(); count++) //Update all enemyes
-            {
-                if (enemies[count].IsEnemyAlive() == true)
-                {
-                    if (enemies[count].inPosition[0] == false)
-                    {
-                        enemies[count].MoveToInAStraightLine(enemies[count].GetSemiCirclePoints(), 0); //Move from spawn to screen
-                    }
-                    else if (enemies[count].inPosition[1] == false)
-                    {
-                        enemies[count].SemiCircleMovement(); // Make the semicircle movement
-                    }
-                    else if (enemies[count].inPosition[2] == false)
-                    {
-                        enemies[count].MoveToInAStraightLine(enemies[count].original_position, 2); // Go to the assigned formation position
-                    }
-                    else if (enemies[count].inPosition[2] == true)
-                    {
-                        int rndmax = 0;
-                        for (int i = 0; i < enemies.size(); i++)
-                        {
-                            if (enemies[i].inPosition[2] == true)
-                            {
-                                rndmax++;
-                            }
-                        }
-                        int rnd = GetRandomValue(0, rndmax - 1);
-                        if (enemyAttackTimer.CheckFinished() && enemies[rnd].IsEnemyAlive() == true && enemies[rnd].inPosition[2] == true && enemies[rnd].inPosition[3] == false)
-                        {
-                            enemies[rnd].Shoot(&enemybullets, player);         // Make a random enemy shoot
-                            if (hardmode) { enemyAttackTimer.StartTimer(0.1); }
-                            else { enemyAttackTimer.StartTimer(1.0); }
-                            enemies[rnd].inPosition[3] = true;
-                        }
-                        if (enemies[count].inPosition[3] == true)
-                        {
-                            //enemies[count].Launch(player); // Launch towards the player
-                        }
-                    }
-                }
-                else
-                {
-                    enemies[count].inPosition[2] = true; //If enemy is dead check the positions so functions do not mess up
-                }
-
-            }
+            EnemyManager();
 
 
             //Player
@@ -564,6 +526,92 @@ int main()
                 }
             }
         }break;
+        case BOSS:
+        {
+            ChangeStage(timerChangeStage);
+
+            if (timerChangeStage.CheckFinished() == true)
+            {
+
+            }
+
+            //Enemy
+            
+            boss.SpawnBoss();
+            
+
+            //Player
+            CheckGodMode();
+            player.Move();
+
+            //Shoot
+            if (IsKeyPressed(KEY_SPACE))
+            {
+                if (player.GetAlive() == true) {
+                    PlaySound(playerShoot);
+                    player_bullet_counter += 1;
+                    player.Shoot(&playerbullets);
+                }
+            }
+
+            //Enemy Collisions
+            for (int i = 0; i < enemies.size(); i++)
+            {
+                for (int j = 0; j < playerbullets.size(); j++)
+                {
+                    if (enemies[i].IsEnemyAlive() == true) {
+                        if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius, enemies[i].enemy_texture_position, enemies[i].GetEnemyRadius()))
+                        {
+                            player.SumScore(100);
+                            hit_counter++;
+                            PlaySound(enemyDeathExplosion);
+                            enemies[i].SetEnemyLife(false);
+                            playerbullets.erase(playerbullets.begin() + j);
+                        }
+                    }
+                }
+            }
+
+            //Winning/Losing Conditions
+            bool allDead = true;
+            if (player.GetLives() < 0)
+            {
+                spawnedWaves = 0;
+                hasWon = false;
+                currentScreen = ENDING;
+            }
+
+            for (int i = 0; i < enemies.size(); i++)
+            {
+                if (enemies.empty() == false)
+                {
+                    if (enemies[i].IsEnemyAlive() == true)
+                    {
+                        allDead = false;
+                    }
+                }
+            }
+            if (allDead == true && enemies.empty() == false && spawnedWaves == 5)
+            {
+                spawnedWaves = 0;
+                hasWon = true;
+                currentScreen = STAGE2;
+            }
+
+            //Score
+            if (player.GetScore() > LoadHighScore(highestHighScore))
+            {
+                if (updatedScore == false)
+                {
+                    UpdateHighScore(player.GetScore());
+                    updatedScore = true;
+                }
+                else
+                {
+                    SaveNewHighScore(highestHighScore, player.GetScore());
+                }
+            }
+        }
         case ENDING:
         {
             if (isClean = false)
@@ -884,6 +932,78 @@ int main()
 
 
         } break;
+        case BOSS:
+        {
+            ClearBackground(BLACK);
+
+            //Particulas
+            DrawParticles();
+
+            //UI
+            ////Scores
+            DrawText("1UP", GetScreenWidth() / 13, GetScreenHeight() / 50, 45, YELLOW);
+            DrawText("HIGH SCORE", GetScreenWidth() / 3, GetScreenHeight() / 50, 45, RED);
+
+            DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
+            DrawText(TextFormat("%i", LoadHighScore(highestHighScore)), GetScreenWidth() / 3, GetScreenHeight() / 20, 45, WHITE);
+
+            //// Lives Remaining
+            for (int i = 0; i < player.GetLives(); i++)
+            {
+                DrawTexture(player_body_t, 74 * i - GetScreenWidth() / 30, GetScreenHeight() * 9 / 10, WHITE);
+            }
+
+            ////Stage Indicator
+            DrawTexture(stageindicator1, GetScreenWidth() * 95 / 100, GetScreenHeight() * 92 / 100, WHITE);
+
+            //Bullets
+            DrawBullet();
+
+            for (int i = 0; i < playerbullets.size(); i++) //Esto deberia estar en DrawBullets
+            {
+                DrawTexture(player_bullet, playerbullets[i].bullet_position.x, playerbullets[i].bullet_position.y, WHITE);
+            }
+
+            if (hardmode == 0)
+            {
+                DrawEnemyBullet();
+            }
+            else
+            {
+                DrawGodShot();
+            }
+
+            for (int i = 0; i < enemybullets.size(); i++) //Esto deberia estar en DrawBullets
+            {
+                int x = GetRandomValue(0, 1);
+                if (x == 0)
+                {
+                    DrawTexture(enemybullet_0, enemybullets[i].bullet_position.x, enemybullets[i].bullet_position.y, WHITE);
+                }
+                else
+                {
+                    DrawTexture(enemybullet_1, enemybullets[i].bullet_position.x, enemybullets[i].bullet_position.y, WHITE);
+                }
+            }
+
+            //Player
+            Vector2 playerActualPosition = player.GetPosition();
+            if (player.GetAlive() == true) {
+                DrawTexture(player_body_t, playerActualPosition.x - 74, playerActualPosition.y - 63, WHITE);
+            }
+
+            //Enemies
+            boss.SetEnemyPosition({ 200,200 });
+
+            Vector2 bossActualPosition = boss.GetEnemyPosition();
+            boss.SpawnBoss();
+            if (boss.IsEnemyAlive() == true)
+            {
+                DrawTexture(Boss_t, bossActualPosition.x, bossActualPosition.y, WHITE);
+            }
+
+
+        }break;
         case ENDING:
         {
             ClearBackground(BLACK);
@@ -1046,7 +1166,58 @@ void DrawGodShot()
     player.CheckDeath(); //Check if player has lost all lives
 }
 
-void ChangeStage(Timer timerChangeStage)
+void EnemyManager() 
+{
+    for (int count = 0; count < enemies.size(); count++) //Update all enemyes
+    {
+        if (enemies[count].IsEnemyAlive() == true)
+        {
+            if (enemies[count].inPosition[0] == false)
+            {
+                enemies[count].MoveToInAStraightLine(enemies[count].GetSemiCirclePoints(), 0); //Move from spawn to screen
+            }
+            else if (enemies[count].inPosition[1] == false)
+            {
+                enemies[count].SemiCircleMovement(); // Make the semicircle movement
+            }
+            else if (enemies[count].inPosition[2] == false)
+            {
+                enemies[count].MoveToInAStraightLine(enemies[count].original_position, 2); // Go to the assigned formation position
+            }
+            else if (enemies[count].inPosition[2] == true)
+            {
+                int rndmax = 0;
+                for (int i = 0; i < enemies.size(); i++)
+                {
+                    if (enemies[i].inPosition[2] == true)
+                    {
+                        rndmax++;
+                    }
+                }
+                int rnd = GetRandomValue(0, rndmax - 1);
+                if (enemyAttackTimer.CheckFinished() && enemies[rnd].IsEnemyAlive() == true && enemies[rnd].inPosition[2] == true && enemies[rnd].inPosition[3] == false)
+                {
+                    enemies[rnd].Shoot(&enemybullets, player);         // Make a random enemy shoot
+                    if (hardmode) { enemyAttackTimer.StartTimer(0.1); }
+                    else { enemyAttackTimer.StartTimer(1.0); }
+                    enemies[rnd].inPosition[3] = true;
+                }
+                if (enemies[count].inPosition[3] == true)
+                {
+                    //enemies[count].Launch(player); // Launch towards the player
+                }
+            }
+        }
+        else
+        {
+            enemies[count].inPosition[2] = true; //If enemy is dead check the positions so functions do not mess up
+        }
+
+    }
+
+} //
+
+void ChangeStage(Timer timerChangeStage) // Change Stage Animation
 {
     timerChangeStage.StartTimer(5.0f);
     //Animation

@@ -450,3 +450,35 @@ void Enemy::SetEnemyPosition(Vector2 v2) { this->enemy_position = v2; }
 void Enemy::SetEnemyPosition(int x, int y) { this->enemy_position.x = x; this->enemy_position.y = y; }
 void Enemy::SetEnemyRadius(int rad) { this->enemy_radius = rad; };
 void Enemy::SetEnemyLife(bool alive) { this->enemy_alive = alive; };
+
+Boss::Boss() 
+{
+    this->enemy_radius = 128; this->enemy_alive = false; this->enemy_speed = { 5,5 }; this->angle = 0; this->hp = 5;
+}
+
+void Boss::GetHit() 
+{
+    this->hp--;
+    if (this->hp > 0)
+    {
+        SetEnemyLife(false);
+    }
+    else 
+    {
+        //Animation
+    }
+
+}
+
+void Boss::SpawnBoss() 
+{
+    if (this->enemy_alive == false) 
+    {
+        this->enemy_alive = true;
+
+        if (this->enemy_position.y > 1)
+        {
+
+        }
+    }
+}
