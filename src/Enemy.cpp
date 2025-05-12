@@ -283,7 +283,7 @@ Vector2 Enemy::GetFormationPositions(int x_pos, int y_pos)     //Vector2 enemies
     return formationPosition;
 }
 
-void Enemy::Launch(Player p)
+void Enemy::Launch(Player* p)
 {
     int speed = 5; // 10
     extern bool hardmode;
@@ -327,7 +327,7 @@ void Enemy::Launch(Player p)
                 radius = 5;
             }
 
-            if ((this->enemy_position.y) < p.GetPositionY() - radius && this->aux == 0)
+            if ((this->enemy_position.y) < p->GetPositionY() - radius && this->aux == 0)
             {
                 this->angle = 0;
                 this->texture_angle = 0;
@@ -371,38 +371,35 @@ void Enemy::Launch(Player p)
             }
             else
             {
-                this->enemy_position.y += speed; // 10 
+                this->enemy_position.y += speed;  
             }
         }
         else if (this->type == Bos)
         {
-            if (this->enemy_position.y - 100 < GetScreenHeight())
+            if (this->enemy_position.y < p->GetPosition().y - 300 && this->aux == 0)
             {
-                this->enemy_position.y += 10; // 10 
+                this->enemy_position.y += speed;  
             }
+            //else if () //Timer 
+            //{
+            //    if (p->GetPosition().x > this->enemy_position.x - 100 && p->GetPosition().x < this->enemy_position.x + 100) 
+            //    {
+            //        if (p->GetAlive() == true && p->GetInmortal() == false) 
+            //        {
+            //            p->Death();
+            //            p->CheckDeath();
+            //        }
+            //    }
+            //}
             else if (this->enemy_position.y >= GetScreenHeight())
             {
                 this->enemy_position.y = -10;
                 enemy_color = RED;
             }
-
-            if (this->enemy_position.y < p.GetPosition().y - 50 && this->aux == 0)
-            {
-                this->enemy_position.y += speed; // 10 
-            }
             else
             {
-                
-                if (p.GetPosition().x > this->enemy_position.x - 100 && p.GetPosition().x < this->enemy_position.x + 100) 
-                {
-                    if (p.GetAlive() == true && p.GetInmortal() == false) 
-                    {
-                        p.Death();
-                        p.CheckDeath();
-                    }
-                }
+                this->enemy_position.y += speed;
             }
-
         }
     }
     else if (enemy_color.g == RED.g)
@@ -415,7 +412,6 @@ void Enemy::Launch(Player p)
         }
     }
 }
-
 
 void Enemy::Shoot(std::vector <Bullet>* bulletManager, Player player)
 {

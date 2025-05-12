@@ -282,7 +282,7 @@ int main()
                         }
                         if (enemies[count].inPosition[3] == true) 
                         {
-                            enemies[count].Launch(player); // Launch towards the player
+                            enemies[count].Launch(&player); // Launch towards the player
                         }
                     }
                 }
@@ -647,34 +647,6 @@ int main()
             //Particles
             DrawParticles();
 
-            //UI
-            ////Scores
-            DrawText("1UP", GetScreenWidth() / 13, GetScreenHeight() / 50, 45, YELLOW);
-            DrawText("HIGH SCORE", GetScreenWidth() / 3, GetScreenHeight() / 50, 45, RED);
-
-            DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
-            DrawText(TextFormat("%i", LoadHighScore(highestHighScore)), GetScreenWidth() / 3, GetScreenHeight() / 20, 45, WHITE);
-
-            //// Lives Remaining
-            for (int i = 0; i < player.GetLives(); i++)
-            {
-                DrawTexture(player_body_t, 74 * i - GetScreenWidth() / 30, GetScreenHeight() * 9 / 10, WHITE);
-            }
-
-            ////Stage Indicator
-            DrawTexture(stageindicator1, GetScreenWidth() * 95 / 100, GetScreenHeight() * 92 / 100, WHITE);
-
-            //Starting level text
-            if (triggerTimerTitleStageOne == false)
-            {
-                timerStageTitle.StartTimer(2.0);
-                triggerTimerTitleStageOne = true;
-            }
-            if (timerStageTitle.CheckFinished() == false)
-            {
-                DrawText("STAGE 1", GetScreenWidth() * 9 / 24, GetScreenHeight() / 3, 45, GREEN);
-            }
-
             //Bullets
             DrawBullet();
 
@@ -708,7 +680,14 @@ int main()
             //Player
             Vector2 playerActualPosition = player.GetPosition();
             if (player.GetAlive() == true) {
-                DrawTexture(player_body_t, playerActualPosition.x - 74, playerActualPosition.y - 63, WHITE);
+                if (player.GetInmortal())
+                {
+                    DrawTexture(player_body_t, playerActualPosition.x - 74, playerActualPosition.y - 63, BLUE);
+                }
+                else
+                {
+                    DrawTexture(player_body_t, playerActualPosition.x - 74, playerActualPosition.y - 63, WHITE);
+                }
             }
             
             //Enemies
@@ -741,7 +720,64 @@ int main()
                         enemies[i].enemy_texture_position = Correccion;
                     }
                 }
+                else
+                {
+                    if (enemies[i].type == Goei) //Goei
+                    {
+                        Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 33, enemies[i].GetEnemyPosition().y - 37 }; //-33 -37
+                        DrawTextureEx(Goei_0_t, Correccion, enemies[i].texture_angle, 0.5, RED);
+                        enemies[i].enemy_texture_position = Correccion;
+                    }
+                    else if (enemies[i].type == Zako) //Zako
+                    {
+                        Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32, enemies[i].GetEnemyPosition().y - 32 }; //-32 -32
+                        DrawTextureEx(Zako_t, Correccion, enemies[i].texture_angle, 1, RED);
+                        enemies[i].enemy_texture_position = Correccion;
+                    }
+                    else if (enemies[i].type == Bon) //Bon
+                    {
+                        Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32 , enemies[i].GetEnemyPosition().y - 32 }; //-32 -32
+                        DrawTextureEx(Bon_t, Correccion, enemies[i].texture_angle, 1, RED);
+                        enemies[i].enemy_texture_position = Correccion;
+                    }
+                    else if (enemies[i].type == Bos) //Bos
+                    {
+                        Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32, enemies[i].GetEnemyPosition().y - 32 }; //-32 -32
+                        DrawTextureEx(Bos_t, Correccion, enemies[i].texture_angle, 1, RED);
+                        enemies[i].enemy_texture_position = Correccion;
+                    }
+                }
             }
+
+            //UI
+            ////Scores
+            DrawText("1UP", GetScreenWidth() / 13, GetScreenHeight() / 50, 45, YELLOW);
+            DrawText("HIGH SCORE", GetScreenWidth() / 3, GetScreenHeight() / 50, 45, RED);
+
+            DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
+            DrawText(TextFormat("%i", LoadHighScore(highestHighScore)), GetScreenWidth() / 3, GetScreenHeight() / 20, 45, WHITE);
+
+            //// Lives Remaining
+            for (int i = 0; i < player.GetLives(); i++)
+            {
+                DrawTexture(player_body_t, 74 * i - GetScreenWidth() / 30, GetScreenHeight() * 9 / 10, WHITE);
+            }
+
+            ////Stage Indicator
+            DrawTexture(stageindicator1, GetScreenWidth() * 95 / 100, GetScreenHeight() * 92 / 100, WHITE);
+
+            //Starting level text
+            if (triggerTimerTitleStageOne == false)
+            {
+                timerStageTitle.StartTimer(2.0);
+                triggerTimerTitleStageOne = true;
+            }
+            if (timerStageTitle.CheckFinished() == false)
+            {
+                DrawText("STAGE 1", GetScreenWidth() * 9 / 24, GetScreenHeight() / 3, 45, GREEN);
+            }
+
+
         } break;
         case STAGE2:
         {
@@ -749,6 +785,8 @@ int main()
 
             //Particulas
             DrawParticles();
+
+            //EXPLOSION
 
             //UI
             ////Scores

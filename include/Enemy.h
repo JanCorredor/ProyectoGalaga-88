@@ -30,6 +30,7 @@ public:
     Vector2 original_position = { 0,0 };
     float aux = 0;
 
+    Color DEAD = { 230, 41, 55, 255 };
     enemyType type;
     float texture_angle = 0;
     Vector2 enemy_texture_position;
@@ -44,7 +45,7 @@ public:
     Vector2 GetSemiCirclePoints();
     void SemiCircleMovement();
     Vector2 GetFormationPositions(int x_pos, int y_pos);
-    void Launch(const Player p);
+    void Launch(Player* p);
 
 
     void Shoot(std::vector <Bullet>* bulletManager, Player player);
