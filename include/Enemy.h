@@ -28,7 +28,7 @@ public:
     Enemy();
     bool inPosition[4] = {false,false,false, false}; //CircleStart, CricleEnd, Formation, Assault
     Vector2 original_position = { 0,0 };
-    int aux = 0;
+    float aux = 0;
 
     enemyType type;
     float texture_angle = 0;

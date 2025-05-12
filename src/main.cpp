@@ -282,7 +282,7 @@ int main()
                         }
                         if (enemies[count].inPosition[3] == true) 
                         {
-                            //enemies[count].Launch(player); // Launch towards the player
+                            enemies[count].Launch(player); // Launch towards the player
                         }
                     }
                 }
@@ -739,8 +739,6 @@ int main()
                         Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32, enemies[i].GetEnemyPosition().y - 32 }; //-32 -32
                         DrawTextureEx(Bos_t, Correccion, enemies[i].texture_angle, 1, WHITE);
                         enemies[i].enemy_texture_position = Correccion;
-                        //DrawRectangle(enemies[i].GetEnemyPosition().x - 50, enemies[i].GetEnemyPosition().y + 100, 100, 50, RED);
-
                     }
                 }
             }
@@ -833,7 +831,6 @@ int main()
                         Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32, enemies[i].GetEnemyPosition().y - 32 }; //-32 -32
                         DrawTextureEx(Bos_t, Correccion, enemies[i].texture_angle, 1, WHITE);
                         enemies[i].enemy_texture_position = Correccion;
-                        //DrawRectangle(enemies[i].GetEnemyPosition().x - 100, enemies[i].GetEnemyPosition().y + 500,100,50,RED);
                     }
                 }
             }
@@ -1031,4 +1028,9 @@ void CheckGodMode()
     {
         player.ToggleInmortal(false);
     }
+    //1 Level 1 
+    //2 Level 2
+    //3 Level 2 Bossfight
+    //4 EndScreen
+    //0 Main Menu
 }

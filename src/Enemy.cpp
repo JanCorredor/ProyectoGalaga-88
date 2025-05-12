@@ -285,16 +285,17 @@ Vector2 Enemy::GetFormationPositions(int x_pos, int y_pos)     //Vector2 enemies
 
 void Enemy::Launch(Player p)
 {
-    int speed = 10; // 10
+    int speed = 5; // 10
     extern bool hardmode;
     if (enemy_color.r == WHITE.r)
     {
-        if (this->type == Goei)
+        if (this->type == Goei || this->type == Bon)
         {
             if (this->enemy_position.y - 100 < GetScreenHeight())
             {
-                this->enemy_position.y += 10; // 10 
-                this->enemy_position.x += 5;
+                this->enemy_position.y += speed; // 10 
+                this->enemy_position.x += sin(aux) * 7;
+                this->aux += 0.1;
             }
             else if (this->enemy_position.y >= GetScreenHeight())
             {
@@ -302,8 +303,20 @@ void Enemy::Launch(Player p)
                 enemy_color = RED;
             }
         }
-        if (this->type == Zako)
+        else if (this->type == Zako)
         {
+            float distanceLeft = abs(this->enemy_position.x - 0);
+            float distanceRight = abs(this->enemy_position.x - GetScreenWidth());
+            bool Left;
+            if (distanceLeft <= distanceRight)
+            {
+                Left = true;
+            }
+            else
+            {
+                Left = false;
+            }
+
             int radius;
             if (hardmode)
             {
@@ -311,76 +324,57 @@ void Enemy::Launch(Player p)
             }
             else
             {
-                radius = 10;
+                radius = 5;
             }
 
-            this->angle = 0;
-            if ((this->enemy_position.y + 2 * radius) < p.GetPosition().y+100 && this->aux == 0)
+            if ((this->enemy_position.y) < p.GetPositionY() - radius && this->aux == 0)
             {
+                this->angle = 0;
+                this->texture_angle = 0;
                 this->enemy_position.y += speed; // 10 
             }
-            else if (this->angle < 3.6/5 && hardmode == false)
+            else if ((this->texture_angle < 360 && this->texture_angle > -360) && hardmode == false)
             {
                 this->aux = 1;
-                if (this->enemy_position.x > p.GetPosition().x) 
+                if (Left)
                 {
-                this->enemy_position.x -= cos(this->angle + 270) * radius / 10;
-                    
-                }
-                else 
-                {
-                this->enemy_position.x += cos(this->angle + 270) * radius / 10;
-                }
-                this->enemy_position.y -= sin(this->angle + 270) * radius;
-
-                this->angle += 0.1 / 5;
-                this->texture_angle += 7.5 / 5;
-            }
-            else if (this->angle < 36 && hardmode) //Hardmode
-            {
-                this->aux = 1;
-                int rd = GetRandomValue(0, 1);
-
-                if (rd == 0)
-                {
-                    this->enemy_position.x -= cos(this->angle) * radius / 4;
+                    this->enemy_position.x += cos(this->angle) * radius;
+                    this->enemy_position.y -= sin(-this->angle) * radius;
+                    this->angle -= 0.1;
+                    this->texture_angle -= 7.5;
                 }
                 else
                 {
-                    this->enemy_position.x += cos(this->angle) * radius / 4;
+                    this->enemy_position.x -= cos(this->angle) * radius;
+                    this->enemy_position.y -= sin(this->angle) * radius;
+                    this->angle += 0.1;
+                    this->texture_angle += 7.5;
                 }
+            }
+            else if (hardmode) //Hardmode
+            {
+                this->aux = 1;
+
+                this->enemy_position.x += cos(this->angle) * radius / 4;
                 this->enemy_position.y += sin(this->angle) * radius;
 
                 this->angle += 0.1;
                 this->texture_angle += 7.5;
             }
-            //else if (this->enemy_position.y >= GetScreenHeight() && this->angle >= 36)
-            //{
-            //    this->enemy_position.y = -10;
-            //    this->angle = 0;
-            //    this->texture_angle = 0;
-            //    this->aux = 0;
-            //    enemy_color = RED;
-            //}
-            //else
-            //{
-            //    this->enemy_position.y += speed; 
-            //}
-
-        }
-        if (this->type == Bon)
-        {
-            if (this->enemy_position.y - 100 < GetScreenHeight())
-            {
-                this->enemy_position.y += 10; // 10 
-            }
             else if (this->enemy_position.y >= GetScreenHeight())
             {
                 this->enemy_position.y = -10;
+                this->angle = 0;
+                this->texture_angle = 0;
+                this->aux = 0;
                 enemy_color = RED;
             }
+            else
+            {
+                this->enemy_position.y += speed; // 10 
+            }
         }
-        if (this->type == Bos)
+        else if (this->type == Bos)
         {
             if (this->enemy_position.y - 100 < GetScreenHeight())
             {
