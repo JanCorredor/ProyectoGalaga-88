@@ -4,6 +4,7 @@
 #include "Defines.h"
 #include <vector>
 #include "Player.h"
+#include "Timer.h"
 
 #include <iostream>
 using namespace std;
@@ -380,21 +381,27 @@ void Enemy::Launch(Player* p)
             {
                 this->enemy_position.y += speed;  
             }
-            //else if () //Timer 
-            //{
-            //    if (p->GetPosition().x > this->enemy_position.x - 100 && p->GetPosition().x < this->enemy_position.x + 100) 
-            //    {
-            //        if (p->GetAlive() == true && p->GetInmortal() == false) 
-            //        {
-            //            p->Death();
-            //            p->CheckDeath();
-            //        }
-            //    }
-            //}
+            else if (aux == 0)
+            {
+                atta.StartTimer(3);
+                aux = 1;
+            }
+            else if (atta.CheckFinished() == false) //Timer 
+            {
+                if (p->GetPosition().x > this->enemy_position.x - 100 && p->GetPosition().x < this->enemy_position.x + 100) 
+                {
+                    if (p->GetAlive() == true && p->GetInmortal() == false) 
+                    {
+                        p->Death();
+                        p->CheckDeath();
+                    }
+                }
+            }
             else if (this->enemy_position.y >= GetScreenHeight())
             {
                 this->enemy_position.y = -10;
                 enemy_color = RED;
+                aux = 0;
             }
             else
             {

@@ -110,6 +110,7 @@ int main()
     Texture player_bullet = LoadTexture("Player/PlayerBullet.png");
     Texture enemybullet_0 = LoadTexture("Enemies/BalaEnemigo_0.png");
     Texture enemybullet_1 = LoadTexture("Enemies/BalaEnemigo_1.png");
+    Texture Bos_attack_t = LoadTexture("Enemies/BosAttack.png");
 
     //ResourceManager r;
 
@@ -252,53 +253,6 @@ int main()
                 }
                 spawnedWaves++;
                 timerSpawnEnemies.StartTimer(5.0);
-            }
-
-            for (int count = 0; count < enemies.size(); count++) //Update all enemyes
-            {
-                if (enemies[count].IsEnemyAlive() == true)
-                {
-                    if (enemies[count].inPosition[0] == false)
-                    {
-                        enemies[count].MoveToInAStraightLine(enemies[count].GetSemiCirclePoints(),0); //Move from spawn to screen
-                    }
-                    else if (enemies[count].inPosition[1] == false)
-                    {
-                        enemies[count].SemiCircleMovement(); // Make the semicircle movement
-                    }
-                    else if (enemies[count].inPosition[2] == false)
-                    {
-                        enemies[count].MoveToInAStraightLine(enemies[count].original_position,2); // Go to the assigned formation position
-                    }
-                    else if (enemies[count].inPosition[2] == true)
-                    {
-                        int rndmax = 0;
-                        for (int i = 0; i < enemies.size(); i++)
-                        {
-                            if (enemies[i].inPosition[2] == true)
-                            {
-                                rndmax++;
-                            }
-                        }
-                        int rnd = GetRandomValue(0, rndmax - 1);
-                        if (enemyAttackTimer.CheckFinished() && enemies[rnd].IsEnemyAlive() == true && enemies[rnd].inPosition[2] == true && enemies[rnd].inPosition[3] == false)
-                        {
-                            enemies[rnd].Shoot(&enemybullets, player);         // Make a random enemy shoot
-                            if (hardmode) { enemyAttackTimer.StartTimer(0.1); }
-                            else { enemyAttackTimer.StartTimer(1.0); }
-                            enemies[rnd].inPosition[3] = true;
-                        }
-                        if (enemies[count].inPosition[3] == true) 
-                        {
-                            enemies[count].Launch(&player); // Launch towards the player
-                        }
-                    }
-                }
-                else
-                {
-                    enemies[count].inPosition[2] = true; //If enemy is dead check the positions so functions do not mess up
-                }
-
             }
             EnemyManager();
 
@@ -448,10 +402,6 @@ int main()
                 spawnedWaves++;
                 timerSpawnEnemies.StartTimer(5.0);
             }
-            else if (timerSpawnEnemies.CheckFinished() == true && spawnedWaves < 5)
-            {
-                //SPAWN BOSS EL JEFE NO EL MOB
-            }
 
             EnemyManager();
 
@@ -483,6 +433,20 @@ int main()
                             PlaySound(enemyDeathExplosion);
                             enemies[i].SetEnemyLife(false);
                             playerbullets.erase(playerbullets.begin() + j);
+
+                            //Score
+                            if (player.GetScore() > LoadHighScore(highestHighScore))
+                            {
+                                if (updatedScore == false)
+                                {
+                                    UpdateHighScore(player.GetScore());
+                                    updatedScore = true;
+                                }
+                                else
+                                {
+                                    SaveNewHighScore(highestHighScore, player.GetScore());
+                                }
+                            }
                         }
                     }
                 }
@@ -511,22 +475,10 @@ int main()
             {
                 spawnedWaves = 0;
                 hasWon = true;
-                currentScreen = STAGE2;
+                currentScreen = BOSS;
             }
 
-            //Score
-            if (player.GetScore() > LoadHighScore(highestHighScore))
-            {
-                if (updatedScore == false)
-                {
-                    UpdateHighScore(player.GetScore());
-                    updatedScore = true;
-                }
-                else
-                {
-                    SaveNewHighScore(highestHighScore, player.GetScore());
-                }
-            }
+
         }break;
         case BOSS:
         {
@@ -569,6 +521,20 @@ int main()
                             PlaySound(enemyDeathExplosion);
                             enemies[i].SetEnemyLife(false);
                             playerbullets.erase(playerbullets.begin() + j);
+
+                            //Score
+                            if (player.GetScore() > LoadHighScore(highestHighScore))
+                            {
+                                if (updatedScore == false)
+                                {
+                                    UpdateHighScore(player.GetScore());
+                                    updatedScore = true;
+                                }
+                                else
+                                {
+                                    SaveNewHighScore(highestHighScore, player.GetScore());
+                                }
+                            }
                         }
                     }
                 }
@@ -597,22 +563,10 @@ int main()
             {
                 spawnedWaves = 0;
                 hasWon = true;
-                currentScreen = STAGE2;
+                currentScreen = ENDING;
             }
 
-            //Score
-            if (player.GetScore() > LoadHighScore(highestHighScore))
-            {
-                if (updatedScore == false)
-                {
-                    UpdateHighScore(player.GetScore());
-                    updatedScore = true;
-                }
-                else
-                {
-                    SaveNewHighScore(highestHighScore, player.GetScore());
-                }
-            }
+
         }break;
         case ENDING:
         {
@@ -769,6 +723,11 @@ int main()
                         Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32, enemies[i].GetEnemyPosition().y - 32 }; //-32 -32
                         DrawTextureEx(Bos_t, Correccion, enemies[i].texture_angle, 1, WHITE);
                         enemies[i].enemy_texture_position = Correccion;
+                        if (enemies[i].aux == 1)
+                        {
+                            Vector2 Attack = { Correccion.x - 64 - 10, Correccion.y + 64 };
+                            DrawTextureEx(Bos_attack_t, Attack, 0, 2, WHITE);
+                        }
                     }
                 }
                 else
@@ -776,25 +735,25 @@ int main()
                     if (enemies[i].type == Goei) //Goei
                     {
                         Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 33, enemies[i].GetEnemyPosition().y - 37 }; //-33 -37
-                        DrawTextureEx(Goei_0_t, Correccion, enemies[i].texture_angle, 0.5, RED);
+                        DrawTextureEx(Goei_0_t, Correccion, enemies[i].texture_angle, 0.5, enemies[i].DEAD);
                         enemies[i].enemy_texture_position = Correccion;
                     }
                     else if (enemies[i].type == Zako) //Zako
                     {
                         Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32, enemies[i].GetEnemyPosition().y - 32 }; //-32 -32
-                        DrawTextureEx(Zako_t, Correccion, enemies[i].texture_angle, 1, RED);
+                        DrawTextureEx(Zako_t, Correccion, enemies[i].texture_angle, 1, enemies[i].DEAD);
                         enemies[i].enemy_texture_position = Correccion;
                     }
                     else if (enemies[i].type == Bon) //Bon
                     {
                         Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32 , enemies[i].GetEnemyPosition().y - 32 }; //-32 -32
-                        DrawTextureEx(Bon_t, Correccion, enemies[i].texture_angle, 1, RED);
+                        DrawTextureEx(Bon_t, Correccion, enemies[i].texture_angle, 1, enemies[i].DEAD);
                         enemies[i].enemy_texture_position = Correccion;
                     }
                     else if (enemies[i].type == Bos) //Bos
                     {
                         Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32, enemies[i].GetEnemyPosition().y - 32 }; //-32 -32
-                        DrawTextureEx(Bos_t, Correccion, enemies[i].texture_angle, 1, RED);
+                        DrawTextureEx(Bos_t, Correccion, enemies[i].texture_angle, 1, enemies[i].DEAD);
                         enemies[i].enemy_texture_position = Correccion;
                     }
                 }
@@ -1207,18 +1166,24 @@ void EnemyManager()
                 }
                 if (enemies[count].inPosition[3] == true)
                 {
-                    //enemies[count].Launch(player); // Launch towards the player
+                    enemies[count].Launch(&player); // Launch towards the player
                 }
             }
         }
         else
         {
             enemies[count].inPosition[2] = true; //If enemy is dead check the positions so functions do not mess up
+
+            if (enemies[count].DEAD.a != 0)
+            {
+                enemies[count].DEAD.a -= 1;
+            }
+            enemies[count].SetEnemyPosition(enemies[count].GetEnemyPosition().x, enemies[count].GetEnemyPosition().y + 1);
         }
 
     }
 
-} //
+} 
 
 void ChangeStage(Timer timerChangeStage) // Change Stage Animation
 {
@@ -1243,12 +1208,10 @@ void DevKeys(GameScreen currentScreen)
     if (IsKeyPressed(KEY_ONE))
     {
         currentScreen = STAGE1;
-        cout << "11111111111111111111111111111111111111111111111111111111111111111111111111111" << endl;
     }
     if (IsKeyPressed(KEY_TWO))
     {
         currentScreen = STAGE2;
-        cout << "22222222222222222222222222222222222222222222222222222222222222222222222222222" << endl;
     }
     if (IsKeyPressed(KEY_THREE))
     {
@@ -1262,5 +1225,4 @@ void DevKeys(GameScreen currentScreen)
     {
         currentScreen = TITLE;
     }
-
 }

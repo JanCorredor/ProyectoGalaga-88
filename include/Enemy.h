@@ -34,6 +34,8 @@ public:
     enemyType type;
     float texture_angle = 0;
     Vector2 enemy_texture_position;
+    Timer atta;
+
 
     void SpawnHorde(std::vector <Enemy>* manager, int num, int spawnId, std::vector <int> enemyId);
     void SpawnLevel1(std::vector <Enemy>* manager, int wave);
