@@ -7,6 +7,7 @@
 #include"Enemy.h"
 #include "Defines.h"
 #include "HighScoreStorage.h"
+#include <iostream>
 
 using namespace std;
 
@@ -50,11 +51,12 @@ std::vector <Bullet> playerbullets; //Vector to control all the player bullets
 int player_bullet_counter = 0; //How many bullets has the player shot
 int hit_counter = 0; //How How many bullets hit an enemy
 void DrawBullet();  //Update all the player bullets
-void CheckGodMode();
+void DevKeys(GameScreen currentScreen);
 
 std::vector <Enemy> enemies;  //Vector to control all the enemies
 Enemy callEnemyFunctions; // An auxiliary to call functions from the Enemy class
 std::vector <Bullet> enemybullets;  //Vector to control all the enemy bullets
+    GameScreen currentScreen = LOGO;
 
 Boss boss;
 
@@ -75,7 +77,6 @@ int main()
 	// Create the window and OpenGL context
 	InitWindow(800, 1280, "Galaga'88"); // 1280, 800
 
-    GameScreen currentScreen = LOGO;
 
     // Utility function from resource_dir.h to find the resources folder and set it as the current working directory so we can load from it
 	SearchAndSetResourceDir("resources");
@@ -171,6 +172,7 @@ int main()
         } break;
         case TITLE:
         {
+            DevKeys(currentScreen);
             if (IsKeyPressed(KEY_UP))
             {
                 hardmode = true; //Hardmode on
@@ -302,7 +304,7 @@ int main()
 
 
             //Player
-            CheckGodMode();
+            DevKeys(currentScreen);
             player.Move();
 
             //Shoot
@@ -455,7 +457,7 @@ int main()
 
 
             //Player
-            CheckGodMode();
+            DevKeys(currentScreen);
             player.Move();
 
             //Shoot
@@ -536,12 +538,12 @@ int main()
             }
 
             //Enemy
-            
+
             boss.SpawnBoss();
-            
+
 
             //Player
-            CheckGodMode();
+            DevKeys(currentScreen);
             player.Move();
 
             //Shoot
@@ -611,9 +613,10 @@ int main()
                     SaveNewHighScore(highestHighScore, player.GetScore());
                 }
             }
-        }
+        }break;
         case ENDING:
         {
+            DevKeys(currentScreen);
             if (isClean = false)
             {
                 if (updatedScore == false)
@@ -1227,7 +1230,7 @@ void ChangeStage(Timer timerChangeStage) // Change Stage Animation
     }
 }
 
-void CheckGodMode() 
+void DevKeys(GameScreen currentScreen)
 {
     if (IsKeyPressed(KEY_I)) 
     {
@@ -1237,9 +1240,27 @@ void CheckGodMode()
     {
         player.ToggleInmortal(false);
     }
-    //1 Level 1 
-    //2 Level 2
-    //3 Level 2 Bossfight
-    //4 EndScreen
-    //0 Main Menu
+    if (IsKeyPressed(KEY_ONE))
+    {
+        currentScreen = STAGE1;
+        cout << "11111111111111111111111111111111111111111111111111111111111111111111111111111" << endl;
+    }
+    if (IsKeyPressed(KEY_TWO))
+    {
+        currentScreen = STAGE2;
+        cout << "22222222222222222222222222222222222222222222222222222222222222222222222222222" << endl;
+    }
+    if (IsKeyPressed(KEY_THREE))
+    {
+        currentScreen = BOSS;
+    }
+    if (IsKeyPressed(KEY_FOUR))
+    {
+        currentScreen = ENDING;
+    }
+    if (IsKeyPressed(KEY_ZERO))
+    {
+        currentScreen = TITLE;
+    }
+
 }
