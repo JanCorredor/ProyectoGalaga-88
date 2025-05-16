@@ -68,12 +68,16 @@ class Boss : public Enemy
 private:
     int hp;
     bool isSpawned;
-
+    bool isHit;
+    Timer timerHitAnimation;
 public:
     Boss();
 
     int GetHP();
     void SetHP(int newHP);
     void GetHit();
+    bool GetIsHit();
+    void SetIsHit(bool newHit);
+    bool CheckIsHit();
     void SpawnBoss();
 };

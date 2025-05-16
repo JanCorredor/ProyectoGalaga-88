@@ -491,9 +491,6 @@ int main()
 
             //Enemy
 
-            boss.SpawnBoss();
-
-
             //Player
             DevKeys(currentScreen);
             player.Move();
@@ -509,13 +506,13 @@ int main()
             }
 
             //Enemy Collisions
-            for (int i = 0; i < enemies.size(); i++)
-            {
+
                 for (int j = 0; j < playerbullets.size(); j++)
                 {
-                    if (enemies[i].IsEnemyAlive() == true) {
-                        if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius, enemies[i].enemy_texture_position, enemies[i].GetEnemyRadius()))
+                    if (boss.IsEnemyAlive() == true) {
+                        if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius, boss.enemy_texture_position, boss.GetEnemyRadius()))
                         {
+<<<<<<< Updated upstream
                             player.SumScore(100);
                             hit_counter++;
                             PlaySound(enemyDeathExplosion);
@@ -534,11 +531,24 @@ int main()
                                 {
                                     SaveNewHighScore(highestHighScore, player.GetScore());
                                 }
+=======
+                            if (boss.GetHP() <= 0) 
+                            {
+                                player.SumScore(1000);
+                                hit_counter++;
+                                PlaySound(enemyDeathExplosion);
+                                playerbullets.erase(playerbullets.begin() + j);
+                            }
+                            else 
+                            {
+                                hit_counter++;
+                                playerbullets.erase(playerbullets.begin() + j);
+                                boss.GetHit();
+>>>>>>> Stashed changes
                             }
                         }
                     }
                 }
-            }
 
             //Winning/Losing Conditions
             bool allDead = true;
@@ -700,6 +710,7 @@ int main()
             {
                 if (enemies[i].IsEnemyAlive() == true)
                 {
+                  
                     if (enemies[i].type == Goei) //Goei
                     {
                         Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 33, enemies[i].GetEnemyPosition().y - 37 }; //-33 -37
@@ -729,6 +740,7 @@ int main()
                             DrawTextureEx(Bos_attack_t, Attack, 0, 2, WHITE);
                         }
                     }
+                    DrawCircle(enemies[i].enemy_texture_position.x, enemies[i].enemy_texture_position.y, enemies[i].GetEnemyRadius(), GREEN);
                 }
                 else
                 {
@@ -954,17 +966,26 @@ int main()
                 DrawTexture(player_body_t, playerActualPosition.x - 74, playerActualPosition.y - 63, WHITE);
             }
 
+            DrawCircle(boss.enemy_texture_position.x,boss.enemy_texture_position.y,boss.GetEnemyRadius(),GREEN);
+
             //Enemies
             boss.SetEnemyPosition({ 200,200 });
+            Vector2 Correccion = { boss.GetEnemyPosition().x+128, boss.GetEnemyPosition().y+128}; //-32 -32
 
             Vector2 bossActualPosition = boss.GetEnemyPosition();
-            boss.SpawnBoss();
+            boss.enemy_texture_position = Correccion;
+            boss.CheckIsHit();
             if (boss.IsEnemyAlive() == true)
             {
-                DrawTexture(Boss_t, bossActualPosition.x, bossActualPosition.y, WHITE);
+                if (boss.GetIsHit() == true) 
+                {
+                    DrawTextureEx(Boss_t, bossActualPosition,0,1, RED);
+                }
+                else 
+                {
+                    DrawTextureEx(Boss_t, bossActualPosition, 0, 1, WHITE);
+                }
             }
-
-
         }break;
         case ENDING:
         {
@@ -1208,21 +1229,32 @@ void DevKeys(GameScreen currentScreen)
     if (IsKeyPressed(KEY_ONE))
     {
         currentScreen = STAGE1;
+<<<<<<< Updated upstream
+=======
+    
+>>>>>>> Stashed changes
     }
     if (IsKeyPressed(KEY_TWO))
     {
         currentScreen = STAGE2;
+<<<<<<< Updated upstream
+=======
+        
+>>>>>>> Stashed changes
     }
     if (IsKeyPressed(KEY_THREE))
     {
         currentScreen = BOSS;
+       
     }
     if (IsKeyPressed(KEY_FOUR))
     {
         currentScreen = ENDING;
+        
     }
     if (IsKeyPressed(KEY_ZERO))
     {
         currentScreen = TITLE;
+        
     }
 }

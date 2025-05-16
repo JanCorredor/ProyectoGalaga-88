@@ -460,21 +460,35 @@ void Enemy::SetEnemyLife(bool alive) { this->enemy_alive = alive; };
 
 Boss::Boss() 
 {
-    this->enemy_radius = 128; this->enemy_alive = false; this->enemy_speed = { 5,5 }; this->angle = 0; this->hp = 5;
+    this->enemy_radius = 128; this->enemy_alive = true; this->enemy_speed = { 5,5 }; this->angle = 0; this->hp = 5; this->isHit = false;
 }
+
+bool Boss::GetIsHit() { return this->isHit; }
+void Boss::SetIsHit(bool newHit) { this->isHit = newHit; }
+int Boss::GetHP() { return this->hp; }
+
 
 void Boss::GetHit() 
 {
     this->hp--;
-    if (this->hp > 0)
+    if (this->hp <= 0)
     {
-        SetEnemyLife(false);
+        this->SetEnemyLife(false);
     }
-    else 
-    {
-        //Animation
-    }
+    this->timerHitAnimation.StartTimer(0.1);
+    isHit = true;
 
+}
+
+bool Boss::CheckIsHit() 
+{
+    if (this->timerHitAnimation.CheckFinished())
+    {
+        isHit = false;
+        return false;
+    } else { 
+        return true; 
+    }
 }
 
 void Boss::SpawnBoss() 
