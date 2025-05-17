@@ -506,13 +506,13 @@ int main()
             }
 
             //Enemy Collisions
-
+            for (int i = 0; i < enemies.size(); i++)
+            {
                 for (int j = 0; j < playerbullets.size(); j++)
                 {
                     if (boss.IsEnemyAlive() == true) {
                         if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius, boss.enemy_texture_position, boss.GetEnemyRadius()))
                         {
-<<<<<<< Updated upstream
                             player.SumScore(100);
                             hit_counter++;
                             PlaySound(enemyDeathExplosion);
@@ -531,25 +531,24 @@ int main()
                                 {
                                     SaveNewHighScore(highestHighScore, player.GetScore());
                                 }
-=======
-                            if (boss.GetHP() <= 0) 
+                            }
+                            if (boss.GetHP() <= 0)
                             {
                                 player.SumScore(1000);
                                 hit_counter++;
                                 PlaySound(enemyDeathExplosion);
                                 playerbullets.erase(playerbullets.begin() + j);
                             }
-                            else 
+                            else
                             {
                                 hit_counter++;
                                 playerbullets.erase(playerbullets.begin() + j);
                                 boss.GetHit();
->>>>>>> Stashed changes
                             }
                         }
                     }
                 }
-
+            }
             //Winning/Losing Conditions
             bool allDead = true;
             if (player.GetLives() < 0)
@@ -1229,23 +1228,14 @@ void DevKeys(GameScreen currentScreen)
     if (IsKeyPressed(KEY_ONE))
     {
         currentScreen = STAGE1;
-<<<<<<< Updated upstream
-=======
-    
->>>>>>> Stashed changes
     }
     if (IsKeyPressed(KEY_TWO))
     {
         currentScreen = STAGE2;
-<<<<<<< Updated upstream
-=======
-        
->>>>>>> Stashed changes
     }
     if (IsKeyPressed(KEY_THREE))
     {
         currentScreen = BOSS;
-       
     }
     if (IsKeyPressed(KEY_FOUR))
     {
@@ -1255,6 +1245,5 @@ void DevKeys(GameScreen currentScreen)
     if (IsKeyPressed(KEY_ZERO))
     {
         currentScreen = TITLE;
-        
     }
 }
