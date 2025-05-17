@@ -51,12 +51,12 @@ std::vector <Bullet> playerbullets; //Vector to control all the player bullets
 int player_bullet_counter = 0; //How many bullets has the player shot
 int hit_counter = 0; //How How many bullets hit an enemy
 void DrawBullet();  //Update all the player bullets
-void DevKeys(GameScreen currentScreen);
+GameScreen DevKeys(GameScreen current);
 
 std::vector <Enemy> enemies;  //Vector to control all the enemies
 Enemy callEnemyFunctions; // An auxiliary to call functions from the Enemy class
 std::vector <Bullet> enemybullets;  //Vector to control all the enemy bullets
-    GameScreen currentScreen = LOGO;
+
 
 Boss boss;
 
@@ -77,7 +77,7 @@ int main()
 	// Create the window and OpenGL context
 	InitWindow(800, 1280, "Galaga'88"); // 1280, 800
 
-
+    GameScreen currentScreen = LOGO;
     // Utility function from resource_dir.h to find the resources folder and set it as the current working directory so we can load from it
 	SearchAndSetResourceDir("resources");
 
@@ -173,7 +173,7 @@ int main()
         } break;
         case TITLE:
         {
-            DevKeys(currentScreen);
+            currentScreen = DevKeys(currentScreen);
             if (IsKeyPressed(KEY_UP))
             {
                 hardmode = true; //Hardmode on
@@ -258,7 +258,7 @@ int main()
 
 
             //Player
-            DevKeys(currentScreen);
+            currentScreen = DevKeys(currentScreen);
             player.Move();
 
             //Shoot
@@ -407,7 +407,7 @@ int main()
 
 
             //Player
-            DevKeys(currentScreen);
+            currentScreen = DevKeys(currentScreen);
             player.Move();
 
             //Shoot
@@ -492,7 +492,7 @@ int main()
             //Enemy
 
             //Player
-            DevKeys(currentScreen);
+            currentScreen = DevKeys(currentScreen);
             player.Move();
 
             //Shoot
@@ -532,14 +532,14 @@ int main()
                                     SaveNewHighScore(highestHighScore, player.GetScore());
                                 }
                             }
-                            if (boss.GetHP() <= 0)
+                            if (boss.GetHP() <= 0) 
                             {
                                 player.SumScore(1000);
                                 hit_counter++;
                                 PlaySound(enemyDeathExplosion);
                                 playerbullets.erase(playerbullets.begin() + j);
                             }
-                            else
+                            else 
                             {
                                 hit_counter++;
                                 playerbullets.erase(playerbullets.begin() + j);
@@ -579,7 +579,7 @@ int main()
         }break;
         case ENDING:
         {
-            DevKeys(currentScreen);
+            currentScreen = DevKeys(currentScreen);
             if (isClean = false)
             {
                 if (updatedScore == false)
@@ -1215,7 +1215,7 @@ void ChangeStage(Timer timerChangeStage) // Change Stage Animation
     }
 }
 
-void DevKeys(GameScreen currentScreen)
+GameScreen DevKeys(GameScreen current)
 {
     if (IsKeyPressed(KEY_I)) 
     {
@@ -1227,23 +1227,24 @@ void DevKeys(GameScreen currentScreen)
     }
     if (IsKeyPressed(KEY_ONE))
     {
-        currentScreen = STAGE1;
+        return STAGE1;
     }
     if (IsKeyPressed(KEY_TWO))
     {
-        currentScreen = STAGE2;
+        return STAGE2;
     }
     if (IsKeyPressed(KEY_THREE))
     {
-        currentScreen = BOSS;
+        return BOSS;
     }
     if (IsKeyPressed(KEY_FOUR))
     {
-        currentScreen = ENDING;
+        return ENDING;
         
     }
     if (IsKeyPressed(KEY_ZERO))
     {
-        currentScreen = TITLE;
+        return TITLE;
     }
+    return current;
 }

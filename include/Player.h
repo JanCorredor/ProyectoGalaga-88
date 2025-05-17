@@ -17,12 +17,15 @@ private:
     bool inmortal = false;
     Timer deathTimer;
 public:
+    //Public Variables
+    int aux;
     std::vector<Bullet>* bulletVector;
-    //Constructores
+    
+    //Constructors
     Player();
     Player(Vector2 _position, int _radius, Color _color, int _score, int _lives);
 
-    //Getters y Setters
+    //Getters & Setters
     Vector2 GetPosition();
     void SetPosition(Vector2 newVector);
     float GetPositionX();
@@ -51,7 +54,7 @@ public:
     Timer GetTimer();
     void SetTimer(Timer newTimer);
 
-    //Funciones
+    //Functions
     void SumScore(int n);
 
     void Move();
@@ -60,6 +63,4 @@ public:
     void Death();
     bool CheckDeath();
     void ToggleInmortal(bool state);
-
-
 };

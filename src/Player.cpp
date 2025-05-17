@@ -117,23 +117,23 @@ void Player::Shoot(std::vector <Bullet>* playerbullets)
 
 void Player::Death()
 {
-    cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << endl;
     this->lives = this->lives -1;
     this->alive = false;
     this->deathTimer.StartTimer(3.0);
     this->ToggleInmortal(true);
+    this->aux = 1;
 
     //Animation
     this->color = RED;
-
 }
 
 bool Player::CheckDeath() 
 {
-    if (this->deathTimer.CheckFinished() == true) 
+    if (this->deathTimer.CheckFinished() == true && aux == 1) 
     {
         this->ToggleInmortal(false);
         this->alive = true;
+        aux = 0;
         return false;
     }
     else 
