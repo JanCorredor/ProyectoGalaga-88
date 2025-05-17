@@ -103,42 +103,34 @@ void ResetHighScore()
 
 void UpdateHighScore(int playerScore)
 {
-    while (1)
+    if (playerScore >= LoadHighScore(highestHighScore))
     {
-        if (playerScore >= LoadHighScore(highestHighScore))
-        {
-            SaveNewHighScore(fifthHighScore, LoadHighScore(fourthHighScore));
-            SaveNewHighScore(fourthHighScore, LoadHighScore(thirdHighScore));
-            SaveNewHighScore(thirdHighScore, LoadHighScore(secondHighScore));
-            SaveNewHighScore(secondHighScore, LoadHighScore(highestHighScore));
-            SaveNewHighScore(highestHighScore, playerScore);
-            break;
-        }
-        else if (playerScore >= LoadHighScore(secondHighScore))
-        {
-            SaveNewHighScore(fifthHighScore, LoadHighScore(fourthHighScore));
-            SaveNewHighScore(fourthHighScore, LoadHighScore(thirdHighScore));
-            SaveNewHighScore(thirdHighScore, LoadHighScore(secondHighScore));
-            SaveNewHighScore(secondHighScore, playerScore);
-            break;
-        }
-        else if (playerScore >= LoadHighScore(thirdHighScore))
-        {
-            SaveNewHighScore(fifthHighScore, LoadHighScore(fourthHighScore));
-            SaveNewHighScore(fourthHighScore, LoadHighScore(thirdHighScore));
-            SaveNewHighScore(thirdHighScore, playerScore);
-            break;
-        }
-        else if (playerScore >= LoadHighScore(fourthHighScore))
-        {
-            SaveNewHighScore(fifthHighScore, LoadHighScore(fourthHighScore));
-            SaveNewHighScore(fourthHighScore, playerScore);
-            break;
-        }
-        else if (playerScore >= LoadHighScore(fifthHighScore))
-        {
-            SaveNewHighScore(fifthHighScore, playerScore);
-            break;
-        }
+        SaveNewHighScore(fifthHighScore, LoadHighScore(fourthHighScore));
+        SaveNewHighScore(fourthHighScore, LoadHighScore(thirdHighScore));
+        SaveNewHighScore(thirdHighScore, LoadHighScore(secondHighScore));
+        SaveNewHighScore(secondHighScore, LoadHighScore(highestHighScore));
+        SaveNewHighScore(highestHighScore, playerScore);
+    }
+    else if (playerScore >= LoadHighScore(secondHighScore))
+    {
+        SaveNewHighScore(fifthHighScore, LoadHighScore(fourthHighScore));
+        SaveNewHighScore(fourthHighScore, LoadHighScore(thirdHighScore));
+        SaveNewHighScore(thirdHighScore, LoadHighScore(secondHighScore));
+        SaveNewHighScore(secondHighScore, playerScore);
+    }
+    else if (playerScore >= LoadHighScore(thirdHighScore))
+    {
+        SaveNewHighScore(fifthHighScore, LoadHighScore(fourthHighScore));
+        SaveNewHighScore(fourthHighScore, LoadHighScore(thirdHighScore));
+        SaveNewHighScore(thirdHighScore, playerScore);
+    }
+    else if (playerScore >= LoadHighScore(fourthHighScore))
+    {
+        SaveNewHighScore(fifthHighScore, LoadHighScore(fourthHighScore));
+        SaveNewHighScore(fourthHighScore, playerScore);
+    }
+    else if (playerScore >= LoadHighScore(fifthHighScore))
+    {
+        SaveNewHighScore(fifthHighScore, playerScore);
     }
 }

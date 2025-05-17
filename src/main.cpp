@@ -34,6 +34,10 @@ bool hasWon;
 bool updatedScore = false;
 
 bool isClean = false;
+int spawnedWaves = 0;
+
+bool triggerTimerTitleStageOne = false;
+bool triggerTimerTitleStageTwo = false;
 
 Timer enemyAttackTimer;
 Timer logoTimer;
@@ -143,10 +147,6 @@ int main()
     //-------------------------------------------------------------------------------------
 
     player.SetPosition({ (float)GetScreenWidth() / 2, (float)GetScreenHeight() * 9 / 10 }); //Set the player position
-
-    int spawnedWaves = 0;
-    bool triggerTimerTitleStageOne = false;
-    bool triggerTimerTitleStageTwo = false;
 
     //Creation of Timers (and startups)
     enemyAttackTimer.StartTimer(10.0);
@@ -580,7 +580,7 @@ int main()
         case ENDING:
         {
             currentScreen = DevKeys(currentScreen);
-            if (isClean = false)
+            if (isClean == false)
             {
                 if (updatedScore == false)
                 {
@@ -600,6 +600,8 @@ int main()
                 playerbullets.clear();
                 enemies.clear();
                 isClean = true;
+                triggerTimerTitleStageOne = false;
+                triggerTimerTitleStageTwo = false;
             }
 
             if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
@@ -654,7 +656,7 @@ int main()
             //Other
             DrawText("PUSH ENTER", GetScreenWidth()/3, GetScreenHeight() /2, 45, GREEN);
         } break;
-        case STAGE1:
+        case STAGE1: case STAGE2:
         {
             ClearBackground(BLACK);
 
@@ -739,7 +741,7 @@ int main()
                             DrawTextureEx(Bos_attack_t, Attack, 0, 2, WHITE);
                         }
                     }
-                    DrawCircle(enemies[i].enemy_texture_position.x, enemies[i].enemy_texture_position.y, enemies[i].GetEnemyRadius(), GREEN);
+                    /////////////////////////////////DrawCircle(enemies[i].enemy_texture_position.x, enemies[i].enemy_texture_position.y, enemies[i].GetEnemyRadius(), GREEN);
                 }
                 else
                 {
@@ -788,123 +790,33 @@ int main()
             DrawTexture(stageindicator1, GetScreenWidth() * 95 / 100, GetScreenHeight() * 92 / 100, WHITE);
 
             //Starting level text
-            if (triggerTimerTitleStageOne == false)
+            if (currentScreen == STAGE1)
             {
-                timerStageTitle.StartTimer(2.0);
-                triggerTimerTitleStageOne = true;
-            }
-            if (timerStageTitle.CheckFinished() == false)
-            {
-                DrawText("STAGE 1", GetScreenWidth() * 9 / 24, GetScreenHeight() / 3, 45, GREEN);
-            }
-
-
-        } break;
-        case STAGE2:
-        {
-            ClearBackground(BLACK);
-
-            //Particulas
-            DrawParticles();
-
-            //EXPLOSION
-
-            //UI
-            ////Scores
-            DrawText("1UP", GetScreenWidth() / 13, GetScreenHeight() / 50, 45, YELLOW);
-            DrawText("HIGH SCORE", GetScreenWidth() / 3, GetScreenHeight() / 50, 45, RED);
-
-            DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
-            DrawText(TextFormat("%i", LoadHighScore(highestHighScore)), GetScreenWidth() / 3, GetScreenHeight() / 20, 45, WHITE);
-
-            //// Lives Remaining
-            for (int i = 0; i < player.GetLives(); i++)
-            {
-                DrawTexture(player_body_t, 74 * i - GetScreenWidth() / 30, GetScreenHeight() * 9 / 10, WHITE);
-            }
-
-            ////Stage Indicator
-            DrawTexture(stageindicator1, GetScreenWidth() * 95 / 100, GetScreenHeight() * 92 / 100, WHITE);
-
-            //Bullets
-            DrawBullet();
-
-            for (int i = 0; i < playerbullets.size(); i++) //Esto deberia estar en DrawBullets
-            {
-                DrawTexture(player_bullet, playerbullets[i].bullet_position.x, playerbullets[i].bullet_position.y, WHITE);
-            }
-
-            if (hardmode == 0)
-            {
-                DrawEnemyBullet();
+                if (triggerTimerTitleStageOne == false)
+                {
+                    timerStageTitle.StartTimer(2.0);
+                    triggerTimerTitleStageOne = true;
+                }
+                if (timerStageTitle.CheckFinished() == false)
+                {
+                    DrawText("STAGE 1", GetScreenWidth() * 9 / 24, GetScreenHeight() / 3, 45, GREEN);
+                }
             }
             else
             {
-                DrawGodShot();
-            }
-
-            for (int i = 0; i < enemybullets.size(); i++) //Esto deberia estar en DrawBullets
-            {
-                int x = GetRandomValue(0, 1);
-                if (x == 0)
+                if (triggerTimerTitleStageTwo == false)
                 {
-                    DrawTexture(enemybullet_0, enemybullets[i].bullet_position.x, enemybullets[i].bullet_position.y, WHITE);
+                    timerStageTitle.StartTimer(2.0);
+                    triggerTimerTitleStageTwo = true;
                 }
-                else
+                if (timerStageTitle.CheckFinished() == false)
                 {
-                    DrawTexture(enemybullet_1, enemybullets[i].bullet_position.x, enemybullets[i].bullet_position.y, WHITE);
+                    DrawText("STAGE 2", GetScreenWidth() * 9 / 24, GetScreenHeight() / 3, 45, GREEN);
                 }
             }
-
-            //Player
-            Vector2 playerActualPosition = player.GetPosition();
-            if (player.GetAlive() == true) {
-                DrawTexture(player_body_t, playerActualPosition.x - 74, playerActualPosition.y - 63, WHITE);
-            }
-
-            //Enemies
-            for (int i = 0; i < enemies.size(); i++)
-            {
-                if (enemies[i].IsEnemyAlive() == true)
-                {
-                    if (enemies[i].type == Goei) //Goei
-                    {
-                        Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 33, enemies[i].GetEnemyPosition().y - 37 }; //-33 -37
-                        DrawTextureEx(Goei_0_t, Correccion, enemies[i].texture_angle, 0.5, WHITE);
-                        enemies[i].enemy_texture_position = Correccion;
-                    }
-                    else if (enemies[i].type == Zako) //Zako
-                    {
-                        Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32, enemies[i].GetEnemyPosition().y - 32 }; //-32 -32
-                        DrawTextureEx(Zako_t, Correccion, enemies[i].texture_angle, 1, WHITE);
-                        enemies[i].enemy_texture_position = Correccion;
-                    }
-                    else if (enemies[i].type == Bon) //Bon
-                    {
-                        Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32 , enemies[i].GetEnemyPosition().y - 32 }; //-32 -32
-                        DrawTextureEx(Bon_t, Correccion, enemies[i].texture_angle, 1, WHITE);
-                        enemies[i].enemy_texture_position = Correccion;
-                    }
-                    else if (enemies[i].type == Bos) //Bos
-                    {
-                        Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32, enemies[i].GetEnemyPosition().y - 32 }; //-32 -32
-                        DrawTextureEx(Bos_t, Correccion, enemies[i].texture_angle, 1, WHITE);
-                        enemies[i].enemy_texture_position = Correccion;
-                    }
-                }
-            }
-            if (triggerTimerTitleStageTwo == false)
-            {
-                timerStageTitle.StartTimer(2.0);
-                triggerTimerTitleStageTwo = true;
-            }
-            if (timerStageTitle.CheckFinished() == false)
-            {
-                DrawText("STAGE 2", GetScreenWidth() * 9 / 24, GetScreenHeight() / 3, 45, GREEN);
-            }
-
-
         } break;
+
+
         case BOSS:
         {
             ClearBackground(BLACK);
@@ -1227,23 +1139,41 @@ GameScreen DevKeys(GameScreen current)
     }
     if (IsKeyPressed(KEY_ONE))
     {
+        triggerTimerTitleStageOne = false;
+        spawnedWaves = 0;
+        enemybullets.clear();
+        playerbullets.clear();
+        enemies.clear();
         return STAGE1;
     }
     if (IsKeyPressed(KEY_TWO))
     {
+        triggerTimerTitleStageTwo = false;
+        spawnedWaves = 0;
+        enemybullets.clear();
+        playerbullets.clear();
+        enemies.clear();
         return STAGE2;
     }
     if (IsKeyPressed(KEY_THREE))
     {
+        spawnedWaves = 0;
+        enemybullets.clear();
+        playerbullets.clear();
+        enemies.clear();
         return BOSS;
     }
     if (IsKeyPressed(KEY_FOUR))
     {
+        isClean = false;
         return ENDING;
-        
     }
     if (IsKeyPressed(KEY_ZERO))
     {
+        spawnedWaves = 0;
+        enemybullets.clear();
+        playerbullets.clear();
+        enemies.clear();
         return TITLE;
     }
     return current;
