@@ -79,7 +79,7 @@ int main()
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
 
 	// Create the window and OpenGL context
-	InitWindow(800, 1280, "Galaga'88"); // 1280, 800
+	InitWindow(800, 1280, "Galaga'88"); // 800, 1280
 
     GameScreen currentScreen = LOGO;
     // Utility function from resource_dir.h to find the resources folder and set it as the current working directory so we can load from it
@@ -88,7 +88,6 @@ int main()
 	//// Load textures from the resources directory
     //LOGO
     Texture GrupoDeNombreLogo = LoadTexture("Wiki/Sprites/GrupoDeNombre.png"); 
-
 
     //TITLE
     Texture Galaga88Logo = LoadTexture("HUD/GALAGA88_LOGO.png");
@@ -111,7 +110,7 @@ int main()
     Texture player_body_t = LoadTexture("Player/PlayerGalaga88.png");
 
 
-    //Death Animation
+    /////Death Animation
     Timer playerDeathtimer;
     int pDeathframe = 0;
     Texture pDeathA_1 = LoadTexture("Player/DeathAnimation/PDA1.png");
@@ -122,15 +121,13 @@ int main()
     Texture pDeathA_6 = LoadTexture("Player/DeathAnimation/PDA6.png");
     Texture pDeathA_7 = LoadTexture("Player/DeathAnimation/PDA7.png");
 
-    Texture pDeathA[7] = { pDeathA_1, pDeathA_2, pDeathA_3,pDeathA_4, pDeathA_5,pDeathA_6,pDeathA_7 };
+    Texture pDeathA[7] = { pDeathA_1, pDeathA_2, pDeathA_3,pDeathA_4, pDeathA_5,pDeathA_6,pDeathA_7 }; //Make an array to be easier to traverse through frames
 
     ////Bullets
     Texture player_bullet = LoadTexture("Player/PlayerBullet.png");
     Texture enemybullet_0 = LoadTexture("Enemies/BalaEnemigo_0.png");
     Texture enemybullet_1 = LoadTexture("Enemies/BalaEnemigo_1.png");
     Texture Bos_attack_t = LoadTexture("Enemies/BosAttack.png");
-
-    //ResourceManager r;
 
     //Audio
     InitAudioDevice();      // Initialize audio device
@@ -150,7 +147,7 @@ int main()
     Sound enemyFormation = LoadSound("Sounds/EnemyFormation.wav");
     Sound enemyDeathExplosion = LoadSound("Sounds/EnemyDeathExplosion.wav");
 
-
+    //Frames per second
     SetTargetFPS(60); // Set Game to run 60 Frames per second
 
     //Particles
@@ -181,7 +178,7 @@ int main()
             // Wait for 2 seconds (120 frames) before jumping to TITLE 
             if (logoTimer.CheckFinished() == true)
             {
-                UnloadTexture(GrupoDeNombreLogo);
+                UnloadTexture(GrupoDeNombreLogo); //Won't use this texture anymore so unload
                 currentScreen = TITLE;
             }
         } break;
@@ -199,7 +196,7 @@ int main()
             if (IsKeyPressed(KEY_ENTER))
             {
                 PlaySound(buttonclick);
-                currentScreen = STAGE1; // STAGE 1 
+                currentScreen = STAGE1; 
                 StopSound(GalagaOpening);
             }
         } break;
@@ -208,9 +205,10 @@ int main()
             //Enemies
             if (timerSpawnEnemies.CheckFinished() == true && spawnedWaves < 5)  //Spawn Enemy Waves
             {
-                callEnemyFunctions.SpawnLevel1(&enemies, spawnedWaves);
+                callEnemyFunctions.SpawnLevel1(&enemies, spawnedWaves); //Spawn Level 1 Enemies
                 
-                if (spawnedWaves == 0)
+                //Set all enemies formation positions
+                if (spawnedWaves == 0) 
                 {
                     enemies[0].original_position  = callEnemyFunctions.GetFormationPositions(7,5);//Zako
                     enemies[1].original_position  = callEnemyFunctions.GetFormationPositions(8,5);//Zako
@@ -266,16 +264,16 @@ int main()
                     enemies[39].original_position = callEnemyFunctions.GetFormationPositions(5,4);//Bon
                 }
                 spawnedWaves++;
-                timerSpawnEnemies.StartTimer(5.0);
+                timerSpawnEnemies.StartTimer(5.0); //5 secons, then spawn next wave
             }
-            EnemyManager();
+            EnemyManager(); //Update all enemies
 
 
             //Player
             currentScreen = DevKeys(currentScreen);
             player.Move();
 
-            //Shoot
+            ////Shoot
             if (IsKeyPressed(KEY_SPACE))
             {
                 if (player.GetAlive() == true) {
@@ -285,7 +283,7 @@ int main()
                 }
             }
 
-            //Enemy Collisions
+            //Enemy Collisions with player bullets
             for (int i = 0; i < enemies.size(); i++)
             {
                 for (int j = 0; j < playerbullets.size(); j++)
@@ -293,11 +291,25 @@ int main()
                     if (enemies[i].IsEnemyAlive() == true) {
                         if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius, enemies[i].enemy_texture_position, enemies[i].GetEnemyRadius()))
                         {
-                            player.SumScore(100);
+                            player.SumScore(100); //Add 100 to score
                             hit_counter++;
                             PlaySound(enemyDeathExplosion);
-                            enemies[i].SetEnemyLife(false);
-                            playerbullets.erase(playerbullets.begin()+j);
+                            enemies[i].SetEnemyLife(false); //Kill enemy
+                            playerbullets.erase(playerbullets.begin()+j); //Erase bullet that hit
+
+                            //Score
+                            if (player.GetScore() > LoadHighScore(highestHighScore)) //Check if Player score is higher than the score in 1st place
+                            {
+                                if (updatedScore == false) //If the score has already updated, don't update again
+                                {
+                                    UpdateHighScore(player.GetScore());
+                                    updatedScore = true;
+                                }
+                                else 
+                                {
+                                    SaveNewHighScore(highestHighScore, player.GetScore()); //Save the player score so to update the highest score
+                                }
+                            }
                         }
                     }
                 }
@@ -305,14 +317,14 @@ int main()
             
             //Winning/Losing Conditions
             bool allDead = true;
-            if (player.GetLives() < 0)
+            if (player.GetLives() < 0) //Player has died
             {
                 spawnedWaves = 0;
                 hasWon = false;
                 currentScreen = ENDING;
             }
 
-            for (int i = 0; i < enemies.size(); i++)
+            for (int i = 0; i < enemies.size(); i++) //Check if all enemies are dead
             {
                 if (enemies.empty() == false) 
                 {
@@ -322,26 +334,14 @@ int main()
                     }
                 }
             }
-            if (allDead == true && enemies.empty() == false && spawnedWaves == 5)
+            if (allDead == true && enemies.empty() == false && spawnedWaves == 5) //Winning conditions: all enemies are dead and all waves have spawned
             {
-                spawnedWaves = 0;
-                enemies.clear();
+                spawnedWaves = 0; //Set waves to 0 to prepare for next stage
+                enemies.clear(); //Clear enemy vector
                 currentScreen = STAGE2;
             }
 
-            //Score
-            if (player.GetScore() > LoadHighScore(highestHighScore))
-            {
-                if (updatedScore == false)
-                {
-                    UpdateHighScore(player.GetScore());
-                    updatedScore = true;
-                }
-                else
-                {
-                    SaveNewHighScore(highestHighScore, player.GetScore());
-                }
-            }
+
 
         } break;
         case STAGE2:
@@ -427,7 +427,7 @@ int main()
                 }
             }
 
-            //Enemy Collisions
+            //Enemy Collisions with player bullets
             for (int i = 0; i < enemies.size(); i++)
             {
                 for (int j = 0; j < playerbullets.size(); j++)
@@ -435,23 +435,23 @@ int main()
                     if (enemies[i].IsEnemyAlive() == true) {
                         if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius, enemies[i].enemy_texture_position, enemies[i].GetEnemyRadius()))
                         {
-                            player.SumScore(100);
+                            player.SumScore(100); //Add 100 to score
                             hit_counter++;
                             PlaySound(enemyDeathExplosion);
-                            enemies[i].SetEnemyLife(false);
-                            playerbullets.erase(playerbullets.begin() + j);
+                            enemies[i].SetEnemyLife(false); //Kill enemy
+                            playerbullets.erase(playerbullets.begin() + j); //Erase bullet that hit
 
                             //Score
-                            if (player.GetScore() > LoadHighScore(highestHighScore))
+                            if (player.GetScore() > LoadHighScore(highestHighScore)) //Check if Player score is higher than the score in 1st place
                             {
-                                if (updatedScore == false)
+                                if (updatedScore == false) //If the score has already updated, don't update again
                                 {
                                     UpdateHighScore(player.GetScore());
                                     updatedScore = true;
                                 }
                                 else
                                 {
-                                    SaveNewHighScore(highestHighScore, player.GetScore());
+                                    SaveNewHighScore(highestHighScore, player.GetScore()); //Save the player score so to update the highest score
                                 }
                             }
                         }
@@ -461,14 +461,14 @@ int main()
 
             //Winning/Losing Conditions
             bool allDead = true;
-            if (player.GetLives() < 0)
+            if (player.GetLives() < 0) //Player has died
             {
                 spawnedWaves = 0;
                 hasWon = false;
                 currentScreen = ENDING;
             }
 
-            for (int i = 0; i < enemies.size(); i++)
+            for (int i = 0; i < enemies.size(); i++) //Check if all enemies are dead
             {
                 if (enemies.empty() == false)
                 {
@@ -478,10 +478,10 @@ int main()
                     }
                 }
             }
-            if (allDead == true && enemies.empty() == false && spawnedWaves == 5)
+            if (allDead == true && enemies.empty() == false && spawnedWaves == 5) //Winning conditions: all enemies are dead and all waves have spawned
             {
-                spawnedWaves = 0;
-                hasWon = true;
+                spawnedWaves = 0; //Set waves to 0 to prepare for next stage
+                enemies.clear(); //Clear enemy vector
                 currentScreen = BOSS;
             }
 
@@ -489,13 +489,6 @@ int main()
         }break;
         case BOSS:
         {
-            if (timerChangeStage.CheckFinished() == true)
-            {
-
-            }
-
-            //Enemy
-
             //Player
             currentScreen = DevKeys(currentScreen);
             player.Move();
@@ -661,7 +654,7 @@ int main()
             //Other
             DrawText("PUSH ENTER", GetScreenWidth()/3, GetScreenHeight() /2, 45, GREEN);
         } break;
-        case STAGE1: case STAGE2:
+        case STAGE1: case STAGE2: //Same drawing for stage 1 and stage 2
         {
             ClearBackground(BLACK);
 
@@ -669,9 +662,9 @@ int main()
             DrawParticles();
 
             //Bullets
-            DrawBullet();
+            DrawBullet(); //Update all bullets
 
-            for (int i = 0; i < playerbullets.size(); i++)
+            for (int i = 0; i < playerbullets.size(); i++) //Draw all bullets
             {
                 DrawTexture(player_bullet, playerbullets[i].bullet_position.x, playerbullets[i].bullet_position.y, WHITE);
             }
