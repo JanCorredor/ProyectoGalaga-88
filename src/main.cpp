@@ -29,6 +29,7 @@ typedef enum GameScreen
 static Player player = Player::Player(); //Create Instance of Player
 
 bool hardmode = false; //Is Hardmode on?
+bool hitboxes = false; //Hitboxes Visisble?
 
 bool hasWon;
 bool updatedScore = false;
@@ -60,8 +61,6 @@ GameScreen DevKeys(GameScreen current);
 std::vector <Enemy> enemies;  //Vector to control all the enemies
 Enemy callEnemyFunctions; // An auxiliary to call functions from the Enemy class
 std::vector <Bullet> enemybullets;  //Vector to control all the enemy bullets
-
-
 Boss boss;
 
 void DrawEnemyBullet();//Update all the enemy bullets (Harmode off)
@@ -205,7 +204,7 @@ int main()
             //Enemies
             if (timerSpawnEnemies.CheckFinished() == true && spawnedWaves < 5)  //Spawn Enemy Waves
             {
-                callEnemyFunctions.SpawnLevel1(&enemies, spawnedWaves); //Spawn Level 1 Enemies
+                callEnemyFunctions.SpawnStage1(&enemies, spawnedWaves); //Spawn Level 1 Enemies
                 
                 //Set all enemies formation positions
                 if (spawnedWaves == 0) 
@@ -349,7 +348,7 @@ int main()
             //Enemies
             if (timerSpawnEnemies.CheckFinished() == true && spawnedWaves < 5)  //Spawn Enemy Waves
             {
-                callEnemyFunctions.SpawnLevel2(&enemies, spawnedWaves);
+                callEnemyFunctions.SpawnStage2(&enemies, spawnedWaves);
 
                 if (spawnedWaves == 0)
                 {
@@ -489,20 +488,10 @@ int main()
         }break;
         case BOSS:
         {
-<<<<<<< Updated upstream
-=======
-            ChangeStage(timerChangeStage);
-
-            if (timerChangeStage.CheckFinished() == true)
-            {
-
-            }
-
             //Enemy
             boss.Move();
             boss.ShootBoss(&enemybullets);
 
->>>>>>> Stashed changes
             //Player
             currentScreen = DevKeys(currentScreen);
             player.Move();
@@ -674,6 +663,10 @@ int main()
 
             for (int i = 0; i < playerbullets.size(); i++) //Draw all bullets
             {
+                if (hitboxes)
+                {
+                    DrawCircleV(playerbullets[i].bullet_position, playerbullets[i].bullet_radius, BLUE);
+                }
                 DrawTexture(player_bullet, playerbullets[i].bullet_position.x, playerbullets[i].bullet_position.y, WHITE);
             }
 
@@ -688,6 +681,10 @@ int main()
 
             for (int i = 0; i < enemybullets.size(); i++)
             {
+                if (hitboxes)
+                {
+                    DrawCircleV(enemybullets[i].bullet_position, enemybullets[i].bullet_radius, PURPLE);
+                }
                 int x = GetRandomValue(0, 1);
                 if (x == 0)
                 {
@@ -703,6 +700,10 @@ int main()
             Vector2 playerActualPosition = player.GetPosition();
             Vector2 playerCorreccion = {playerActualPosition.x - 74, playerActualPosition.y - 63};
 
+            if (hitboxes)
+            {
+                DrawCircle(playerActualPosition.x, playerActualPosition.y, player.GetRadius(), GREEN);
+            }
             if (player.GetAlive() == true) 
             {
                 pDeathframe = 0;
@@ -730,42 +731,40 @@ int main()
                 }
             }
 
+
             //Enemies
             for (int i = 0; i < enemies.size(); i++)
             {
                 if (enemies[i].IsEnemyAlive() == true)
                 {
-                  
+                    Vector2 Correccion = { enemies[i].GetEnemyPosition().x -32, enemies[i].GetEnemyPosition().y -32 }; //-32 -32
+                    enemies[i].enemy_texture_position = Correccion;
+
+                    if (hitboxes)
+                    {;
+                        DrawCircleV(enemies[i].enemy_texture_position, enemies[i].GetEnemyRadius(), RED);
+                    }
                     if (enemies[i].type == Goei) //Goei
                     {
-                        Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 33, enemies[i].GetEnemyPosition().y - 37 }; //-33 -37
                         DrawTextureEx(Goei_0_t, Correccion, enemies[i].texture_angle, 0.5, WHITE);
-                        enemies[i].enemy_texture_position = Correccion;
                     }
                     else if (enemies[i].type == Zako) //Zako
                     {
-                        Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32, enemies[i].GetEnemyPosition().y - 32 }; //-32 -32
                         DrawTextureEx(Zako_t, Correccion, enemies[i].texture_angle, 1, WHITE);
-                        enemies[i].enemy_texture_position = Correccion;
                     }
                     else if (enemies[i].type == Bon) //Bon
                     {
-                        Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32 , enemies[i].GetEnemyPosition().y - 32 }; //-32 -32
                         DrawTextureEx(Bon_t, Correccion, enemies[i].texture_angle, 1, WHITE);
-                        enemies[i].enemy_texture_position = Correccion;
                     }
                     else if (enemies[i].type == Bos) //Bos
                     {
-                        Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32, enemies[i].GetEnemyPosition().y - 32 }; //-32 -32
                         DrawTextureEx(Bos_t, Correccion, enemies[i].texture_angle, 1, WHITE);
-                        enemies[i].enemy_texture_position = Correccion;
                         if (enemies[i].aux == 1)
                         {
                             Vector2 Attack = { Correccion.x - 64 - 10, Correccion.y + 64 };
                             DrawTextureEx(Bos_attack_t, Attack, 0, 2, WHITE);
                         }
                     }
-                    /////////////////////////////////DrawCircle(enemies[i].enemy_texture_position.x, enemies[i].enemy_texture_position.y, enemies[i].GetEnemyRadius(), GREEN);
                 }
                 else
                 {
@@ -839,8 +838,6 @@ int main()
                 }
             }
         } break;
-
-
         case BOSS:
         {
             ClearBackground(BLACK);
@@ -866,10 +863,14 @@ int main()
             DrawTexture(stageindicator1, GetScreenWidth() * 95 / 100, GetScreenHeight() * 92 / 100, WHITE);
 
             //Bullets
-            DrawBullet();
+            DrawBullet(); //Update all bullets
 
-            for (int i = 0; i < playerbullets.size(); i++) //Esto deberia estar en DrawBullets
+            for (int i = 0; i < playerbullets.size(); i++) //Draw all bullets
             {
+                if (hitboxes)
+                {
+                    DrawCircleV(playerbullets[i].bullet_position, playerbullets[i].bullet_radius, BLUE);
+                }
                 DrawTexture(player_bullet, playerbullets[i].bullet_position.x, playerbullets[i].bullet_position.y, WHITE);
             }
 
@@ -882,8 +883,12 @@ int main()
                 DrawGodShot();
             }
 
-            for (int i = 0; i < enemybullets.size(); i++) //Esto deberia estar en DrawBullets
+            for (int i = 0; i < enemybullets.size(); i++)
             {
+                if (hitboxes)
+                {
+                    DrawCircleV(enemybullets[i].bullet_position, enemybullets[i].bullet_radius, PURPLE);
+                }
                 int x = GetRandomValue(0, 1);
                 if (x == 0)
                 {
@@ -897,20 +902,51 @@ int main()
 
             //Player
             Vector2 playerActualPosition = player.GetPosition();
-            if (player.GetAlive() == true) {
-                DrawTexture(player_body_t, playerActualPosition.x - 74, playerActualPosition.y - 63, WHITE);
+            Vector2 playerCorreccion = { playerActualPosition.x - 74, playerActualPosition.y - 63 };
+            if (hitboxes)
+            {
+                DrawCircle(playerActualPosition.x, playerActualPosition.y, player.GetRadius(), GREEN);
+            }
+            if (player.GetAlive() == true)
+            {
+                pDeathframe = 0;
+                if (player.GetInmortal())
+                {
+                    DrawTexture(player_body_t, playerCorreccion.x, playerCorreccion.y, BLUE);
+                }
+                else
+                {
+                    DrawTexture(player_body_t, playerCorreccion.x, playerCorreccion.y, WHITE);
+                }
+            }
+            else
+            {
+                Vector2 pDeathAnim = { playerCorreccion.x + 10, playerCorreccion.y };
+                if (pDeathframe < 7)
+                {
+                    DrawTextureEx(pDeathA[pDeathframe], pDeathAnim, 0, 0.5, WHITE);
+                }
+
+                if ((playerDeathtimer.CheckFinished() && pDeathframe <= 7) || pDeathframe == 0)
+                {
+                    playerDeathtimer.StartTimer(0.1);
+                    pDeathframe++;
+                }
             }
 
-            DrawCircle(boss.enemy_texture_position.x,boss.enemy_texture_position.y,boss.GetEnemyRadius(),GREEN);
 
             //Enemies
             Vector2 Correccion = { boss.GetEnemyPosition().x+128, boss.GetEnemyPosition().y+128}; //-32 -32
-
             Vector2 bossActualPosition = boss.GetEnemyPosition();
             boss.enemy_texture_position = Correccion;
-            boss.CheckIsHit();
+
             if (boss.IsEnemyAlive() == true)
             {
+                if (hitboxes)
+                {
+                    DrawCircle(boss.enemy_texture_position.x, boss.enemy_texture_position.y, boss.GetEnemyRadius(), RED);
+                }
+                boss.CheckIsHit();
                 if (boss.GetIsHit() == true) 
                 {
                     DrawTextureEx(Boss_t, bossActualPosition,0,1, RED);
@@ -1144,11 +1180,25 @@ GameScreen DevKeys(GameScreen current)
 {
     if (IsKeyPressed(KEY_I)) 
     {
-        player.ToggleInmortal(true);
+        if (player.GetInmortal())
+        {
+            player.ToggleInmortal(false);
+        }
+        else
+        {
+            player.ToggleInmortal(true);
+        }
     }
-    if (IsKeyPressed(KEY_O)) 
+    if (IsKeyPressed(KEY_H)) 
     {
-        player.ToggleInmortal(false);
+        if (hitboxes)
+        {
+            hitboxes = false;
+        }
+        else
+        {
+            hitboxes = true;
+        }
     }
     if (IsKeyPressed(KEY_ONE))
     {

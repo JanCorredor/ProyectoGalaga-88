@@ -9,7 +9,7 @@
 class Player {
 private:
     Vector2 position;
-    int radius = 25;
+    int radius = 40;
     Color color;
     int score = 0;
     int lives = 2;

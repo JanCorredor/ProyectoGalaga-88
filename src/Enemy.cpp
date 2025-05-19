@@ -12,21 +12,21 @@ using namespace std;
 #include "Enemy.h"
 
 Enemy::Enemy() {
-    this->enemy_radius = 64; this->enemy_alive = true; this->enemy_speed = { 5,5 }; this->angle = 0;
+    this->enemy_alive = true; this->enemy_speed = { 5,5 }; this->angle = 0;
 }
 
 void Enemy::SpawnHorde(std::vector <Enemy>* manager, int num, int spawnId, std::vector <int> enemyId)
 {
     for (int i = 0; i < num; i++)
     {
-        Vector2 spaceBetween;
+        Vector2 spaceBetween; //Space Bewtween each enemy when they spawn together
         if (spawnId <= 2) //Up
         {
-            spaceBetween = { StartingPositions(spawnId).x * 0, StartingPositions(spawnId).y * i / 10}; // -
+            spaceBetween = { StartingPositions(spawnId).x * 0, StartingPositions(spawnId).y * i / 10}; 
         }
         else if (spawnId == 3) //Center Left
         {
-            spaceBetween = { StartingPositions(spawnId).x * i / 10, StartingPositions(spawnId).y * 0 }; // -
+            spaceBetween = { StartingPositions(spawnId).x * i / 10, StartingPositions(spawnId).y * 0 }; 
         }
         else if (spawnId == 4) //Right
         {
@@ -46,7 +46,7 @@ void Enemy::SpawnHorde(std::vector <Enemy>* manager, int num, int spawnId, std::
         }
         else if (enemyId[i] == 1)
         {
-            newEnemy.type = Zako; //Zako
+            newEnemy.type = Zako;
         }
         else if (enemyId[i] == 2)
         {
@@ -61,7 +61,7 @@ void Enemy::SpawnHorde(std::vector <Enemy>* manager, int num, int spawnId, std::
     }
 }
 
-void Enemy::SpawnLevel1(std::vector <Enemy>* manager, int wave)
+void Enemy::SpawnStage1(std::vector <Enemy>* manager, int wave)
 {
     //Upper Center = 0 //Upper Left //Upper Right //Center Left //Center Right //Low Left //Low Righ
     if (wave == 0)
@@ -91,7 +91,7 @@ void Enemy::SpawnLevel1(std::vector <Enemy>* manager, int wave)
         SpawnHorde(manager, 8, 2, ZBZBon); //Zako Bon Zako Bon Up Righ
     }
 }
-void Enemy::SpawnLevel2(std::vector <Enemy>* manager, int wave)
+void Enemy::SpawnStage2(std::vector <Enemy>* manager, int wave)
 {
     //Upper Center = 0 //Upper Left //Upper Right //Center Left //Center Right //Low Left //Low Righ
     if (wave == 0)
@@ -135,7 +135,7 @@ void Enemy::MoveToInAStraightLine(Vector2 destination, int positionId)
         }
     }
 
-    if (this->enemy_position.x != destination.x)
+    if (this->enemy_position.x != destination.x) //Horitzontal Movement
     {
         if (distanceX < tolerance)
         {
@@ -154,7 +154,7 @@ void Enemy::MoveToInAStraightLine(Vector2 destination, int positionId)
         this->enemy_speed.x = 5;
     }
 
-    if (this->enemy_position.y != destination.y)
+    if (this->enemy_position.y != destination.y) //Vertical Movement
     {
         if (distanceY < tolerance)
         {
@@ -176,7 +176,7 @@ void Enemy::MoveToInAStraightLine(Vector2 destination, int positionId)
 
 Vector2 Enemy::StartingPositions(int spawnId)
 {
-    //Debug Purposes && FailSave
+    //FailSave
     if (spawnId >= 7)
     {
         spawnId = GetRandomValue(0,6);
@@ -227,7 +227,7 @@ Vector2 Enemy::GetSemiCirclePoints()
     float distanceLeft = abs(this->enemy_position.x - LeftPoint.x);
     float distanceRight = abs(this->enemy_position.x - RightPoint.x);
 
-    if (distanceLeft <= distanceRight)
+    if (distanceLeft <= distanceRight) //Give the point near the enemy
     {
         this->angle = 90;
         texture_angle = 180;
@@ -270,7 +270,6 @@ void Enemy::SemiCircleMovement()
             this->inPosition[1] = true;
         }
     }
-
 }
 
 Vector2 Enemy::GetFormationPositions(int x_pos, int y_pos)     //Vector2 enemiesFormationPositions[10][6];
@@ -295,9 +294,9 @@ void Enemy::Launch(Player* p)
         }
         p->CheckDeath(); //Check if player has lost all lives
 
-        if (hardmode == false)
+        if (hardmode == false) //Hardmode off
         {
-            this->enemy_alive = false;
+            this->enemy_alive = false; //Kill the enemy that collided 
         }
     }
 
@@ -371,11 +370,28 @@ void Enemy::Launch(Player* p)
             {
                 this->aux = 1;
 
-                this->enemy_position.x += cos(this->angle) * radius / 4;
-                this->enemy_position.y += sin(this->angle) * radius;
+                if (Left)
+                {
+                    this->enemy_position.x += cos(this->angle) * radius;
+                    this->enemy_position.y += sin(this->angle) * radius;
+                    this->angle -= 0.1;
+                    this->texture_angle -= 7.5;
+                }
+                else
+                {
+                    this->enemy_position.x -= cos(this->angle) * radius;
+                    this->enemy_position.y -= sin(this->angle) * radius;
+                    this->angle += 0.1;
+                    this->texture_angle += 7.5;
+                }
 
-                this->angle += 0.1;
-                this->texture_angle += 7.5;
+                if (this->texture_angle > 3600 || this->texture_angle < -3600)
+                {
+                    this->angle = 0;
+                    this->texture_angle = 0;
+                    this->aux = 0;
+                    enemy_color = RED;
+                }
             }
             else if (this->enemy_position.y >= GetScreenHeight())
             {
@@ -473,7 +489,7 @@ void Enemy::SetEnemyPosition(int x, int y) { this->enemy_position.x = x; this->e
 void Enemy::SetEnemyRadius(int rad) { this->enemy_radius = rad; };
 void Enemy::SetEnemyLife(bool alive) { this->enemy_alive = alive; };
 
-// -------------------------------- BOSS ----------------------------------
+// -------------------------------- BOSS ---------------------------------- //
 
 
 Boss::Boss() 
@@ -487,7 +503,7 @@ Boss::Boss()
 bool Boss::GetIsHit() { return this->isHit; }
 void Boss::SetIsHit(bool newHit) { this->isHit = newHit; }
 int Boss::GetHP() { return this->hp; }
-
+void Boss::SetHP(int newHP) { this->hp = newHP; }
 
 void Boss::GetHit() 
 {
