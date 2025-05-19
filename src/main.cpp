@@ -489,6 +489,20 @@ int main()
         }break;
         case BOSS:
         {
+<<<<<<< Updated upstream
+=======
+            ChangeStage(timerChangeStage);
+
+            if (timerChangeStage.CheckFinished() == true)
+            {
+
+            }
+
+            //Enemy
+            boss.Move();
+            boss.ShootBoss(&enemybullets);
+
+>>>>>>> Stashed changes
             //Player
             currentScreen = DevKeys(currentScreen);
             player.Move();
@@ -504,19 +518,11 @@ int main()
             }
 
             //Enemy Collisions
-            for (int i = 0; i < enemies.size(); i++)
-            {
                 for (int j = 0; j < playerbullets.size(); j++)
                 {
                     if (boss.IsEnemyAlive() == true) {
                         if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius, boss.enemy_texture_position, boss.GetEnemyRadius()))
                         {
-                            player.SumScore(100);
-                            hit_counter++;
-                            PlaySound(enemyDeathExplosion);
-                            enemies[i].SetEnemyLife(false);
-                            playerbullets.erase(playerbullets.begin() + j);
-
                             //Score
                             if (player.GetScore() > LoadHighScore(highestHighScore))
                             {
@@ -536,17 +542,19 @@ int main()
                                 hit_counter++;
                                 PlaySound(enemyDeathExplosion);
                                 playerbullets.erase(playerbullets.begin() + j);
+                               
                             }
                             else 
                             {
                                 hit_counter++;
                                 playerbullets.erase(playerbullets.begin() + j);
                                 boss.GetHit();
+                                
                             }
                         }
                     }
                 }
-            }
+        
             //Winning/Losing Conditions
             bool allDead = true;
             if (player.GetLives() < 0)
@@ -896,7 +904,6 @@ int main()
             DrawCircle(boss.enemy_texture_position.x,boss.enemy_texture_position.y,boss.GetEnemyRadius(),GREEN);
 
             //Enemies
-            boss.SetEnemyPosition({ 200,200 });
             Vector2 Correccion = { boss.GetEnemyPosition().x+128, boss.GetEnemyPosition().y+128}; //-32 -32
 
             Vector2 bossActualPosition = boss.GetEnemyPosition();

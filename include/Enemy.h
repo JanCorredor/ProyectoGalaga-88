@@ -70,14 +70,18 @@ private:
     bool isSpawned;
     bool isHit;
     Timer timerHitAnimation;
+    Timer timerShotCadence;
+    int bulletcounter;
 public:
     Boss();
-
+    int auxVertical;
     int GetHP();
     void SetHP(int newHP);
     void GetHit();
     bool GetIsHit();
     void SetIsHit(bool newHit);
     bool CheckIsHit();
+    void Move();
+    void ShootBoss(std::vector <Bullet>* bulletManager);
     void SpawnBoss();
 };

@@ -473,9 +473,15 @@ void Enemy::SetEnemyPosition(int x, int y) { this->enemy_position.x = x; this->e
 void Enemy::SetEnemyRadius(int rad) { this->enemy_radius = rad; };
 void Enemy::SetEnemyLife(bool alive) { this->enemy_alive = alive; };
 
+// -------------------------------- BOSS ----------------------------------
+
+
 Boss::Boss() 
 {
     this->enemy_radius = 128; this->enemy_alive = true; this->enemy_speed = { 5,5 }; this->angle = 0; this->hp = 5; this->isHit = false;
+    this->timerShotCadence.StartTimer(1);
+    this->bulletcounter = 0;
+    this->enemy_position = { 200,200 };
 }
 
 bool Boss::GetIsHit() { return this->isHit; }
@@ -503,6 +509,70 @@ bool Boss::CheckIsHit()
         return false;
     } else { 
         return true; 
+    }
+}
+
+void Boss::Move() 
+{
+    //Horizontal Movement
+    if (this->IsEnemyAlive())
+    {
+            if (this->enemy_position.x >= 500)
+            {
+                this->aux = 1; //Izquierda
+            }
+            if (this->enemy_position.x <= 10)
+            {
+                this->aux = 0; //Derecha
+            }
+
+            if (aux == 0) 
+            {
+                this->enemy_position.x += 5;
+            }
+            else if (aux == 1) 
+            {
+                this->enemy_position.x -= 5;
+            }
+        
+        //Vertical Movement
+        if (this->enemy_position.y <= 150) 
+        {
+            this->auxVertical = 0; //Baja
+        }
+        if (this->enemy_position.y >= 450) 
+        {
+            this->auxVertical = 1; //Sube
+            this->bulletcounter = 0;
+        }
+
+        if (auxVertical == 0) 
+        {
+            this->enemy_position.y += 5;
+        }
+        else if(auxVertical == 1)
+        {
+            this->enemy_position.y -= 5;
+        }
+    }
+}
+
+void Boss::ShootBoss(std::vector <Bullet>* bulletManager)
+{
+    if (this->timerShotCadence.CheckFinished()) 
+    {
+        if (this->enemy_alive == true && this->bulletcounter < 4)
+        {
+            Bullet newBullet;
+
+            newBullet.bullet_position.x = this->enemy_position.x + 115;
+            newBullet.bullet_position.y = this->enemy_position.y + 220;
+
+            newBullet.bullet_radius = 10;
+            bulletManager->push_back(newBullet);
+            this->bulletcounter++;
+        }
+        this->timerShotCadence.StartTimer(0.1);
     }
 }
 
