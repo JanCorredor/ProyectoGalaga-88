@@ -131,6 +131,7 @@ bool Player::CheckDeath()
 {
     if (this->deathTimer.CheckFinished() == true && aux == 1) 
     {
+        this->color = WHITE;
         this->ToggleInmortal(false);
         this->alive = true;
         aux = 0;

@@ -286,8 +286,23 @@ Vector2 Enemy::GetFormationPositions(int x_pos, int y_pos)     //Vector2 enemies
 
 void Enemy::Launch(Player* p)
 {
-    int speed = 5; // 10
     extern bool hardmode;
+    if (CheckCollisionCircles(p->GetPosition(), p->GetRadius(), this->enemy_texture_position, this->enemy_radius))
+    {
+        if (p->GetAlive() == true && p->GetInmortal() == false)
+        {
+            p->Death(); // Player loses one life
+        }
+        p->CheckDeath(); //Check if player has lost all lives
+
+        if (hardmode == false)
+        {
+            this->enemy_alive = false;
+        }
+    }
+
+    int speed = 5;
+
     if (enemy_color.r == WHITE.r)
     {
         if (this->type == Goei || this->type == Bon)

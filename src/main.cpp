@@ -68,7 +68,7 @@ void DrawEnemyBullet();//Update all the enemy bullets (Harmode off)
 void DrawGodShot(); ////Update all the enemy bullets (Harmode on)
 void EnemyManager(); //Manages enemy spawn waves
 
-void ChangeStage(Timer timerChangeStage);
+
 
 //-------------------------------------------------------------------------------------
 // Main
@@ -109,6 +109,20 @@ int main()
 
     ////Player
     Texture player_body_t = LoadTexture("Player/PlayerGalaga88.png");
+
+
+    //Death Animation
+    Timer playerDeathtimer;
+    int pDeathframe = 0;
+    Texture pDeathA_1 = LoadTexture("Player/DeathAnimation/PDA1.png");
+    Texture pDeathA_2 = LoadTexture("Player/DeathAnimation/PDA2.png");
+    Texture pDeathA_3 = LoadTexture("Player/DeathAnimation/PDA3.png");
+    Texture pDeathA_4 = LoadTexture("Player/DeathAnimation/PDA4.png");
+    Texture pDeathA_5 = LoadTexture("Player/DeathAnimation/PDA5.png");
+    Texture pDeathA_6 = LoadTexture("Player/DeathAnimation/PDA6.png");
+    Texture pDeathA_7 = LoadTexture("Player/DeathAnimation/PDA7.png");
+
+    Texture pDeathA[7] = { pDeathA_1, pDeathA_2, pDeathA_3,pDeathA_4, pDeathA_5,pDeathA_6,pDeathA_7 };
 
     ////Bullets
     Texture player_bullet = LoadTexture("Player/PlayerBullet.png");
@@ -332,13 +346,6 @@ int main()
         } break;
         case STAGE2:
         {
-            ChangeStage(timerChangeStage);
-
-            if (timerChangeStage.CheckFinished() == true) 
-            {
-                   
-            }
-
             //Enemies
             if (timerSpawnEnemies.CheckFinished() == true && spawnedWaves < 5)  //Spawn Enemy Waves
             {
@@ -482,8 +489,6 @@ int main()
         }break;
         case BOSS:
         {
-            ChangeStage(timerChangeStage);
-
             if (timerChangeStage.CheckFinished() == true)
             {
 
@@ -666,7 +671,7 @@ int main()
             //Bullets
             DrawBullet();
 
-            for (int i = 0; i < playerbullets.size(); i++) 
+            for (int i = 0; i < playerbullets.size(); i++)
             {
                 DrawTexture(player_bullet, playerbullets[i].bullet_position.x, playerbullets[i].bullet_position.y, WHITE);
             }
@@ -695,17 +700,35 @@ int main()
 
             //Player
             Vector2 playerActualPosition = player.GetPosition();
-            if (player.GetAlive() == true) {
+            Vector2 playerCorreccion = {playerActualPosition.x - 74, playerActualPosition.y - 63};
+
+            if (player.GetAlive() == true) 
+            {
+                pDeathframe = 0;
                 if (player.GetInmortal())
                 {
-                    DrawTexture(player_body_t, playerActualPosition.x - 74, playerActualPosition.y - 63, BLUE);
+                    DrawTexture(player_body_t, playerCorreccion.x, playerCorreccion.y, BLUE);
                 }
                 else
                 {
-                    DrawTexture(player_body_t, playerActualPosition.x - 74, playerActualPosition.y - 63, WHITE);
+                    DrawTexture(player_body_t, playerCorreccion.x, playerCorreccion.y, WHITE);
                 }
             }
-            
+            else
+            {
+                Vector2 pDeathAnim = { playerCorreccion.x + 10, playerCorreccion.y };
+                if (pDeathframe < 7)
+                {
+                    DrawTextureEx(pDeathA[pDeathframe], pDeathAnim, 0, 0.5, WHITE);
+                }
+
+                if ((playerDeathtimer.CheckFinished() && pDeathframe <= 7) || pDeathframe == 0)
+                {
+                    playerDeathtimer.StartTimer(0.1);
+                    pDeathframe++;
+                }
+            }
+
             //Enemies
             for (int i = 0; i < enemies.size(); i++)
             {
@@ -1116,16 +1139,6 @@ void EnemyManager()
     }
 
 } 
-
-void ChangeStage(Timer timerChangeStage) // Change Stage Animation
-{
-    timerChangeStage.StartTimer(5.0f);
-    //Animation
-    if (timerChangeStage.CheckFinished() == true) 
-    {
-        
-    }
-}
 
 GameScreen DevKeys(GameScreen current)
 {
