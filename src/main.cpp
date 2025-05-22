@@ -527,10 +527,11 @@ int main()
                             }
                             if (boss.GetHP() <= 0) 
                             {
-                                player.SumScore(1000);
+                                player.SumScore(10000);
                                 hit_counter++;
                                 PlaySound(enemyDeathExplosion);
                                 playerbullets.erase(playerbullets.begin() + j);
+                                currentScreen = ENDING;
                                
                             }
                             else 
