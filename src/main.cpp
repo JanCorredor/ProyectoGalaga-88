@@ -724,16 +724,14 @@ int main()
                     }
                     if (enemies[i].type == Goei) //Goei
                     {
-                        DrawTextureEx(Goei_t, Correccion, enemies[i].texture_angle, 0.5, WHITE);
-                        //DrawTextureEx(Goei_0_t, Correccion, enemies[i].texture_angle, 0.5, WHITE);
-                        //Rectangle Destinationr = { enemies[i].GetEnemyPosition().x,enemies[i].GetEnemyPosition().y,64, 64 };
-                        //Rectangle Sourcer = { 62,62,63,63 };
-                        /*DrawTexturePro(Goei_0_t, Sourcer,Destinationr,enemies[i].GetEnemyPosition(), enemies[i].texture_angle, WHITE);*/
-                        enemies[i].imagen = LoadImageFromTexture(Goei_0_t);
-                        ImageRotate(&enemies[i].imagen, enemies[i].texture_angle);
-                        enemies[i].textura = LoadTextureFromImage(enemies[i].imagen);
-                        DrawTextureEx(enemies[i].textura, Correccion, 0, 0.5, WHITE);
-                        //UnloadTexture(texturaFinal);
+                        Rectangle sourceRec = { 0.0f, 0.0f, Goei_t.width, Goei_t.height};
+                        Rectangle destRec = { enemies[i].GetEnemyPosition().x, enemies[i].GetEnemyPosition().y, 64, 64 };
+                        Vector2 origin = { (float)Goei_t.width-64-30,(float)Goei_t.height-64-16};
+                        DrawTexturePro(Goei_t, sourceRec, destRec , origin, enemies[i].texture_angle, WHITE);
+
+
+                        DrawLine((int)destRec.x, 0, (int)destRec.x, GetScreenHeight(), RED);
+                        DrawLine(0, (int)destRec.y, GetScreenWidth(), (int)destRec.y, RED);
                     }
                     else if (enemies[i].type == Zako) //Zako
                     {
