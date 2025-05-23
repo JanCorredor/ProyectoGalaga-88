@@ -729,24 +729,39 @@ int main()
                         Vector2 origin = { (float)Goei_t.width-64-30,(float)Goei_t.height-64-16};
                         DrawTexturePro(Goei_t, sourceRec, destRec , origin, enemies[i].texture_angle, WHITE);
 
-
                         DrawLine((int)destRec.x, 0, (int)destRec.x, GetScreenHeight(), RED);
                         DrawLine(0, (int)destRec.y, GetScreenWidth(), (int)destRec.y, RED);
                     }
                     else if (enemies[i].type == Zako) //Zako
                     {
-                        DrawTextureEx(Zako_t, Correccion, enemies[i].texture_angle, 1, WHITE);
-                        //DrawTextureEx(Zako_t, Correccion, 0, 1, WHITE);
+                        Rectangle sourceRec = { 0.0f, 0.0f, Zako_t.width, Zako_t.height };
+                        Rectangle destRec = { enemies[i].GetEnemyPosition().x, enemies[i].GetEnemyPosition().y, 64, 64 };
+                        Vector2 origin = { (float)Zako_t.width - 30,(float)Zako_t.height - 30};
+                        DrawTexturePro(Zako_t, sourceRec, destRec, origin, enemies[i].texture_angle, WHITE);
+
+                        DrawLine((int)destRec.x, 0, (int)destRec.x, GetScreenHeight(), RED);
+                        DrawLine(0, (int)destRec.y, GetScreenWidth(), (int)destRec.y, RED);
                     }
                     else if (enemies[i].type == Bon) //Bon
                     {
-                        DrawTextureEx(Bon_t, Correccion, enemies[i].texture_angle, 1, WHITE);
-                        //DrawTextureEx(Bon_t, Correccion, 0, 1, WHITE);
+                        Rectangle sourceRec = { 0.0f, 0.0f, Bon_t.width, Bon_t.height };
+                        Rectangle destRec = { enemies[i].GetEnemyPosition().x, enemies[i].GetEnemyPosition().y, 64, 64 };
+                        Vector2 origin = { (float)Bon_t.width - 30,(float)Bon_t.height - 30};
+                        DrawTexturePro(Bon_t, sourceRec, destRec, origin, enemies[i].texture_angle, WHITE);
+
+                        DrawLine((int)destRec.x, 0, (int)destRec.x, GetScreenHeight(), RED);
+                        DrawLine(0, (int)destRec.y, GetScreenWidth(), (int)destRec.y, RED);
                     }
                     else if (enemies[i].type == Bos) //Bos
                     {
-                        DrawTextureEx(Bos_t, Correccion, enemies[i].texture_angle, 1, WHITE);
-                        //DrawTextureEx(Bos_t, Correccion, 0, 1, WHITE);
+                        Rectangle sourceRec = { 0.0f, 0.0f, Bos_t.width, Bos_t.height };
+                        Rectangle destRec = { enemies[i].GetEnemyPosition().x, enemies[i].GetEnemyPosition().y, 64, 64 };
+                        Vector2 origin = { (float)Bos_t.width - 30,(float)Bos_t.height - 30};
+                        DrawTexturePro(Bos_t, sourceRec, destRec, origin, enemies[i].texture_angle, WHITE);
+
+                        DrawLine((int)destRec.x, 0, (int)destRec.x, GetScreenHeight(), RED);
+                        DrawLine(0, (int)destRec.y, GetScreenWidth(), (int)destRec.y, RED);
+
                         if (enemies[i].aux == 1)
                         {
                             Vector2 Attack = { Correccion.x - 64 - 10, Correccion.y + 64 };
