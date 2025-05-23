@@ -220,7 +220,7 @@ Vector2 Enemy::StartingPositions(int spawnId)
 
 Vector2 Enemy::GetSemiCirclePoints()
 {
-    int verticalCirclePosition = GetScreenHeight() / 2;
+    int verticalCirclePosition = GetScreenHeight() / 2; 
     Vector2 LeftPoint = { positionAdjustments, verticalCirclePosition};
     Vector2 RightPoint = {GetScreenWidth() - positionAdjustments, verticalCirclePosition};
 
@@ -249,9 +249,9 @@ void Enemy::SemiCircleMovement()
     float distanceLeft = abs(this->enemy_position.x - 0);
     float distanceRight = abs(this->enemy_position.x - GetScreenWidth());
 
-    if (distanceLeft <= distanceRight)
+    if (distanceLeft <= distanceRight) 
     {
-        this->enemy_position.x -= cos(this->angle) * radius;
+        this->enemy_position.x -= cos(this->angle) * radius; //Math
         this->enemy_position.y += sin(this->angle) * radius;
     }
     else
@@ -351,7 +351,7 @@ void Enemy::Launch(Player* p)
             else if ((this->texture_angle < 360 && this->texture_angle > -360) && hardmode == false)
             {
                 this->aux = 1;
-                if (Left)
+                if (Left) //Circular Movement depending on the side of the screen
                 {
                     this->enemy_position.x += cos(this->angle) * radius;
                     this->enemy_position.y -= sin(-this->angle) * radius;
@@ -370,7 +370,7 @@ void Enemy::Launch(Player* p)
             {
                 this->aux = 1;
 
-                if (Left)
+                if (Left) //Circular Movement depending on the side of the screen
                 {
                     this->enemy_position.x += cos(this->angle) * radius;
                     this->enemy_position.y += sin(this->angle) * radius;
@@ -535,11 +535,11 @@ void Boss::Move()
     {
             if (this->enemy_position.x >= 500)
             {
-                this->aux = 1; //Izquierda
+                this->aux = 1; //Left
             }
             if (this->enemy_position.x <= 10)
             {
-                this->aux = 0; //Derecha
+                this->aux = 0; //Right
             }
 
             if (aux == 0) 
@@ -554,11 +554,11 @@ void Boss::Move()
         //Vertical Movement
         if (this->enemy_position.y <= 150) 
         {
-            this->auxVertical = 0; //Baja
+            this->auxVertical = 0; //Down
         }
         if (this->enemy_position.y >= 450) 
         {
-            this->auxVertical = 1; //Sube
+            this->auxVertical = 1; //Up
             this->bulletcounter = 0;
         }
 

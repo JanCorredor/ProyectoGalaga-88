@@ -180,7 +180,6 @@ int main()
             // Wait for 2 seconds (120 frames) before jumping to TITLE 
             if (logoTimer.CheckFinished() == true)
             {
-                UnloadTexture(GrupoDeNombreLogo); //Won't use this texture anymore so unload
                 currentScreen = TITLE;
             }
         } break;
@@ -290,7 +289,8 @@ int main()
             {
                 for (int j = 0; j < playerbullets.size(); j++)
                 {
-                    if (enemies[i].IsEnemyAlive() == true) {
+                    if (enemies[i].IsEnemyAlive() == true) 
+                    {
                         if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius, enemies[i].enemy_texture_position, enemies[i].GetEnemyRadius()))
                         {
                             player.SumScore(100); //Add 100 to score
@@ -512,7 +512,8 @@ int main()
             //Enemy Collisions
                 for (int j = 0; j < playerbullets.size(); j++)
                 {
-                    if (boss.IsEnemyAlive() == true) {
+                    if (boss.IsEnemyAlive() == true) 
+                    {
                         if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius, boss.enemy_texture_position, boss.GetEnemyRadius()))
                         {
                             //Score
@@ -534,8 +535,6 @@ int main()
                                 hit_counter++;
                                 PlaySound(enemyDeathExplosion);
                                 playerbullets.erase(playerbullets.begin() + j);
-                                currentScreen = ENDING;
-                               
                             }
                             else 
                             {
@@ -582,6 +581,8 @@ int main()
             }
             if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
             {
+                player = Player::Player();
+                hardmode = false;
                 CleanVariables();
 
                 StopSound(GalagaWin);
@@ -955,27 +956,23 @@ int main()
             DrawText("1UP", GetScreenWidth() / 13, GetScreenHeight() / 50, 45, YELLOW);
             DrawText("HIGH SCORE", GetScreenWidth() / 3, GetScreenHeight() / 50, 45, RED);
 
-            DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
-            DrawText(TextFormat("%i", (char*)LoadHighScore(highestHighScore)), GetScreenWidth() / 3, GetScreenHeight() / 20, 45, WHITE);
+            DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE); //Player Score
+            DrawText(TextFormat("%i", (char*)LoadHighScore(highestHighScore)), GetScreenWidth() / 3, GetScreenHeight() / 20, 45, WHITE); //Highest Score
 
-            DrawText("SHOTS FIRED", GetScreenWidth() / 13, GetScreenHeight() / 10, 45, YELLOW);
-            DrawText(TextFormat("%i", (char*)player_bullet_counter), GetScreenWidth() * 2 / 3, GetScreenHeight() / 10, 45, YELLOW);
+            DrawText("SHOTS FIRED", GetScreenWidth() / 13, GetScreenHeight() / 10, 45, YELLOW);                                   
+            DrawText(TextFormat("%i", (char*)player_bullet_counter), GetScreenWidth() * 2 / 3, GetScreenHeight() / 10, 45, YELLOW);//Number of Shots fired
 
             DrawText("NUMBER OF HITS", GetScreenWidth() / 13, GetScreenHeight() / 7, 45, YELLOW);
-            DrawText(TextFormat("%i", (char*)hit_counter), GetScreenWidth() * 2 / 3, GetScreenHeight() / 7, 45, YELLOW);
+            DrawText(TextFormat("%i", (char*)hit_counter), GetScreenWidth() * 2 / 3, GetScreenHeight() / 7, 45, YELLOW); //Number of enemies hit
 
             float ratio;
-            if (player_bullet_counter == 0)
-            {
-                ratio = 0.00f;
-            }
+            if (player_bullet_counter == 0)  //Avoid dividing by 0 (Failsave)(impossible to get to ending without shooting)
+            { ratio = 0.00f; }
             else
-            {
-                ratio = ((float)hit_counter / (float)player_bullet_counter) * 100;
-            }
+            { ratio = ((float)hit_counter / (float)player_bullet_counter) * 100; }
 
             DrawText("HIT-MISS RATIO", GetScreenWidth() / 13, GetScreenHeight() / 5, 45, YELLOW);
-            DrawText(TextFormat("%d %%", (char)ratio), GetScreenWidth() * 2 / 3, GetScreenHeight() / 5, 45, YELLOW); ///////////////Error: No se dibujan los decimales
+            DrawText(TextFormat("%d %%", (char)ratio), GetScreenWidth() * 2 / 3, GetScreenHeight() / 5, 45, YELLOW); //Ratio of bullets hit per bullets shot
 
             DrawText("[1]", GetScreenWidth() / 13, GetScreenHeight() * 3 / 10, 50, GOLD);
             DrawText("[2]", GetScreenWidth() / 13, GetScreenHeight() * 4 / 10, 45, WHITE);
@@ -983,13 +980,13 @@ int main()
             DrawText("[4]", GetScreenWidth() / 13, GetScreenHeight() * 6 / 10, 45, WHITE);
             DrawText("[5]", GetScreenWidth() / 13, GetScreenHeight() * 7 / 10, 45, WHITE);
 
-            DrawText(TextFormat("%i", (char*)LoadHighScore(highestHighScore)), GetScreenWidth() / 6, GetScreenHeight() * 3 / 10, 50, GOLD);
-            DrawText(TextFormat("%i", (char*)LoadHighScore(secondHighScore)), GetScreenWidth() / 6, GetScreenHeight() * 4 / 10, 40, WHITE);
-            DrawText(TextFormat("%i", (char*)LoadHighScore(thirdHighScore)), GetScreenWidth() / 6, GetScreenHeight() * 5 / 10, 40, WHITE);
-            DrawText(TextFormat("%i", (char*)LoadHighScore(fourthHighScore)), GetScreenWidth() / 6, GetScreenHeight() * 6 / 10, 40, WHITE);
-            DrawText(TextFormat("%i", (char*)LoadHighScore(fifthHighScore)), GetScreenWidth() / 6, GetScreenHeight() * 7 / 10, 40, WHITE);
+            DrawText(TextFormat("%i", (char*)LoadHighScore(highestHighScore)), GetScreenWidth() / 6, GetScreenHeight() * 3 / 10, 50, GOLD); //1st Place on leaderboard
+            DrawText(TextFormat("%i", (char*)LoadHighScore(secondHighScore)), GetScreenWidth() / 6, GetScreenHeight() * 4 / 10, 40, WHITE);//2nd Place on leaderboard
+            DrawText(TextFormat("%i", (char*)LoadHighScore(thirdHighScore)), GetScreenWidth() / 6, GetScreenHeight() * 5 / 10, 40, WHITE);//3rd Place on leaderboard
+            DrawText(TextFormat("%i", (char*)LoadHighScore(fourthHighScore)), GetScreenWidth() / 6, GetScreenHeight() * 6 / 10, 40, WHITE);//4th Place on leaderboard
+            DrawText(TextFormat("%i", (char*)LoadHighScore(fifthHighScore)), GetScreenWidth() / 6, GetScreenHeight() * 7 / 10, 40, WHITE);//5th Place on leaderboard
 
-            if (hasWon == true)
+            if (hasWon == true) //Has the player won?
             {
                 DrawText("VICTORY ACHIEVED", GetScreenWidth() / 10, GetScreenHeight() * 16 / 20, 45, DARKGREEN);
                 DrawText("Retry?", GetScreenWidth() / 10, GetScreenHeight() * 18 / 20, 45, GREEN);
@@ -999,22 +996,57 @@ int main()
                 DrawText("You DIED and LOST", GetScreenWidth() / 10, GetScreenHeight() * 16 / 20, 45, RED);
                 DrawText("Retry?", GetScreenWidth() / 10, GetScreenHeight() * 18 / 20, 45, RED);
             }
-
-
         } break;
         default: break;
         }
 
-
 		EndDrawing();
 	}
 
-	// Cleanup
-	// Unload textures so it can be cleaned up TODO
+	//Cleanup
+	//Unload textures so it can be cleaned up
+    UnloadTexture(GrupoDeNombreLogo);
+
+    UnloadTexture(Galaga88Logo);
+
+    UnloadTexture(stageindicator1);
+
+    UnloadTexture(Goei_0_t);
+    UnloadTexture(Goei_1_t);
+    UnloadTexture(Zako_t);
+    UnloadTexture(Bon_t);
+    UnloadTexture(Bos_t);
+
+    UnloadTexture(Boss_t);
+    UnloadTexture(Boss_2nd_t);
+
+    UnloadTexture(player_body_t);
+
+    UnloadTexture(pDeathA_1);
+    UnloadTexture(pDeathA_2);
+    UnloadTexture(pDeathA_3);
+    UnloadTexture(pDeathA_4);
+    UnloadTexture(pDeathA_5);
+    UnloadTexture(pDeathA_6);
+    UnloadTexture(pDeathA_7);
+
+    UnloadTexture(player_bullet);
+    UnloadTexture(enemybullet_0);
+    UnloadTexture(enemybullet_1);
+    UnloadTexture(Bos_attack_t);
 
     //Unload sounds
     UnloadSound(buttonclick);
+    UnloadSound(GalagaOpening);
+    UnloadSound(GalagaWin);
+    UnloadSound(GalagaDefeat);
+
     UnloadSound(playerShoot);
+    UnloadSound(playerDeath);
+
+    UnloadSound(enemyShoot);
+    UnloadSound(enemyFormation);
+    UnloadSound(enemyDeathExplosion);
 
 	//Destroy the window and cleanup the OpenGL context
 	CloseWindow();
@@ -1057,13 +1089,13 @@ void DrawEnemyBullet()
 
         if (enemybullets[i].bullet_position.y >= GetScreenHeight() + 20) //Sprite out of screen
         {
-            enemybullets.erase(enemybullets.begin());
+            enemybullets.erase(enemybullets.begin()); //Erase bullet
             continue;
         }
 
         if (CheckCollisionCircles(enemybullets[i].bullet_position, enemybullets[i].bullet_radius, player.GetPosition(), player.GetRadius())) //Check if bullet collides with player
         {
-            enemybullets.erase(enemybullets.begin()+i);
+            enemybullets.erase(enemybullets.begin()+i); //Erase the bullet that hit
             if (player.GetAlive() == true && player.GetInmortal() == false) 
             {
                 player.Death(); // Player loses one life
@@ -1095,13 +1127,13 @@ void DrawGodShot()
 
         if (enemybullets[i].bullet_position.y >= GetScreenHeight() + 20) //Sprite out of screen
         {
-            enemybullets.erase(enemybullets.begin());
+            enemybullets.erase(enemybullets.begin()); //Erase bullet
             continue;
         }
 
         if (CheckCollisionCircles(enemybullets[i].bullet_position, enemybullets[i].bullet_radius, player.GetPosition(), player.GetRadius())) //Check if bullet collides with player
         {
-            enemybullets.erase(enemybullets.begin() + i);
+            enemybullets.erase(enemybullets.begin() + i); //Erase the bullet that hit
             if (player.GetAlive() == true && player.GetInmortal() == false)
             {
                 player.Death(); // Player loses one life
@@ -1131,15 +1163,12 @@ void EnemyManager()
             }
             else if (enemies[count].inPosition[2] == true)
             {
-                int rndmax = 0;
+                int rndmax = 0; 
                 for (int i = 0; i < enemies.size(); i++)
                 {
-                    if (enemies[i].inPosition[2] == true)
-                    {
-                        rndmax++;
-                    }
+                    if (enemies[i].inPosition[2] == true) { rndmax++; } //If they are in formation they can shoot
                 }
-                int rnd = GetRandomValue(0, rndmax - 1);
+                int rnd = GetRandomValue(0, rndmax - 1); //Make a random enemy that meets the conditions shoot and launch towards the player
                 if (enemyAttackTimer.CheckFinished() && enemies[rnd].IsEnemyAlive() == true && enemies[rnd].inPosition[2] == true && enemies[rnd].inPosition[3] == false)
                 {
                     enemies[rnd].Shoot(&enemybullets, player);         // Make a random enemy shoot
@@ -1157,11 +1186,11 @@ void EnemyManager()
         {
             enemies[count].inPosition[2] = true; //If enemy is dead check the positions so functions do not mess up
 
-            if (enemies[count].DEAD.a != 0)
+            if (enemies[count].DEAD.a != 0) //Dead Color alpha is diferent from 0 (transparent)
             {
-                enemies[count].DEAD.a -= 1;
+                enemies[count].DEAD.a -= 1; //alpha -1
             }
-            enemies[count].SetEnemyPosition(enemies[count].GetEnemyPosition().x, enemies[count].GetEnemyPosition().y + 1);
+            enemies[count].SetEnemyPosition(enemies[count].GetEnemyPosition().x, enemies[count].GetEnemyPosition().y + 1); //Make the corpses go down
         }
 
     }
@@ -1170,7 +1199,7 @@ void EnemyManager()
 
 void CleanVariables()
 {
-    player = Player::Player();
+
     player_bullet_counter = 0;
     hit_counter = 0;
 
@@ -1179,7 +1208,7 @@ void CleanVariables()
     enemies.clear();
 
     updatedScore = false;
-    hardmode = false;
+
 
     triggerTimerTitleStageOne = false;
     triggerTimerTitleStageTwo = false;

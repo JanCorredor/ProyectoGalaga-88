@@ -35,7 +35,10 @@ void DrawParticles()
         if ((particles[i].particle_position.y) >= GetScreenHeight()) // Restart 
         {
             particles[i].particle_position = { (float)GetRandomValue(GetScreenWidth() / 200, GetScreenWidth() * 199 / 200), (float)GetRandomValue(0, 5) };// Position
-            particles[i].particle_color = particle_colors[GetRandomValue(0, 5)];                                                                     //Color
+
+            extern bool hardmode;
+            if (hardmode) { particles[i].particle_color = RED; }                                                                                       //Red
+            else { particles[i].particle_color = particle_colors[GetRandomValue(0, 5)];  }                                                            //Color
             particles[i].particle_speed = GetRandomValue(1, 3);                                                                                      //Speed
         }
 
