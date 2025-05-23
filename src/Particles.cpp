@@ -35,10 +35,7 @@ void DrawParticles()
         if ((particles[i].particle_position.y) >= GetScreenHeight()) // Restart 
         {
             particles[i].particle_position = { (float)GetRandomValue(GetScreenWidth() / 200, GetScreenWidth() * 199 / 200), (float)GetRandomValue(0, 5) };// Position
-
-            extern bool hardmode;
-            if (hardmode) { particles[i].particle_color = RED; }                                                                                       //Red
-            else { particles[i].particle_color = particle_colors[GetRandomValue(0, 5)];  }                                                            //Color
+            particles[i].particle_color = particle_colors[GetRandomValue(0, 5)];                                                                       //Color
             particles[i].particle_speed = GetRandomValue(1, 3);                                                                                      //Speed
         }
 
@@ -47,6 +44,8 @@ void DrawParticles()
     {
         if (particles[i].visible == true) //Draw only if visible
         {
+            extern bool hardmode;
+            if (hardmode) { particles[i].particle_color = RED; }                                                                                       //Red
             DrawRectangle(particles[i].particle_position.x, particles[i].particle_position.y, particles[i].particle_size, particles[i].particle_size, particles[i].particle_color);
         }
     }
