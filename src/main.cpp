@@ -98,9 +98,7 @@ int main()
     Texture stageindicator1 = LoadTexture("HUD/Galaga_'88_icon_stage_1.png");
 
     ////Enemies
-    Texture Goei_0_t = LoadTexture("Enemies/Goei_0.png");
-    Texture Goei_1_t = LoadTexture("Enemies/Goei_1.png");
-
+    Texture Goei_t = LoadTexture("Enemies/Goei.png");
     Texture Zako_t = LoadTexture("Enemies/Zako.png");
     Texture Bon_t = LoadTexture("Enemies/Bon.png");
     Texture Bos_t = LoadTexture("Enemies/Boos.png");
@@ -725,7 +723,7 @@ int main()
                     }
                     if (enemies[i].type == Goei) //Goei
                     {
-                        DrawTextureEx(Goei_0_t, Correccion, enemies[i].texture_angle, 0.5, WHITE);
+                        DrawTextureEx(Goei_t, Correccion, enemies[i].texture_angle, 0.5, WHITE);
                     }
                     else if (enemies[i].type == Zako) //Zako
                     {
@@ -750,7 +748,7 @@ int main()
                     if (enemies[i].type == Goei) //Goei
                     {
                         Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 33, enemies[i].GetEnemyPosition().y - 37 }; //-33 -37
-                        DrawTextureEx(Goei_0_t, Correccion, enemies[i].texture_angle, 0.5, enemies[i].DEAD);
+                        DrawTextureEx(Goei_t, Correccion, enemies[i].texture_angle, 0.5, enemies[i].DEAD);
                         enemies[i].enemy_texture_position = Correccion;
                     }
                     else if (enemies[i].type == Zako) //Zako
@@ -801,7 +799,8 @@ int main()
                 }
                 if (timerStageTitle.CheckFinished() == false)
                 {
-                    DrawText("STAGE 1", GetScreenWidth() * 9 / 24, GetScreenHeight() / 3, 45, GREEN);
+                    if (hardmode) { DrawText("STAGE 1", GetScreenWidth() * 9 / 24, GetScreenHeight() / 3, 45, RED); }
+                    else { DrawText("STAGE 1", GetScreenWidth() * 9 / 24, GetScreenHeight() / 3, 45, GREEN); }
                 }
             }
             else
@@ -813,7 +812,8 @@ int main()
                 }
                 if (timerStageTitle.CheckFinished() == false)
                 {
-                    DrawText("STAGE 2", GetScreenWidth() * 9 / 24, GetScreenHeight() / 3, 45, GREEN);
+                    if (hardmode) { DrawText("STAGE 2", GetScreenWidth() * 9 / 24, GetScreenHeight() / 3, 45, RED); }
+                    else { DrawText("STAGE 2", GetScreenWidth() * 9 / 24, GetScreenHeight() / 3, 45, GREEN); }
                 }
             }
         } break;
@@ -1011,8 +1011,7 @@ int main()
 
     UnloadTexture(stageindicator1);
 
-    UnloadTexture(Goei_0_t);
-    UnloadTexture(Goei_1_t);
+    UnloadTexture(Goei_t);
     UnloadTexture(Zako_t);
     UnloadTexture(Bon_t);
     UnloadTexture(Bos_t);
