@@ -28,6 +28,14 @@ typedef enum GameScreen
 //-------------------------------------------------------------------------------------
 static Player player = Player::Player(); //Create Instance of Player
 
+std::vector <Bullet> playerbullets; //Vector to control all the player bullets
+int player_bullet_counter = 0; //How many bullets has the player shot
+int hit_counter = 0; //How How many bullets hit an enemy
+
+std::vector <Enemy> enemies;  //Vector to control all the enemies
+std::vector <Bullet> enemybullets; //Vector to control all the enemy bullets
+Boss boss;
+
 bool hardmode = false; //Is Hardmode on?
 bool hitboxes = false; //Hitboxes Visisble?
 
@@ -47,27 +55,21 @@ Timer timerChangeStage;
 Timer timerStageTitle;
 
 //-------------------------------------------------------------------------------------
-// Declaracion de funciones
+// Functions declaration
 //-------------------------------------------------------------------------------------
 
-//Disparar
-std::vector <Bullet> playerbullets; //Vector to control all the player bullets
 
-int player_bullet_counter = 0; //How many bullets has the player shot
-int hit_counter = 0; //How How many bullets hit an enemy
 void DrawBullet();  //Update all the player bullets
 GameScreen DevKeys(GameScreen current);
 
-std::vector <Enemy> enemies;  //Vector to control all the enemies
 Enemy callEnemyFunctions; // An auxiliary to call functions from the Enemy class
-std::vector <Bullet> enemybullets;  //Vector to control all the enemy bullets
-Boss boss;
+
 
 void DrawEnemyBullet();//Update all the enemy bullets (Harmode off)
 void DrawGodShot(); ////Update all the enemy bullets (Harmode on)
 void EnemyManager(); //Manages enemy spawn waves
 
-
+void CleanVariables();
 
 //-------------------------------------------------------------------------------------
 // Main
@@ -104,6 +106,7 @@ int main()
     Texture Bos_t = LoadTexture("Enemies/Boos.png");
 
     Texture Boss_t = LoadTexture("Enemies/Galaga_'88_Giant Zako.png");
+    Texture Boss_2nd_t = LoadTexture("Enemies/cositas.png");
 
     ////Player
     Texture player_body_t = LoadTexture("Player/PlayerGalaga88.png");
@@ -554,17 +557,7 @@ int main()
                 currentScreen = ENDING;
             }
 
-            for (int i = 0; i < enemies.size(); i++)
-            {
-                if (enemies.empty() == false)
-                {
-                    if (enemies[i].IsEnemyAlive() == true)
-                    {
-                        allDead = false;
-                    }
-                }
-            }
-            if (allDead == true && enemies.empty() == false && spawnedWaves == 5)
+            if (boss.IsEnemyAlive() == false)
             {
                 spawnedWaves = 0;
                 hasWon = true;
@@ -578,38 +571,22 @@ int main()
             currentScreen = DevKeys(currentScreen);
             if (isClean == false)
             {
-                if (updatedScore == false)
+                if (updatedScore == false) //If score hasn't been updated
                 {
-                    UpdateHighScore(player.GetScore());
+                    UpdateHighScore(player.GetScore());  //Check if score is in leaderboard and change leaderboard if necessary
                     updatedScore = true;
                 }
-
-                if (hasWon == true)
-                {
-                    PlaySound(GalagaWin);
-                }
-                else
-                {
-                    PlaySound(GalagaDefeat);
-                }
-                enemybullets.clear();
-                playerbullets.clear();
-                enemies.clear();
+                if (hasWon == true) { PlaySound(GalagaWin); } //Win music
+                else { PlaySound(GalagaDefeat); } //Lose music
                 isClean = true;
-                triggerTimerTitleStageOne = false;
-                triggerTimerTitleStageTwo = false;
             }
-
             if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
             {
-                player = Player::Player();
-                updatedScore = false;
-                hardmode = false;
+                CleanVariables();
+
                 StopSound(GalagaWin);
                 StopSound(GalagaDefeat);
-                player_bullet_counter = 0;
-                hit_counter = 0;
-                isClean = false;
+
                 currentScreen = TITLE;
             }
         } break;
@@ -950,11 +927,25 @@ int main()
                 boss.CheckIsHit();
                 if (boss.GetIsHit() == true) 
                 {
-                    DrawTextureEx(Boss_t, bossActualPosition,0,1, RED);
+                    if (hardmode)
+                    {
+                        DrawTextureEx(Boss_2nd_t, bossActualPosition, 0, 1, RED);
+                    }
+                    else
+                    {
+                        DrawTextureEx(Boss_t, bossActualPosition, 0, 1, RED);
+                    }
                 }
                 else 
                 {
-                    DrawTextureEx(Boss_t, bossActualPosition, 0, 1, WHITE);
+                    if (hardmode)
+                    {
+                        DrawTextureEx(Boss_2nd_t, bossActualPosition, 0, 1, WHITE);
+                    }
+                    else
+                    {
+                        DrawTextureEx(Boss_t, bossActualPosition, 0, 1, WHITE);
+                    }
                 }
             }
         }break;
@@ -1177,6 +1168,25 @@ void EnemyManager()
 
 } 
 
+void CleanVariables()
+{
+    player = Player::Player();
+    player_bullet_counter = 0;
+    hit_counter = 0;
+
+    enemybullets.clear();
+    playerbullets.clear();
+    enemies.clear();
+
+    updatedScore = false;
+    hardmode = false;
+
+    triggerTimerTitleStageOne = false;
+    triggerTimerTitleStageTwo = false;
+    isClean = false;
+}
+
+
 GameScreen DevKeys(GameScreen current)
 {
     if (IsKeyPressed(KEY_I)) 
@@ -1203,41 +1213,27 @@ GameScreen DevKeys(GameScreen current)
     }
     if (IsKeyPressed(KEY_ONE))
     {
-        triggerTimerTitleStageOne = false;
-        spawnedWaves = 0;
-        enemybullets.clear();
-        playerbullets.clear();
-        enemies.clear();
+        CleanVariables();
         return STAGE1;
     }
     if (IsKeyPressed(KEY_TWO))
     {
-        triggerTimerTitleStageTwo = false;
-        spawnedWaves = 0;
-        enemybullets.clear();
-        playerbullets.clear();
-        enemies.clear();
+        CleanVariables();
         return STAGE2;
     }
     if (IsKeyPressed(KEY_THREE))
     {
-        spawnedWaves = 0;
-        enemybullets.clear();
-        playerbullets.clear();
-        enemies.clear();
+        CleanVariables();
         return BOSS;
     }
     if (IsKeyPressed(KEY_FOUR))
     {
-        isClean = false;
+        CleanVariables();
         return ENDING;
     }
     if (IsKeyPressed(KEY_ZERO))
     {
-        spawnedWaves = 0;
-        enemybullets.clear();
-        playerbullets.clear();
-        enemies.clear();
+        CleanVariables();
         return TITLE;
     }
     return current;
