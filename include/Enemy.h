@@ -30,6 +30,8 @@ public:
     Vector2 original_position = { 0,0 };
     float aux = 0;
 
+    Image imagen;
+    Texture2D textura;
     Color DEAD = { 230, 41, 55, 255 };
     enemyType type;
     float texture_angle = 0;

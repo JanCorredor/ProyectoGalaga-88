@@ -5,10 +5,7 @@
 #include <iostream>
 using namespace std;
 
-//------------------------- Defines -------------------------
-
-
-//------------------------- Constructores -------------------------
+//------------------------- Constructors -------------------------
 
 Player::Player()
 {
@@ -27,7 +24,7 @@ Player::Player(Vector2 _position, int _radius, Color _color, int _score, int _li
     this->deathTimer;
 };
 
-//------------------------- Getters y setters -------------------------
+//------------------------- Getters / setters -------------------------
 
 Vector2 Player::GetPosition() { return this->position; }
 void Player::SetPosition(Vector2 newVector) { this->position = newVector; }
@@ -35,29 +32,22 @@ float Player::GetPositionX() { return this->position.x; }
 void Player::SetPositionX(float newPositionX) { this->position.x = newPositionX; }
 float Player::GetPositionY() { return this->position.y; }
 void Player::SetPositionY(float newPositionY) { this->position.y = newPositionY; }
-
 int Player::GetRadius() { return this->radius; }
 void Player::SetRadius(int newRadius) { this->radius = newRadius; }
-
 Color Player::GetColor() { return this->color; }
 void Player::SetColor(Color newColor) { this->color = newColor; }
-
 int Player::GetScore() { return this->score; }
 void Player::SetScore(int newScore) { this->score = newScore; }
-
 int Player::GetLives() { return this->lives; }
 void Player::SetLives(int newLives) { this->lives = newLives; }
-
 bool Player::GetInmortal() { return this->inmortal; }
 void Player::SetInmortal(bool newInmortal) { this->inmortal = newInmortal; }
-
 bool Player::GetAlive() { return this->alive; }
 void Player::SetAlive(bool newAlive) { this->alive = newAlive; }
-
 Timer Player::GetTimer() { return this->deathTimer; }
 void Player::SetTimer(Timer newTimer) {}
 
-//------------------------- Funciones -------------------------
+//------------------------- Functions -------------------------
 
 void Player::SumScore(int n)
 {
@@ -93,6 +83,7 @@ void Player::Move()
     }
 }
 
+//Player shooting function
 void Player::Shoot(std::vector <Bullet>* playerbullets)
 {
     Bullet newBullet;
@@ -115,6 +106,7 @@ void Player::Shoot(std::vector <Bullet>* playerbullets)
 
 }
 
+//Function to update variables on death
 void Player::Death()
 {
     this->lives = this->lives -1;
@@ -127,6 +119,7 @@ void Player::Death()
     this->color = RED;
 }
 
+//Function to check the inmortal timer while dead and other variables
 bool Player::CheckDeath() 
 {
     if (this->deathTimer.CheckFinished() == true && aux == 1) 

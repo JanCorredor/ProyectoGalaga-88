@@ -714,28 +714,41 @@ int main()
             {
                 if (enemies[i].IsEnemyAlive() == true)
                 {
-                    Vector2 Correccion = { enemies[i].GetEnemyPosition().x -32, enemies[i].GetEnemyPosition().y -32 }; //-32 -32
-                    enemies[i].enemy_texture_position = Correccion;
+                    Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32, enemies[i].GetEnemyPosition().y - 32}; //-32 -32
+                    Vector2 CorreccionHitbox = { Correccion.x + 32,Correccion.y + 32 }; // Texture correction to match sprites.
+                    enemies[i].enemy_texture_position = CorreccionHitbox; 
 
                     if (hitboxes)
-                    {;
+                    {
                         DrawCircleV(enemies[i].enemy_texture_position, enemies[i].GetEnemyRadius(), RED);
                     }
                     if (enemies[i].type == Goei) //Goei
                     {
                         DrawTextureEx(Goei_t, Correccion, enemies[i].texture_angle, 0.5, WHITE);
+                        //DrawTextureEx(Goei_0_t, Correccion, enemies[i].texture_angle, 0.5, WHITE);
+                        //Rectangle Destinationr = { enemies[i].GetEnemyPosition().x,enemies[i].GetEnemyPosition().y,64, 64 };
+                        //Rectangle Sourcer = { 62,62,63,63 };
+                        /*DrawTexturePro(Goei_0_t, Sourcer,Destinationr,enemies[i].GetEnemyPosition(), enemies[i].texture_angle, WHITE);*/
+                        enemies[i].imagen = LoadImageFromTexture(Goei_0_t);
+                        ImageRotate(&enemies[i].imagen, enemies[i].texture_angle);
+                        enemies[i].textura = LoadTextureFromImage(enemies[i].imagen);
+                        DrawTextureEx(enemies[i].textura, Correccion, 0, 0.5, WHITE);
+                        //UnloadTexture(texturaFinal);
                     }
                     else if (enemies[i].type == Zako) //Zako
                     {
                         DrawTextureEx(Zako_t, Correccion, enemies[i].texture_angle, 1, WHITE);
+                        //DrawTextureEx(Zako_t, Correccion, 0, 1, WHITE);
                     }
                     else if (enemies[i].type == Bon) //Bon
                     {
                         DrawTextureEx(Bon_t, Correccion, enemies[i].texture_angle, 1, WHITE);
+                        //DrawTextureEx(Bon_t, Correccion, 0, 1, WHITE);
                     }
                     else if (enemies[i].type == Bos) //Bos
                     {
                         DrawTextureEx(Bos_t, Correccion, enemies[i].texture_angle, 1, WHITE);
+                        //DrawTextureEx(Bos_t, Correccion, 0, 1, WHITE);
                         if (enemies[i].aux == 1)
                         {
                             Vector2 Attack = { Correccion.x - 64 - 10, Correccion.y + 64 };

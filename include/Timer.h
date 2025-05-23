@@ -15,14 +15,12 @@ private:
     float duration;
     
 public:
-    //Constructores
     Timer();
 
     float GetStartTime();
     float GetElapsedTime();
     float GetEndTime();
     void SetFinished(bool newFinished);
-    //Funciones
     bool CheckFinished();
     void StartTimer(float _duration);
 };
