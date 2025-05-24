@@ -20,21 +20,22 @@ void Enemy::SpawnHorde(std::vector <Enemy>* manager, int num, int spawnId, std::
     for (int i = 0; i < num; i++)
     {
         Vector2 spaceBetween; //Space Bewtween each enemy when they spawn together
+        float mult = 32*i; // i/10
         if (spawnId <= 2) //Up
         {
-            spaceBetween = { StartingPositions(spawnId).x * 0, StartingPositions(spawnId).y * i / 10}; 
+            spaceBetween = { StartingPositions(spawnId).x * 0, StartingPositions(spawnId).y -mult*2}; 
         }
         else if (spawnId == 3) //Center Left
         {
-            spaceBetween = { StartingPositions(spawnId).x * i / 10, StartingPositions(spawnId).y * 0 }; 
+            spaceBetween = { StartingPositions(spawnId).x -mult *2, StartingPositions(spawnId).y * 0 };
         }
         else if (spawnId == 4) //Right
         {
-            spaceBetween = { StartingPositions(spawnId).x * i / 10, StartingPositions(spawnId).y * 0 };
+            spaceBetween = { StartingPositions(spawnId).x +mult *2, StartingPositions(spawnId).y * 0 };
         }
         else //Lower
         {
-            spaceBetween = { StartingPositions(spawnId).x * 0, StartingPositions(spawnId).y * i / 10 };
+            spaceBetween = { StartingPositions(spawnId).x * 0, StartingPositions(spawnId).y +mult*2};
         }
 
         Enemy newEnemy;

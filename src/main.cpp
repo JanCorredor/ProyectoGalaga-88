@@ -714,9 +714,7 @@ int main()
             {
                 if (enemies[i].IsEnemyAlive() == true)
                 {
-                    Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32, enemies[i].GetEnemyPosition().y - 32}; //-32 -32
-                    Vector2 CorreccionHitbox = { Correccion.x + 32,Correccion.y + 32 }; // Texture correction to match sprites.
-                    enemies[i].enemy_texture_position = CorreccionHitbox; 
+                    enemies[i].enemy_texture_position = enemies[i].GetEnemyPosition();
 
                     if (hitboxes)
                     {
@@ -728,9 +726,6 @@ int main()
                         Rectangle destRec = { enemies[i].GetEnemyPosition().x, enemies[i].GetEnemyPosition().y, 64, 64 };
                         Vector2 origin = { (float)Goei_t.width-64-30,(float)Goei_t.height-64-16};
                         DrawTexturePro(Goei_t, sourceRec, destRec , origin, enemies[i].texture_angle, WHITE);
-
-                        DrawLine((int)destRec.x, 0, (int)destRec.x, GetScreenHeight(), RED);
-                        DrawLine(0, (int)destRec.y, GetScreenWidth(), (int)destRec.y, RED);
                     }
                     else if (enemies[i].type == Zako) //Zako
                     {
@@ -738,9 +733,6 @@ int main()
                         Rectangle destRec = { enemies[i].GetEnemyPosition().x, enemies[i].GetEnemyPosition().y, 64, 64 };
                         Vector2 origin = { (float)Zako_t.width - 30,(float)Zako_t.height - 30};
                         DrawTexturePro(Zako_t, sourceRec, destRec, origin, enemies[i].texture_angle, WHITE);
-
-                        DrawLine((int)destRec.x, 0, (int)destRec.x, GetScreenHeight(), RED);
-                        DrawLine(0, (int)destRec.y, GetScreenWidth(), (int)destRec.y, RED);
                     }
                     else if (enemies[i].type == Bon) //Bon
                     {
@@ -748,9 +740,6 @@ int main()
                         Rectangle destRec = { enemies[i].GetEnemyPosition().x, enemies[i].GetEnemyPosition().y, 64, 64 };
                         Vector2 origin = { (float)Bon_t.width - 30,(float)Bon_t.height - 30};
                         DrawTexturePro(Bon_t, sourceRec, destRec, origin, enemies[i].texture_angle, WHITE);
-
-                        DrawLine((int)destRec.x, 0, (int)destRec.x, GetScreenHeight(), RED);
-                        DrawLine(0, (int)destRec.y, GetScreenWidth(), (int)destRec.y, RED);
                     }
                     else if (enemies[i].type == Bos) //Bos
                     {
@@ -759,12 +748,9 @@ int main()
                         Vector2 origin = { (float)Bos_t.width - 30,(float)Bos_t.height - 30};
                         DrawTexturePro(Bos_t, sourceRec, destRec, origin, enemies[i].texture_angle, WHITE);
 
-                        DrawLine((int)destRec.x, 0, (int)destRec.x, GetScreenHeight(), RED);
-                        DrawLine(0, (int)destRec.y, GetScreenWidth(), (int)destRec.y, RED);
-
-                        if (enemies[i].aux == 1)
+                        if (enemies[i].aux == 1) //Is attacking
                         {
-                            Vector2 Attack = { Correccion.x - 64 - 10, Correccion.y + 64 };
+                            Vector2 Attack = { enemies[i].GetEnemyPosition().x - 64 -32 - 10, enemies[i].GetEnemyPosition().y + 32};
                             DrawTextureEx(Bos_attack_t, Attack, 0, 2, WHITE);
                         }
                     }
@@ -773,27 +759,31 @@ int main()
                 {
                     if (enemies[i].type == Goei) //Goei
                     {
-                        Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 33, enemies[i].GetEnemyPosition().y - 37 }; //-33 -37
-                        DrawTextureEx(Goei_t, Correccion, enemies[i].texture_angle, 0.5, enemies[i].DEAD);
-                        enemies[i].enemy_texture_position = Correccion;
+                        Rectangle sourceRec = { 0.0f, 0.0f, Goei_t.width, Goei_t.height };
+                        Rectangle destRec = { enemies[i].GetEnemyPosition().x, enemies[i].GetEnemyPosition().y, 64, 64 };
+                        Vector2 origin = { (float)Goei_t.width - 64 - 30,(float)Goei_t.height - 64 - 16 };
+                        DrawTexturePro(Goei_t, sourceRec, destRec, origin, enemies[i].texture_angle, RED);
                     }
                     else if (enemies[i].type == Zako) //Zako
                     {
-                        Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32, enemies[i].GetEnemyPosition().y - 32 }; //-32 -32
-                        DrawTextureEx(Zako_t, Correccion, enemies[i].texture_angle, 1, enemies[i].DEAD);
-                        enemies[i].enemy_texture_position = Correccion;
+                        Rectangle sourceRec = { 0.0f, 0.0f, Zako_t.width, Zako_t.height };
+                        Rectangle destRec = { enemies[i].GetEnemyPosition().x, enemies[i].GetEnemyPosition().y, 64, 64 };
+                        Vector2 origin = { (float)Zako_t.width - 30,(float)Zako_t.height - 30 };
+                        DrawTexturePro(Zako_t, sourceRec, destRec, origin, enemies[i].texture_angle, RED);
                     }
                     else if (enemies[i].type == Bon) //Bon
                     {
-                        Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32 , enemies[i].GetEnemyPosition().y - 32 }; //-32 -32
-                        DrawTextureEx(Bon_t, Correccion, enemies[i].texture_angle, 1, enemies[i].DEAD);
-                        enemies[i].enemy_texture_position = Correccion;
+                        Rectangle sourceRec = { 0.0f, 0.0f, Bon_t.width, Bon_t.height };
+                        Rectangle destRec = { enemies[i].GetEnemyPosition().x, enemies[i].GetEnemyPosition().y, 64, 64 };
+                        Vector2 origin = { (float)Bon_t.width - 30,(float)Bon_t.height - 30 };
+                        DrawTexturePro(Bon_t, sourceRec, destRec, origin, enemies[i].texture_angle, RED);
                     }
                     else if (enemies[i].type == Bos) //Bos
                     {
-                        Vector2 Correccion = { enemies[i].GetEnemyPosition().x - 32, enemies[i].GetEnemyPosition().y - 32 }; //-32 -32
-                        DrawTextureEx(Bos_t, Correccion, enemies[i].texture_angle, 1, enemies[i].DEAD);
-                        enemies[i].enemy_texture_position = Correccion;
+                        Rectangle sourceRec = { 0.0f, 0.0f, Bos_t.width, Bos_t.height };
+                        Rectangle destRec = { enemies[i].GetEnemyPosition().x, enemies[i].GetEnemyPosition().y, 64, 64 };
+                        Vector2 origin = { (float)Bos_t.width - 30,(float)Bos_t.height - 30 };
+                        DrawTexturePro(Bos_t, sourceRec, destRec, origin, enemies[i].texture_angle, RED);
                     }
                 }
             }
@@ -1224,7 +1214,7 @@ void EnemyManager()
 
 void CleanVariables()
 {
-
+    spawnedWaves = 0;
     player_bullet_counter = 0;
     hit_counter = 0;
 
