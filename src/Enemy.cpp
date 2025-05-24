@@ -498,7 +498,8 @@ Boss::Boss()
     this->enemy_radius = 128; this->enemy_alive = true; this->enemy_speed = { 5,5 }; this->angle = 0; this->hp = 5; this->isHit = false;
     this->timerShotCadence.StartTimer(1);
     this->bulletcounter = 0;
-    this->enemy_position = { 200,200 };
+    this->enemy_position = { 250,-200 };
+    this->isSpawned = false;
 }
 
 bool Boss::GetIsHit() { return this->isHit; }
@@ -595,13 +596,21 @@ void Boss::ShootBoss(std::vector <Bullet>* bulletManager)
 
 void Boss::SpawnBoss() 
 {
-    if (this->enemy_alive == false) 
+
+    this->enemy_position.y += 5;
+
+    if (this->enemy_position.y >= 200) 
     {
-        this->enemy_alive = true;
-
-        if (this->enemy_position.y > 1)
-        {
-
-        }
+        this->isSpawned = true;
     }
+
+}
+
+void Boss::Reset() 
+{
+    this->enemy_radius = 128; this->enemy_alive = true; this->enemy_speed = { 5,5 }; this->angle = 0; this->hp = 5; this->isHit = false;
+    this->timerShotCadence.StartTimer(1);
+    this->bulletcounter = 0;
+    this->enemy_position = { 250,-200 };
+    this->isSpawned = false;
 }

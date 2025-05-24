@@ -53,6 +53,7 @@ Timer logoTimer;
 Timer timerSpawnEnemies;
 Timer timerChangeStage;
 Timer timerStageTitle;
+Timer timerBossSpawn;
 
 //-------------------------------------------------------------------------------------
 // Functions declaration
@@ -489,10 +490,15 @@ int main()
         }break;
         case BOSS:
         {
+            if (boss.isSpawned == false) 
+            {
+                boss.SpawnBoss();
+            }else{
+
             //Enemy
             boss.Move();
             boss.ShootBoss(&enemybullets);
-
+            }
             //Player
             currentScreen = DevKeys(currentScreen);
             player.Move();
@@ -510,7 +516,7 @@ int main()
             //Enemy Collisions
                 for (int j = 0; j < playerbullets.size(); j++)
                 {
-                    if (boss.IsEnemyAlive() == true) 
+                    if (boss.IsEnemyAlive() == true && boss.isSpawned == true) 
                     {
                         if (CheckCollisionCircles(playerbullets[j].bullet_position, playerbullets[j].bullet_radius, boss.enemy_texture_position, boss.GetEnemyRadius()))
                         {
@@ -840,23 +846,6 @@ int main()
             //Particulas
             DrawParticles();
 
-            //UI
-            ////Scores
-            DrawText("1UP", GetScreenWidth() / 13, GetScreenHeight() / 50, 45, YELLOW);
-            DrawText("HIGH SCORE", GetScreenWidth() / 3, GetScreenHeight() / 50, 45, RED);
-
-            DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
-            DrawText(TextFormat("%i", LoadHighScore(highestHighScore)), GetScreenWidth() / 3, GetScreenHeight() / 20, 45, WHITE);
-
-            //// Lives Remaining
-            for (int i = 0; i < player.GetLives(); i++)
-            {
-                DrawTexture(player_body_t, 74 * i - GetScreenWidth() / 30, GetScreenHeight() * 9 / 10, WHITE);
-            }
-
-            ////Stage Indicator
-            DrawTexture(stageindicator1, GetScreenWidth() * 95 / 100, GetScreenHeight() * 92 / 100, WHITE);
-
             //Bullets
             DrawBullet(); //Update all bullets
 
@@ -965,6 +954,23 @@ int main()
                     }
                 }
             }
+
+            //UI
+            ////Scores
+            DrawText("1UP", GetScreenWidth() / 13, GetScreenHeight() / 50, 45, YELLOW);
+            DrawText("HIGH SCORE", GetScreenWidth() / 3, GetScreenHeight() / 50, 45, RED);
+
+            DrawText(TextFormat("%i", (char*)player.GetScore()), GetScreenWidth() / 13, GetScreenHeight() / 20, 45, WHITE);
+            DrawText(TextFormat("%i", LoadHighScore(highestHighScore)), GetScreenWidth() / 3, GetScreenHeight() / 20, 45, WHITE);
+
+            //// Lives Remaining
+            for (int i = 0; i < player.GetLives(); i++)
+            {
+                DrawTexture(player_body_t, 74 * i - GetScreenWidth() / 30, GetScreenHeight() * 9 / 10, WHITE);
+            }
+
+            ////Stage Indicator
+            DrawTexture(stageindicator1, GetScreenWidth() * 95 / 100, GetScreenHeight() * 92 / 100, WHITE);
         }break;
         case ENDING:
         {
@@ -1221,7 +1227,7 @@ void CleanVariables()
     enemybullets.clear();
     playerbullets.clear();
     enemies.clear();
-
+    boss.Reset();
     updatedScore = false;
 
 

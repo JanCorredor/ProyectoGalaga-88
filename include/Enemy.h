@@ -67,7 +67,6 @@ class Boss : public Enemy //Subclass for bosses
 {
 private:
     int hp;
-    bool isSpawned;
     bool isHit;
     Timer timerHitAnimation;
     Timer timerShotCadence;
@@ -75,6 +74,7 @@ private:
 public:
     Boss();
     int auxVertical;
+    bool isSpawned;
     int GetHP();
     void SetHP(int newHP);
     void GetHit();
@@ -84,4 +84,5 @@ public:
     void Move();
     void ShootBoss(std::vector <Bullet>* bulletManager);
     void SpawnBoss();
+    void Reset();
 };
