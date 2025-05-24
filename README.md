@@ -14,7 +14,6 @@ https://github.com/JanCorredor/ProyectoGalaga-88/wiki
 ## Controls
 ### In the main menu:
 - Enter to start
-- R to reset all scores
 - Up Arrow for Hardcore Difficulty (Slightly Harder)
 
 ### In gameplay:
@@ -36,3 +35,13 @@ https://github.com/JanCorredor/ProyectoGalaga-88/wiki
 ## Extra Features
 - Score Leaderboard
 - Hardmode
+- DevKeys
+    - R to reset all scores(Main Menu Only)
+    - I to toggle Godmode
+    - H to toggle Hitboxes Visibility
+    - 1 to go to Stage 1
+    - 2 to go to Stage 2
+    - 3 to go to Bossfight 
+    - 4 to go to the ending screen
+    - 0 to go tothe Main Menu 
+      
