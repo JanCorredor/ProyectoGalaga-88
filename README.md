@@ -23,6 +23,9 @@ https://github.com/JanCorredor/ProyectoGalaga-88/wiki
 ### In endscreen
 - Enter to return to menu
 
+### Test video
+https://youtu.be/GcaHHlR-iIM
+
 ## Things Implemented
 - Main Menu
 - UI and Sounds

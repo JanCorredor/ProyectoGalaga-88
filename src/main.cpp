@@ -542,6 +542,7 @@ int main()
                             }
                             else 
                             {
+                                PlaySound(enemyDeathExplosion);
                                 hit_counter++;
                                 playerbullets.erase(playerbullets.begin() + j);
                                 boss.GetHit();
@@ -1194,7 +1195,7 @@ void EnemyManager()
                 {
                     enemies[rnd].Shoot(&enemybullets, player);         // Make a random enemy shoot
                     if (hardmode) { enemyAttackTimer.StartTimer(0.1); }
-                    else { enemyAttackTimer.StartTimer(1.0); }
+                    else { enemyAttackTimer.StartTimer(3.0); }
                     enemies[rnd].inPosition[3] = true;
                 }
                 if (enemies[count].inPosition[3] == true)
