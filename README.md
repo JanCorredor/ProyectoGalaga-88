@@ -12,6 +12,9 @@ You take the role of the Blast Fighter, a starship aimed to destroy the hostile 
 ## Wiki
 https://github.com/JanCorredor/ProyectoGalaga-88/wiki
 
+## Release
+https://github.com/JanCorredor/ProyectoGalaga-88/releases/tag/Final
+
 ## Controls
 ### In the main menu:
 - Enter to start
