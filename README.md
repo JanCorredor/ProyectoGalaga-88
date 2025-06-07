@@ -3,7 +3,14 @@
 
 ## Team Members
 * **Code/QA**: [Jan Corredor Mayol](https://github.com/JanCorredor)<br>
-* **Design/Art/Management**: [Arnau Gonzalez Olivé](https://github.com/Arnauwu)
+    -  Enemies
+    -  Particles
+    -  Score System
+
+* **Design/Art/Management**: [Arnau Gonzalez Olivé](https://github.com/Arnauwu)<br>
+     - Timer
+     - Player
+     - Boss
 
 ## Description of the game
 Galaga 88' is a Top-down space combat Shoot 'em up game released in 1987 for the Namco System 1.
