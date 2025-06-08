@@ -17,13 +17,13 @@ Galaga 88' is a Top-down space combat Shoot 'em up game released in 1987 for the
 You take the role of the Blast Fighter, a starship aimed to destroy the hostile Galaga forces and their home planet.
 
 ## Wiki
-https://github.com/JanCorredor/ProyectoGalaga-88/wiki
+[https://github.com/JanCorredor/ProyectoGalaga-88/wiki](https://github.com/JanCorredor/ProyectoGalaga-88/wiki)
 
 ### Trailer video
 [https://www.youtube.com/watch?v=vjk5JAGVWO4](https://www.youtube.com/watch?v=vjk5JAGVWO4)
 
 ## Release
-https://github.com/JanCorredor/ProyectoGalaga-88/releases/tag/Final
+[https://github.com/JanCorredor/ProyectoGalaga-88/releases/tag/Final](https://github.com/JanCorredor/ProyectoGalaga-88/releases/tag/Final)
 
 ## Controls
 ### In the main menu:
