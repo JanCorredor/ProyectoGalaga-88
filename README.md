@@ -19,7 +19,7 @@ You take the role of the Blast Fighter, a starship aimed to destroy the hostile 
 ## Wiki
 [https://github.com/JanCorredor/ProyectoGalaga-88/wiki](https://github.com/JanCorredor/ProyectoGalaga-88/wiki)
 
-### Trailer video
+## Trailer
 [https://www.youtube.com/watch?v=vjk5JAGVWO4](https://www.youtube.com/watch?v=vjk5JAGVWO4)
 
 ## Release
